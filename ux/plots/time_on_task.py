@@ -1,6 +1,5 @@
 from matplotlib.axes import Axes
-from numpy import array
-from numpy.ma import mean
+from numpy import array, mean
 from pandas import Series, DataFrame
 
 from ux.calcs.utils import exponential_confidence_interval

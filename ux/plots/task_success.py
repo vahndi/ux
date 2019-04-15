@@ -1,9 +1,8 @@
 from collections import OrderedDict
-from typing import Union
-
 from matplotlib.axes import Axes
 from numpy import array, ndarray, histogram
 from pandas import DataFrame, Series
+from typing import Union
 
 from ux.calcs.task_success import binary_task_success_rate
 from ux.plots.helpers import new_axes, get_hist_index

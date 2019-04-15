@@ -1,7 +1,3 @@
-from typing import List
-from ux.interfaces.ux.i_action_template import IActionTemplate
-
-
 class ITask(object):
 
     @property
