@@ -9,7 +9,7 @@ setup(
     license='MIT',
     author='vahndi.minah',
     author_email='',
-    description='Python package for measuring and analyzing User Experience',
+    description='A Python package for measuring and analyzing User Experience',
     install_requires=[
         'matplotlib',
         'numpy',
