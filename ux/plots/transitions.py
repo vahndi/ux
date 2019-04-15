@@ -1,0 +1,91 @@
+from matplotlib.axes import Axes
+from matplotlib.patches import Circle, FancyArrowPatch, ConnectionStyle, ArrowStyle
+from pandas import Series, pivot_table
+from seaborn import heatmap
+from typing import Dict, Union, Callable
+
+from ux.plots.helpers import new_axes, point_distance, circle_edge, get_color
+
+
+def plot_transition_matrix(transitions, get_name: callable = None,
+                           ax: Axes = None, heatmap_kws: dict = None):
+    """
+    Plot a state transition matrix.
+
+    :param transitions: List of transitions and their counts or probabilities.
+    :type transitions: Dict[Tuple[object, object], Union[float, int]]
+    :param get_name: Optional lambda function to call to convert states to labels.
+    :param heatmap_kws: Keyword args and values for seaborn's heatmap function.
+    :param ax: Optional matplotlib axes to plot on.
+    """
+    get_name = get_name if get_name is not None else lambda a: a
+    transitions = Series(transitions).reset_index()
+    transitions.columns = ['from', 'to', 'count']
+    transitions['from'] = transitions['from'].map(get_name)
+    transitions['to'] = transitions['to'].map(get_name)
+    transitions = pivot_table(
+        data=transitions, values='count',
+        index='to', columns='from'
+    )
+    ax = ax or new_axes()
+    heatmap(transitions, ax=ax, **heatmap_kws)
+    ax.invert_yaxis()
+    return ax
+
+
+def plot_markov_chain(transitions,
+                      get_location: callable, get_name: callable = None,
+                      state_color: Union[str, Callable] = None,
+                      transition_color: Union[str, Callable] = None,
+                      arc_scale: float = 0.1,
+                      ax: Axes = None, text_kws: dict = None, circle_kws: dict = None, arrowstyle_kws: dict = None):
+    """
+    Plot a diagram of the Markov Chain corresponding to the given transitions between states.
+
+    :param transitions: List of transitions and their counts or probabilities.
+    :type transitions: Dict[Tuple[object, object], Union[float, int]]
+    :param get_location: Lambda function to call to get state plot locations.
+    :param get_name: Optional lambda function to call to convert states to labels.
+    :param state_color: string or callable(state) to generate color for each state.
+    :param transition_color: string or callable(state) to generate color for each transition.
+    :param arc_scale: this is multiplied by the distance between states to get the radius of the connecting arc
+    :param text_kws: args to pass to `ax.text` for the state names
+    :param circle_kws: args to pass to `matplotlib.patches.Circle` for the states
+    :param arrowstyle_kws: args to pass to `matplotlib.patches.FancyArrowPatch(arrowstyle)` for the transitions
+    :param ax: Optional matplotlib axes to plot on.
+    :rtype: Axes
+    """
+    ax = ax or new_axes()
+    # get unique states
+    states = set()
+    for from_state, to_state in transitions.keys():
+        states.update([from_state, to_state])
+    # plot state circles
+    for state in states:
+        center = get_location(state)
+        color = get_color(state_color, state, default='green')
+        ax.add_patch(Circle(
+            xy=center, color=color, **circle_kws
+        ))
+        ax.plot(*center, c='yellow')
+    # plot transition arrows
+    arrowstyle_kws = arrowstyle_kws or dict(stylename='Fancy', head_length=10, head_width=5, tail_width=2)
+    for (from_state, to_state), number in transitions.items():
+        from_center = get_location(from_state)
+        to_center = get_location(to_state)
+        distance = point_distance(from_center, to_center)
+        circle_radius = circle_kws['radius']
+        if distance > 0:
+            from_edge = circle_edge(from_center, to_center, circle_radius, 15)
+            to_edge = circle_edge(to_center, from_center, circle_radius, -15)
+            color = get_color(transition_color, from_state, default='red')
+            ax.add_patch(FancyArrowPatch(
+                posA=from_edge, posB=to_edge,
+                connectionstyle=ConnectionStyle(stylename='Arc3', rad=arc_scale*distance),
+                arrowstyle=ArrowStyle(**arrowstyle_kws),
+                linewidth=0, color=color
+            ))
+    # plot state labels
+    for state in states:
+        center = get_location(state)
+        ax.text(*center, s=get_name(state), **text_kws)
