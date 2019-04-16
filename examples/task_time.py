@@ -7,7 +7,9 @@ from ux.plots.time_on_task import plot_task_completion_times, plot_task_completi
 
 
 def mean_time_on_task():
-
+    """
+    Emulate the plot from Figure 4.5 of "Measuring the User Experience".
+    """
     # generate example data
     task_time = OrderedDict(
         ('Task {}'.format(i), normal(randint(60, 100), 10, 100))
@@ -18,8 +20,10 @@ def mean_time_on_task():
     plt.show()
 
 
-def task_completion_in_time():
-
+def task_completion_under_threshold():
+    """
+    Emulate the plot from Figure 4.6 of "Measuring the User Experience".
+    """
     # generate example data
     participant_times = {
        'P1': [259, 112, 135, 58, 8],
@@ -53,6 +57,6 @@ def task_completion_in_time():
 
 if __name__ == '__main__':
 
-    # mean_time_on_task()
-    task_completion_in_time()
+    mean_time_on_task()
+    task_completion_under_threshold()
 

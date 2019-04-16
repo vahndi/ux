@@ -3,8 +3,10 @@ import matplotlib.pyplot as plt
 from ux.plots.errors import plot_percentage_task_errors
 
 
-def attempts_with_errors():
-
+def percentage_task_errors():
+    """
+    Emulate the plot from Figure 4.8 of "Measuring the User Experience".
+    """
     # generate example data
     condition_result = {
         'Control': [1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1],
@@ -24,4 +26,4 @@ def attempts_with_errors():
 
 if __name__ == '__main__':
 
-    attempts_with_errors()
+    percentage_task_errors()

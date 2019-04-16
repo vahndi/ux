@@ -17,6 +17,7 @@ def plot_transition_matrix(transitions, get_name: callable = None,
     :param get_name: Optional lambda function to call to convert states to labels.
     :param heatmap_kws: Keyword args and values for seaborn's heatmap function.
     :param ax: Optional matplotlib axes to plot on.
+    :rtype: Axes
     """
     get_name = get_name if get_name is not None else lambda a: a
     transitions = Series(transitions).reset_index()

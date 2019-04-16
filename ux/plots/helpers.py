@@ -1,7 +1,9 @@
 from math import cos, sin, radians
 import matplotlib.pyplot as plt
 from matplotlib.axes import Axes
-from typing import List
+from typing import List, Union
+
+from ux.interfaces.ux.i_location import ILocation
 
 
 def new_axes():
@@ -58,8 +60,15 @@ def circle_edge(point_1: tuple, point_2: tuple, radius: float, rotation_angle: f
     return edge_point
 
 
-def get_color(color, state, default: str):
+def get_color(color: Union[None, str, callable], state: ILocation, default: str):
+    """
+    Return a matplotlib color string depending on the type of `color`
 
+    :param color: `string` to pass through, `None` to use default or `callable` to use a function.
+    :param state: The location to use if `color` is a `callable`.
+    :param default: Default color value if `None` was passed.
+    :rtype: str
+    """
     if color is None:
         return default
     elif type(color) is str:

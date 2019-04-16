@@ -38,6 +38,7 @@ def plot_task_completion_under_threshold(participant_times: dict, threshold: int
     :param participant_times: Dictionary mapping  {task name => {participant => time on task}}
     :param threshold: Time threshold to use to measure task completion success.
     :param ax: Optional matplotlib axes to plot on.
+    :rtype: Axes
     """
     df = DataFrame.from_dict(participant_times)
     df_below_threshold = df.le(threshold).mean()
