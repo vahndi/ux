@@ -1,7 +1,7 @@
 import unittest
 from unittest import TestCase
 
-from ux.calcs.task_success import ordered_task_completion_rate, unordered_task_completion_rate
+from ux.calcs.object_calcs.task_success import ordered_task_completion_rate, unordered_task_completion_rate
 from ux.classes.ux.action_sequence import ActionSequence
 from ux.classes.ux.action_template import ActionTemplate
 from ux.classes.ux.task import Task

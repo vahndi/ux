@@ -1,7 +1,7 @@
 from typing import List
 
-from ux.calcs.task_success import unordered_task_completion_rate, ordered_task_completion_rate
-from ux.calcs.utils import sequence_intersects_task
+from ux.calcs.object_calcs.task_success import unordered_task_completion_rate, ordered_task_completion_rate
+from ux.calcs.object_calcs.utils import sequence_intersects_task
 from ux.interfaces.ux.i_action_sequence import IActionSequence
 from ux.interfaces.ux.i_task import ITask
 from ux.interfaces.ux.i_user_action import IUserAction

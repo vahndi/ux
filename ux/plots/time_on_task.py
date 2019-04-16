@@ -2,7 +2,7 @@ from matplotlib.axes import Axes
 from numpy import array, mean
 from pandas import Series, DataFrame
 
-from ux.calcs.utils import exponential_confidence_interval
+from ux.calcs.basic_calcs.stats import exponential_confidence_interval
 from ux.plots.helpers import new_axes
 
 

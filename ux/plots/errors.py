@@ -2,7 +2,7 @@ from matplotlib.axes import Axes
 from numpy import array, stack
 from pandas import Series
 
-from ux.calcs.task_success import binary_task_success_rate
+from ux.calcs.basic_calcs.task_success import binary_task_success_rate
 from ux.plots.helpers import new_axes
 
 

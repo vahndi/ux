@@ -4,7 +4,7 @@ from numpy import array, ndarray, histogram
 from pandas import DataFrame, Series
 from typing import Union, Iterable
 
-from ux.calcs.task_success import binary_task_success_rate
+from ux.calcs.basic_calcs.task_success import binary_task_success_rate
 from ux.plots.helpers import new_axes, get_hist_index
 
 

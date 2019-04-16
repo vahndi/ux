@@ -1,7 +1,7 @@
 import unittest
 from unittest import TestCase
 
-from ux.calcs.time_on_task import task_extents
+from ux.calcs.object_calcs.time_on_task import task_extents
 from ux.classes.ux.action_sequence import ActionSequence
 from ux.classes.ux.action_template import ActionTemplate
 from ux.classes.ux.task import Task

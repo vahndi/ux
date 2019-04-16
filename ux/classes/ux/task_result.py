@@ -1,6 +1,6 @@
 from typing import List
 
-from ux.calcs.task_success import binary_task_success_rate
+from ux.calcs.basic_calcs.task_success import binary_task_success_rate
 
 
 class TaskResult(object):
