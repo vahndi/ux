@@ -1,6 +1,6 @@
 from matplotlib.axes import Axes
-from numpy import array, mean
-from pandas import Series, DataFrame
+from numpy import mean
+from pandas import Series
 
 from ux.plots.helpers import new_axes
 
