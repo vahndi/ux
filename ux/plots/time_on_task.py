@@ -24,7 +24,7 @@ def plot_task_completion_times(task_times: dict, confidence: float = 0.95, ax: A
         for task_name in means.index
     ]).reshape(1, 2, means.shape[0])
     ax = ax or new_axes()
-    means.plot(kind='bar', ax=ax, yerr=errors)
+    means.plot(kind='bar', ax=ax, yerr=errors, capsize=5)
     ax.set_xlabel('Task')
     ax.set_ylabel('Time (Sec) to Complete Task')
 
