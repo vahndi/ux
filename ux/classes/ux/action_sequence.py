@@ -1,4 +1,5 @@
-from typing import List
+from datetime import timedelta
+from typing import List, Callable
 
 from ux.calcs.object_calcs.task_success import unordered_task_completion_rate, ordered_task_completion_rate
 from ux.calcs.object_calcs.utils import sequence_intersects_task
@@ -9,25 +10,41 @@ from ux.interfaces.ux.i_action_template import IActionTemplate
 
 
 class ActionSequence(IActionSequence):
-
+    """
+    Represents a sequence of UserActions taken by a User.
+    """
     def __init__(self, user_actions: List[IUserAction] = None, extra: dict = None):
+        """
+        Create a new ActionSequence.
 
+        :param user_actions: List of Actions to use to construct the ActionSequence.
+        :param extra: Optional additional data to store with the ActionSequence.
+        """
         self._user_actions = user_actions or []
         self._extra = extra
 
     @property
     def user_actions(self):
         """
+        Return the list of UserActions in the ActionSequence.
+
         :rtype: List[IUserAction]
         """
         return self._user_actions
 
     @property
     def extra(self):
+        """
+        Return the dictionary of extra information added at construction time.
+
+        :rtype: dict
+        """
         return self._extra
 
     def action_templates(self):
         """
+        Return a list of ActionTemplates derived from each of the UserActions taken.
+
         :rtype: List[IActionTemplate]
         """
         return [
@@ -36,19 +53,30 @@ class ActionSequence(IActionSequence):
         ]
 
     def duration(self):
+        """
+        Return the total duration of the ActionSequence from the first Action to the last.
 
+        :rtype: timedelta
+        """
         start_time = self.user_actions[0].time_stamp
         end_time = self.user_actions[-1].time_stamp
         return end_time - start_time
 
     def intersects_task(self, task: ITask):
         """
+        Return True if the given Task has ActionTemplates that are equivalent to any Actions in the Sequence.
+
+        :param task: Task to cross-reference Action Templates against.
         :rtype: bool
         """
         return sequence_intersects_task(action_sequence=self, task=task)
 
-    def split_after(self, condition: callable, copy_extra: bool):
+    def split_after(self, condition: Callable[[IUserAction], bool], copy_extra: bool):
         """
+        Split into a list of new ActionSequences after each `UserAction` where `condition` is met.
+
+        :param condition: Lambda function to test when to break the sequence.
+        :param copy_extra: Whether to copy the `extra` dict into the new Sequences.
         :rtype: List[IActionSequence]
         """
         new_sequences = []
@@ -63,6 +91,24 @@ class ActionSequence(IActionSequence):
                 sequence_actions = []
         return new_sequences
 
+    def unordered_completion_rate(self, task: ITask):
+        """
+        Return the unordered completion rate of the given Task from the Actions in the Sequence.
+
+        :param task: The Task to cross-reference UserActions against.
+        :rtype: float
+        """
+        return unordered_task_completion_rate(task, self)
+
+    def ordered_completion_rate(self, task: ITask):
+        """
+        Return the ordered completion rate of the given Task from the Actions in the Sequence.
+
+        :param task: The Task to cross-reference UserActions against.
+        :rtype: float
+        """
+        return ordered_task_completion_rate(task, self)
+
     def __repr__(self):
 
         return 'ActionSequence([{}])'.format(
@@ -72,16 +118,3 @@ class ActionSequence(IActionSequence):
     def __len__(self):
 
         return len(self._user_actions)
-
-    def unordered_completion_rate(self, task: ITask):
-        """
-        :rtype: float
-        """
-        return unordered_task_completion_rate(task, self)
-
-    def ordered_completion_rate(self, task: ITask):
-        """
-        :rtype: float
-        """
-        return ordered_task_completion_rate(task, self)
-
