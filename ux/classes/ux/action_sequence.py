@@ -93,7 +93,7 @@ class ActionSequence(IActionSequence):
 
     def unordered_completion_rate(self, task: ITask):
         """
-        Return the unordered completion rate of the given Task from the Actions in the Sequence.
+        Calculate the unordered completion rate of the given Task from the Actions in the Sequence.
 
         :param task: The Task to cross-reference UserActions against.
         :rtype: float
@@ -102,7 +102,7 @@ class ActionSequence(IActionSequence):
 
     def ordered_completion_rate(self, task: ITask):
         """
-        Return the ordered completion rate of the given Task from the Actions in the Sequence.
+        Calculate the ordered completion rate of the given Task from the Actions in the Sequence.
 
         :param task: The Task to cross-reference UserActions against.
         :rtype: float
