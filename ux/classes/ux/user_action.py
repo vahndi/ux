@@ -1,16 +1,30 @@
 from datetime import datetime
 from typing import Iterable
 
-from ux.classes.ux.action_template import ActionTemplate
 from ux.interfaces.ux.i_user_action import IUserAction
+from ux.interfaces.ux.i_action_template import IActionTemplate
+from ux.classes.ux.action_template import ActionTemplate
 
 
 class UserAction(IUserAction):
-
+    """
+    Represents an Action taken by a User.
+    """
     def __init__(self, action_id: str, action_type: str, source_id: str,
                  time_stamp: datetime, user_id: str, session_id: str,
                  target_id: str = None, extra: dict = None):
+        """
+        Create a new UserAction.
 
+        :param action_id: The id of the Action taken.
+        :param action_type: The type of Action taken.
+        :param source_id: The id of the location where the User took the Action.
+        :param time_stamp: The date-time when the User took the Action.
+        :param user_id: The id of the User who took the Action.
+        :param session_id: The id of the Session in which the User took the Action.
+        :param target_id: Optional id of the location the Action navigated to.
+        :param extra: Optional additional data to store with the UserAction.
+        """
         self._action_type = action_type
         self._source_id = source_id
         self._target_id = target_id
@@ -22,39 +36,81 @@ class UserAction(IUserAction):
 
     @property
     def action_type(self):
+        """
+        Return the type of Action taken.
+
+        :rtype: str
+        """
         return self._action_type
 
     @property
     def source_id(self):
+        """
+        Return the id of the location where the User took the Action.
+
+        :rtype: str
+        """
         return self._source_id
 
     @property
     def target_id(self):
+        """
+        Return the id of the location where the Action took the User to.
+
+        :rtype: str
+        """
         return self._target_id
 
     @property
     def action_id(self):
+        """
+        Return the id of the Action taken.
+
+        :rtype: str
+        """
         return self._action_id
 
     @property
     def time_stamp(self):
+        """
+        Return the date-time the Action was taken.
+
+        :rtype: datetime
+        """
         return self._time_stamp
 
     @property
     def user_id(self):
+        """
+        Return the id of the User who took the Action.
+
+        :rtype: str
+        """
         return self._user_id
 
     @property
     def session_id(self):
+        """
+        Return the id of the Session in which the User took the Action.
+
+        :rtype: str
+        """
         return self._session_id
 
     @property
     def extra(self):
+        """
+        Return any additional data stored with the UserAction.
+
+        :rtype: dict
+        """
         return self._extra
 
     def template(self):
         """
-        :rtype: ActionTemplate
+        Return an ActionTemplate that corresponds to the Action.
+
+        :rtype: IActionTemplate
         """
         return ActionTemplate(
             action_type=self._action_type,
@@ -65,6 +121,8 @@ class UserAction(IUserAction):
     @staticmethod
     def templates(user_actions):
         """
+        Return a list of ActionTemplates corresponding to the given list of Actions.
+
         :type user_actions: Iterable[UserAction]
         :rtype: List[ActionTemplate]
         """
