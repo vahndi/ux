@@ -1,3 +1,5 @@
+from typing import Callable
+
 from ux.interfaces.ux.i_action_sequence import IActionSequence
 from ux.interfaces.ux.i_task import ITask
 
@@ -44,3 +46,15 @@ def ordered_task_completion_rate(task: ITask, action_sequence: IActionSequence):
     return num_found / num_templates
 
 
+def binary_task_success(task: ITask, action_sequence: IActionSequence,
+                        success_func: Callable[[ITask, IActionSequence], bool]):
+    """
+    Calculate the binary task success for each sequence.
+
+    :param task: The Task to assess success against.
+    :param action_sequence: ActionSequence to assess success of.
+    :param success_func: Callable to use to assess success.
+    :return: List of False for fail or True for pass
+    :rtype: bool
+    """
+    return success_func(task, action_sequence)

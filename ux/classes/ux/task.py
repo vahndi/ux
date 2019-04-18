@@ -1,6 +1,7 @@
-from typing import List
+from typing import List, Callable
 
-from ux.calcs.object_calcs.task_success import unordered_task_completion_rate, ordered_task_completion_rate
+from ux.calcs.object_calcs.task_success import unordered_task_completion_rate, ordered_task_completion_rate, \
+    binary_task_success
 from ux.calcs.object_calcs.utils import sequence_intersects_task
 from ux.interfaces.ux.i_action_sequence import IActionSequence
 from ux.interfaces.ux.i_action_template import IActionTemplate
@@ -70,6 +71,20 @@ class Task(ITask):
         :rtype: bool
         """
         return sequence_intersects_task(action_sequence=action_sequence, task=self)
+
+    def binary_task_success(self, action_sequence: IActionSequence,
+                            success_func: Callable[[ITask, IActionSequence], bool]):
+        """
+        Return True if success_func is met.
+
+        :param action_sequence: The ActionSequence to assess success of.
+        :param success_func: Callable to use to assess success.
+        :rtype: bool
+        """
+        return binary_task_success(
+            task=self, action_sequence=action_sequence,
+            success_func=success_func
+        )
 
     def __len__(self):
 

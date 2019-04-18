@@ -1,7 +1,8 @@
 from datetime import timedelta
 from typing import List, Callable
 
-from ux.calcs.object_calcs.task_success import unordered_task_completion_rate, ordered_task_completion_rate
+from ux.calcs.object_calcs.task_success import unordered_task_completion_rate, ordered_task_completion_rate, \
+    binary_task_success
 from ux.calcs.object_calcs.utils import sequence_intersects_task
 from ux.interfaces.ux.i_action_sequence import IActionSequence
 from ux.interfaces.ux.i_task import ITask
@@ -70,6 +71,20 @@ class ActionSequence(IActionSequence):
         :rtype: bool
         """
         return sequence_intersects_task(action_sequence=self, task=task)
+
+    def binary_task_success(self, task: ITask,
+                            success_func: Callable[[ITask, IActionSequence], bool]):
+        """
+        Return True if success_func is met.
+
+        :param task: The Task to assess success against.
+        :param success_func: Callable to use to assess success.
+        :rtype: bool
+        """
+        return binary_task_success(
+            task=task, action_sequence=self,
+            success_func=success_func
+        )
 
     def split_after(self, condition: Callable[[IUserAction], bool], copy_extra: bool):
         """
