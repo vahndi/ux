@@ -12,3 +12,6 @@ class IActionTemplate(object):
     def target_id(self):
         raise NotImplementedError
 
+    @property
+    def weighting(self):
+        raise NotImplementedError

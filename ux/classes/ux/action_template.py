@@ -3,11 +3,13 @@ from ux.interfaces.ux.i_action_template import IActionTemplate
 
 class ActionTemplate(IActionTemplate):
 
-    def __init__(self, action_type: str, source_id: str, target_id: str = None):
+    def __init__(self, action_type: str, source_id: str, target_id: str = None,
+                 weighting: float = 1):
 
         self._action_type = action_type
         self._source_id = source_id
         self._target_id = target_id
+        self._weighting = weighting
 
     @property
     def action_type(self):
@@ -20,6 +22,10 @@ class ActionTemplate(IActionTemplate):
     @property
     def target_id(self):
         return self._target_id
+
+    @property
+    def weighting(self):
+        return self._weighting
 
     def __eq__(self, other):
         """
