@@ -1,60 +1,76 @@
 from typing import List
 
-from ux.classes.ux.session import Session
-
 
 class IDatabaseManager(object):
-
+    """
+    An interface or abstract base class that should be implemented for each new backend.
+    """
     def session(self, session_id: str):
         """
-        :rtype: Session
+        Return the Session with the given id.
+
+        :rtype: ISession
         """
         raise NotImplementedError
 
     def sessions(self):
         """
-        :rtype: List[Session]
+        Return all the Sessions in the database.
+
+        :rtype: List[ISession]
         """
         raise NotImplementedError
 
     def user(self, user_id: str):
         """
-        :rtype: User
+        :rtype: IUser
         """
         raise NotImplementedError
 
     def users(self):
         """
-        :rtype: List[User]
+        Return all the Users in the database.
+
+        :rtype: List[IUser]
         """
         raise NotImplementedError
 
     def user_action(self, action_id: str):
         """
-        :rtype: UserAction
+        Return the UserAction with the given id.
+
+        :rtype: IUserAction
         """
         raise NotImplementedError
 
     def user_actions(self, user_id: str):
         """
-        :rtype: List[UserAction]
+        Return all the Actions taken by the User with the given id in the database.
+
+        :rtype: List[IUserAction]
         """
         raise NotImplementedError
 
     def location(self, location_id: str):
         """
-        :rtype: Location
+        Return the Location with the given id.
+
+        :rtype: ILocation
         """
         raise NotImplementedError
 
     def locations(self):
         """
-        :rtype: List[Location]
+        Return all the Locations in the database.
+
+        :rtype: List[ILocation]
         """
         raise NotImplementedError
 
     def get_session_sequence(self, session_id):
         """
+        Return an ActionSequence constructed from all UserActions in the Session with the given id.
+
         :rtype: IActionSequence
         """
         raise NotImplementedError
