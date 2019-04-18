@@ -1,6 +1,7 @@
 from datetime import timedelta
 from typing import List, Callable
 
+from ux.calcs.object_calcs.efficiency import lostness
 from ux.calcs.object_calcs.task_success import unordered_task_completion_rate, ordered_task_completion_rate, \
     binary_task_success
 from ux.calcs.object_calcs.utils import sequence_intersects_task
@@ -85,6 +86,15 @@ class ActionSequence(IActionSequence):
             task=task, action_sequence=self,
             success_func=success_func
         )
+
+    def lostness(self, task: ITask):
+        """
+        Return the lostness with respect to the given Task.
+
+        :param task: The Task to calculate lostness against.
+        :rtype: float
+        """
+        return lostness(task=task, action_sequence=self)
 
     def split_after(self, condition: Callable[[IUserAction], bool], copy_extra: bool):
         """

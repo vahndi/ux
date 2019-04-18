@@ -1,5 +1,6 @@
 from typing import List, Callable
 
+from ux.calcs.object_calcs.efficiency import lostness
 from ux.calcs.object_calcs.task_success import unordered_task_completion_rate, ordered_task_completion_rate, \
     binary_task_success
 from ux.calcs.object_calcs.utils import sequence_intersects_task
@@ -85,6 +86,15 @@ class Task(ITask):
             task=self, action_sequence=action_sequence,
             success_func=success_func
         )
+
+    def lostness(self, action_sequence: IActionSequence):
+        """
+        Return the lostness of the given ActionSequence with respect to this Task.
+
+        :param action_sequence: The ActionSequence to calculate lostness for.
+        :rtype: float
+        """
+        return lostness(task=self, action_sequence=action_sequence)
 
     def __len__(self):
 
