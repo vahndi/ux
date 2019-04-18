@@ -4,10 +4,18 @@ from ux.classes.stats.confidence_interval import ConfidenceInterval
 
 
 class SuccessRate(object):
-
+    """
+    Represents a Task Success Rate.
+    """
     def __init__(self, mean: float, confidence_interval: ConfidenceInterval,
                  name: str = None):
+        """
+        Create a new SuccessRate.
 
+        :param mean: The mean value of the results.
+        :param confidence_interval: The confidence interval of the results.
+        :param name: The name for the SuccessRate.
+        """
         self.mean = mean
         self.confidence_interval = confidence_interval
         self.name = name or ''
@@ -21,7 +29,7 @@ class SuccessRate(object):
     @staticmethod
     def means(success_rates):
         """
-        Return a list of the mean value of each success rate
+        Return a list of the mean value of each SuccessRate.
 
         :type success_rates: Iterable[SuccessRate]
         :rtype: list

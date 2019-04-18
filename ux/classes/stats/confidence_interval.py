@@ -1,8 +1,10 @@
 class ConfidenceInterval(object):
-
+    """
+    Represents a confidence interval.
+    """
     def __init__(self, lower: float, upper: float, significance: float):
         """
-        Represents a confidence interval
+        Create a new confidence interval
 
         :param lower: Lower bound.
         :param upper: Upper bound.
