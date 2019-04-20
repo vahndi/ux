@@ -13,11 +13,19 @@ def unordered_task_completion_rate(task: ITask, action_sequence: IActionSequence
     :param action_sequence: The Sequence of user actions.
     :rtype: float
     """
-    task_template_set = set(task.action_templates)
-    num_task_actions = len(task_template_set)
-    session_template_set = set(action_sequence.action_templates())
-    num_overlaps = len(task_template_set.intersection(session_template_set))
-    return num_overlaps / num_task_actions
+    # calculate sum of task unique action template weights
+    task_templates = task.action_templates
+    task_template_set = set(task_templates)
+    task_weight = sum([action_template.weighting
+                       for action_template in task.action_templates])
+    # calculate sum of weights of action templates in task and sequence
+    sequence_template_set = set(action_sequence.action_templates())
+    overlaps = task_template_set.intersection(sequence_template_set)
+    overlap_weight = sum([
+        action_template.weighting
+        for action_template in overlaps
+    ])
+    return overlap_weight / task_weight
 
 
 def ordered_task_completion_rate(task: ITask, action_sequence: IActionSequence):
@@ -29,21 +37,27 @@ def ordered_task_completion_rate(task: ITask, action_sequence: IActionSequence):
     :param action_sequence: The Sequence of User Actions
     :rtype: float
     """
+    # calculate sum of task action template weights
     task_templates = task.action_templates
+    task_weight = sum([action_template.weighting
+                       for action_template in task.action_templates])
     num_templates = len(task_templates)
-    session_templates = action_sequence.action_templates()
+    sequence_templates = action_sequence.action_templates()
+    # find weights of action templates in sequence in order
     found = True
     num_found = 0
+    sequence_weight = 0.0
     while found and num_found < num_templates:
-        search_value = task_templates[num_found]
+        search_template = task_templates[num_found]
         try:
-            session_index = session_templates.index(search_value)
+            sequence_index = sequence_templates.index(search_template)
             num_found += 1
-            session_templates = session_templates[session_index + 1:]
+            sequence_weight += search_template.weighting
+            sequence_templates = sequence_templates[sequence_index + 1:]
         except:
             found = False
 
-    return num_found / num_templates
+    return sequence_weight / task_weight
 
 
 def binary_task_success(task: ITask, action_sequence: IActionSequence,
