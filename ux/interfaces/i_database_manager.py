@@ -67,6 +67,14 @@ class IDatabaseManager(object):
         """
         raise NotImplementedError
 
+    def action_types(self):
+        """
+        Return all the Action Types embedded in UserActions.
+
+        :rtype: List[str]
+        """
+        raise NotImplementedError
+
     def get_session_sequence(self, session_id):
         """
         Return an ActionSequence constructed from all UserActions in the Session with the given id.
