@@ -56,4 +56,4 @@ def generate_templates(data: DataFrame, placeholders: dict, out_dir: str = ''):
                 ), 'w') as f:
                     f.write(output)
             templates.append(template)
-    return template
+    return templates
