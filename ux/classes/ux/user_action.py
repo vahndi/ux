@@ -12,7 +12,7 @@ class UserAction(IUserAction):
     """
     def __init__(self, action_id: str, action_type: str, source_id: str,
                  time_stamp: datetime, user_id: str, session_id: str,
-                 target_id: str = None, extra: dict = None):
+                 target_id: str = None, meta: dict = None):
         """
         Create a new UserAction.
 
@@ -23,7 +23,7 @@ class UserAction(IUserAction):
         :param user_id: The id of the User who took the Action.
         :param session_id: The id of the Session in which the User took the Action.
         :param target_id: Optional id of the location the Action navigated to.
-        :param extra: Optional additional data to store with the UserAction.
+        :param meta: Optional additional data to store with the UserAction.
         """
         self._action_type = action_type
         self._source_id = source_id
@@ -32,7 +32,7 @@ class UserAction(IUserAction):
         self._time_stamp = time_stamp
         self._user_id = user_id
         self._session_id = session_id
-        self._extra = extra
+        self._meta = meta
 
     @property
     def action_type(self):
@@ -98,13 +98,13 @@ class UserAction(IUserAction):
         return self._session_id
 
     @property
-    def extra(self):
+    def meta(self):
         """
         Return any additional data stored with the UserAction.
 
         :rtype: dict
         """
-        return self._extra
+        return self._meta
 
     def template(self):
         """

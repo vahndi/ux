@@ -15,15 +15,15 @@ class ActionSequence(IActionSequence):
     """
     Represents a sequence of UserActions taken by a User.
     """
-    def __init__(self, user_actions: List[IUserAction] = None, extra: dict = None):
+    def __init__(self, user_actions: List[IUserAction] = None, meta: dict = None):
         """
         Create a new ActionSequence.
 
         :param user_actions: List of Actions to use to construct the ActionSequence.
-        :param extra: Optional additional data to store with the ActionSequence.
+        :param meta: Optional additional data to store with the ActionSequence.
         """
         self._user_actions = user_actions or []
-        self._extra = extra
+        self._meta = meta
 
     @property
     def user_actions(self):
@@ -35,13 +35,13 @@ class ActionSequence(IActionSequence):
         return self._user_actions
 
     @property
-    def extra(self):
+    def meta(self):
         """
-        Return the dictionary of extra information added at construction time.
+        Return the dictionary of meta information added at construction time.
 
         :rtype: dict
         """
-        return self._extra
+        return self._meta
 
     def action_templates(self):
         """
@@ -96,12 +96,12 @@ class ActionSequence(IActionSequence):
         """
         return lostness(task=task, action_sequence=self)
 
-    def split_after(self, condition: Callable[[IUserAction], bool], copy_extra: bool):
+    def split_after(self, condition: Callable[[IUserAction], bool], copy_meta: bool):
         """
         Split into a list of new ActionSequences after each `UserAction` where `condition` is met.
 
         :param condition: Lambda function to test when to break the sequence.
-        :param copy_extra: Whether to copy the `extra` dict into the new Sequences.
+        :param copy_meta: Whether to copy the `meta` dict into the new Sequences.
         :rtype: List[IActionSequence]
         """
         new_sequences = []
@@ -111,7 +111,7 @@ class ActionSequence(IActionSequence):
             if condition(action):
                 new_sequences.append(ActionSequence(
                     user_actions=sequence_actions,
-                    extra=self.extra.copy() if copy_extra else None
+                    meta=self.meta.copy() if copy_meta else None
                 ))
                 sequence_actions = []
         return new_sequences

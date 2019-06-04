@@ -7,15 +7,15 @@ class TaskResult(object):
     """
     Represents the Result of a Task.
     """
-    def __init__(self, value, extra: dict = None):
+    def __init__(self, value, meta: dict = None):
         """
         Create a new Task Result.
 
         :param value: The numeric value of the result.
-        :param extra: Additional metadata about the TaskResult.
+        :param meta: Additional metadata about the TaskResult.
         """
         self.value = value
-        self._extra = extra
+        self._meta = meta
 
     @staticmethod
     def binary_task_success_rate(results,

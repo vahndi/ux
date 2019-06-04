@@ -55,7 +55,7 @@ class IUserAction(object):
         raise NotImplementedError
 
     @property
-    def extra(self):
+    def meta(self):
         """
         :rtype: dict
         """
