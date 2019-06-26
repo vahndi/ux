@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from matplotlib.axes import Axes
 from typing import List, Union
 
-from ux.interfaces.ux.i_location import ILocation
+from ux.interfaces.i_location import ILocation
 
 
 def new_axes():

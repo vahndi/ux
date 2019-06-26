@@ -1,6 +1,6 @@
 from typing import List
 
-from ux.interfaces.ux.i_user import IUser
+from ux.interfaces.i_user import IUser
 
 
 class User(IUser):

@@ -1,4 +1,4 @@
-from ux.interfaces.ux.i_location import ILocation
+from ux.interfaces.i_location import ILocation
 
 
 class Location(ILocation):

@@ -1,9 +1,9 @@
 from datetime import datetime
 from typing import Iterable
 
-from ux.interfaces.ux.i_user_action import IUserAction
-from ux.interfaces.ux.i_action_template import IActionTemplate
-from ux.classes.ux.action_template import ActionTemplate
+from ux.interfaces.actions.i_user_action import IUserAction
+from ux.interfaces.actions.i_action_template import IActionTemplate
+from ux.classes.actions.action_template import ActionTemplate
 
 
 class UserAction(IUserAction):

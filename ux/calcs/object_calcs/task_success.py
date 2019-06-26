@@ -1,7 +1,7 @@
 from typing import Callable
 
-from ux.interfaces.ux.i_action_sequence import IActionSequence
-from ux.interfaces.ux.i_task import ITask
+from ux.interfaces.actions.i_action_sequence import IActionSequence
+from ux.interfaces.tasks.i_task import ITask
 
 
 def unordered_task_completion_rate(task: ITask, action_sequence: IActionSequence):

@@ -1,4 +1,4 @@
-from ux.interfaces.ux.i_action_template import IActionTemplate
+from ux.interfaces.actions.i_action_template import IActionTemplate
 
 
 class ActionTemplate(IActionTemplate):

@@ -5,10 +5,9 @@ from ux.calcs.object_calcs.efficiency import lostness
 from ux.calcs.object_calcs.task_success import unordered_task_completion_rate, ordered_task_completion_rate, \
     binary_task_success
 from ux.calcs.object_calcs.utils import sequence_intersects_task
-from ux.interfaces.ux.i_action_sequence import IActionSequence
-from ux.interfaces.ux.i_task import ITask
+from ux.interfaces.actions.i_action_sequence import IActionSequence
+from ux.interfaces.tasks.i_task import ITask
 from ux.interfaces.ux.i_user_action import IUserAction
-from ux.interfaces.ux.i_action_template import IActionTemplate
 
 
 class ActionSequence(IActionSequence):

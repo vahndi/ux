@@ -1,7 +1,7 @@
 from math import sqrt
 
-from ux.interfaces.ux.i_action_sequence import IActionSequence
-from ux.interfaces.ux.i_task import ITask
+from ux.interfaces.actions.i_action_sequence import IActionSequence
+from ux.interfaces.tasks.i_task import ITask
 
 
 def lostness(task: ITask, action_sequence: IActionSequence):

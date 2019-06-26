@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from ux.interfaces.ux.i_session import ISession
+from ux.interfaces.i_session import ISession
 
 
 class Session(ISession):

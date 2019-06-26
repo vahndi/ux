@@ -1,6 +1,6 @@
 from typing import List
 
-from ux.interfaces.ux.i_user_action import IUserAction
+from ux.interfaces.actions.i_user_action import IUserAction
 
 
 class IActionSequence(object):
