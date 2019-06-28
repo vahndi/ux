@@ -1,13 +1,14 @@
 from datetime import timedelta
 from typing import List, Callable
 
-from ux.interfaces.actions.i_user_action import IUserAction
 from ux.calcs.object_calcs.efficiency import lostness
 from ux.calcs.object_calcs.task_success import unordered_task_completion_rate, ordered_task_completion_rate, \
     binary_task_success
 from ux.calcs.object_calcs.utils import sequence_intersects_task
 from ux.interfaces.actions.i_action_sequence import IActionSequence
+from ux.interfaces.i_location import ILocation
 from ux.interfaces.tasks.i_task import ITask
+from ux.interfaces.actions.i_user_action import IUserAction
 
 
 class ActionSequence(IActionSequence):
@@ -132,6 +133,19 @@ class ActionSequence(IActionSequence):
         :rtype: float
         """
         return ordered_task_completion_rate(task, self)
+
+    def location_ids(self):
+        """
+        Return a set of the ids of the unique locations visited in the sequence.
+
+        :rtype: Set[str]
+        """
+        location_ids = set()
+        for action in self._user_actions:
+            location_ids.add(action.source_id)
+            if action.target_id:
+                location_ids.add(action.target_id)
+        return location_ids
 
     def __repr__(self):
 

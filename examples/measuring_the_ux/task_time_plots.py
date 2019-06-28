@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from numpy.random import randint, normal
 from pandas import DataFrame
 
-from ux.plots.time_on_task import plot_task_completion_times, plot_task_completion_under_threshold
+from plots.usability.time_on_task import plot_task_completion_times, plot_task_completion_under_threshold
 
 
 def mean_time_on_task():

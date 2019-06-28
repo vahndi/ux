@@ -1,6 +1,7 @@
-from typing import List
+from typing import List, Set
 
 from ux.interfaces.actions.i_user_action import IUserAction
+from ux.interfaces.i_location import ILocation
 
 
 class IActionSequence(object):
@@ -49,6 +50,12 @@ class IActionSequence(object):
         """
         :type task: ITask
         :rtype: bool
+        """
+        raise NotImplementedError
+
+    def location_ids(self):
+        """
+        :rtype: Set[str]
         """
         raise NotImplementedError
 

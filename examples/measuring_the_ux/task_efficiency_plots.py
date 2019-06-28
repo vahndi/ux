@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from numpy.random import random, normal
 from numpy import add, min
 
-from ux.plots.efficiency import plot_task_completion_efficiency
+from plots.usability.efficiency import plot_task_completion_efficiency
 
 
 def task_success_per_time_unit():

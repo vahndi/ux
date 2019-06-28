@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 
-from ux.plots.errors import plot_percentage_task_errors
+from plots.usability.errors import plot_percentage_task_errors
 
 
 def percentage_task_errors():

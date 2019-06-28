@@ -135,6 +135,6 @@ class UserAction(IUserAction):
 
         return 'UserAction({}: {}{}{})'.format(
             self._action_type, self._source_id,
-            '->' if self._target_id else '',
+            ' -> ' if self._target_id else '',
             self._target_id if self._target_id else ''
         )
