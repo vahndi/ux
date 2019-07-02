@@ -19,11 +19,13 @@ def plot_location_history(manager: IDatabaseManager, start: datetime = None, end
     ax = ax or new_axes()
     history = find_location_history(manager=manager, start=start, end=end)
     locations = list(history.keys())
+    # sort locations by first session
+    locations = sorted(locations, key=lambda loc: history[loc][0])
     for l, location in enumerate(locations):
         ax.scatter(
             x=history[location],
             y=[l] * len(history[location]),
-            marker='.'
+            marker='.', s=1
         )
     ax.set_yticks(range(1, len(locations)))
     ax.set_yticklabels(locations)
