@@ -2,35 +2,37 @@ from matplotlib.axes import Axes
 from matplotlib.patches import Circle, FancyArrowPatch, ConnectionStyle, ArrowStyle
 from pandas import Series, pivot_table
 from seaborn import heatmap
-from typing import Dict, Union, Callable
+from typing import Dict, Union, Callable, List
 
+from ux.utils.transitions import create_transition_matrix
 from ux.plots.helpers import new_axes, point_distance, circle_edge, get_color
 
 
-def plot_transition_matrix(transitions, get_name: callable = None,
+def plot_transition_matrix(transitions: dict, get_name: callable = None,
+                           order_by: str = 'from', exclude: List[str] = None,
                            ax: Axes = None, heatmap_kws: dict = None):
     """
-    Plot a state transition matrix.
+    Plot a state transition matrix from the given transition counts or probabilities.
 
-    :param transitions: List of transitions and their counts or probabilities.
+    :param transitions: Dictionary of transitions and their counts or probabilities.
     :type transitions: Dict[Tuple[object, object], Union[float, int]]
     :param get_name: Optional lambda function to call to convert states to labels.
+    :param order_by: Order labels by descending count of `from` or `to`.
+    :param exclude: Optional list of labels to exclude from the plots.
     :param heatmap_kws: Keyword args and values for seaborn's heatmap function.
     :param ax: Optional matplotlib axes to plot on.
     :rtype: Axes
     """
-    get_name = get_name if get_name is not None else lambda a: a
-    transitions = Series(transitions).reset_index()
-    transitions.columns = ['from', 'to', 'count']
-    transitions['from'] = transitions['from'].map(get_name)
-    transitions['to'] = transitions['to'].map(get_name)
-    transitions = pivot_table(
-        data=transitions, values='count',
-        index='to', columns='from'
-    )
+    matrix = create_transition_matrix(transitions=transitions, get_name=get_name,
+                                      order_by=order_by, exclude=exclude)
     ax = ax or new_axes()
-    heatmap(transitions, ax=ax, **heatmap_kws)
+    if heatmap_kws is None:
+        heatmap_kws = {}
+    heatmap(matrix, ax=ax, **heatmap_kws)
+    ax.set_xticklabels(matrix.columns.tolist())
+    ax.set_yticklabels(matrix.columns.tolist())
     ax.invert_yaxis()
+    ax.figure.tight_layout()
     return ax
 
 

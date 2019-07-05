@@ -21,12 +21,18 @@ def plot_location_history(manager: IDatabaseManager, start: datetime = None, end
     locations = list(history.keys())
     # sort locations by first session
     locations = sorted(locations, key=lambda loc: history[loc][0])
+    # plot histories
     for l, location in enumerate(locations):
+        color = 'C{}'.format(l % 10)
         ax.scatter(
             x=history[location],
             y=[l] * len(history[location]),
-            marker='.', s=1
+            marker='x', s=5, c=color
         )
+        x = [history[location][0], history[location][-1]]
+        y = [l, l]
+        ax.plot(x, y, c=color, alpha=0.1)
+    # format axes
     ax.set_yticks(range(1, len(locations)))
     ax.set_yticklabels(locations)
     if start:

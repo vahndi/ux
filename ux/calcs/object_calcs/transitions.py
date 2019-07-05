@@ -12,7 +12,7 @@ def transition_counts(task: ITask, action_sequences: List[IActionSequence]):
     :param task: The task defining the actions that should  be counted.
     :param action_sequences: List of action sequences to count over.
     :return: Dictionary of {(from, to) => count}
-    :rtype: Dict[Tuple[ITask, ITask], int]
+    :rtype: Dict[Tuple[IActionTemplate, IActionTemplate], int]
     """
     transitions = defaultdict(int)
     task_action_set = set(task.action_templates)
