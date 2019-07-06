@@ -28,7 +28,7 @@ def plot_transition_matrix(transitions: dict, get_name: callable = None,
     ax = ax or new_axes()
     if heatmap_kws is None:
         heatmap_kws = {}
-    heatmap(matrix, ax=ax, **heatmap_kws)
+    heatmap(matrix, ax=ax, **heatmap_kws, annot=True, fmt='0.0f')
     ax.set_xticklabels(matrix.columns.tolist())
     ax.set_yticklabels(matrix.columns.tolist())
     ax.invert_yaxis()

@@ -27,7 +27,7 @@ def count_transitions(action_sequences):
 def create_transition_matrix(transitions: dict, get_name: callable = None,
                              order_by: str = 'from', exclude: List[str] = None):
     """
-    Create a matrix from a dictionary of transition counts.
+    Create a transition matrix from a dictionary of transition counts.
 
     :param transitions: Dictionary of transitions and their counts or probabilities.
     :type transitions: Dict[Tuple[object, object], Union[float, int]]

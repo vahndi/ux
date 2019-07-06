@@ -41,4 +41,3 @@ def plot_location_history(manager: IDatabaseManager, start: datetime = None, end
     if end:
         x_lim = ax.get_xlim()
         ax.set_xlim(x_lim[0], end)
-

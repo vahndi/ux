@@ -10,7 +10,7 @@ def new_axes():
     """
     :rtype: Axes
     """
-    _, ax = plt.subplots()
+    _, ax = plt.subplots(figsize=(16, 9))
     return ax
 
 
