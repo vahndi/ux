@@ -17,7 +17,8 @@ def plot_transition_matrix(transitions: dict, get_name: callable = None,
     :param transitions: Dictionary of transitions and their counts or probabilities.
     :type transitions: Dict[Tuple[object, object], Union[float, int]]
     :param get_name: Optional lambda function to call to convert states to labels.
-    :param order_by: Order labels by descending count of `from` or `to`.
+    :param order_by: Order labels by descending count of `from` or `to`, or pass a list to set order explicitly.
+    :type order_by: Union[str, List[str]]
     :param exclude: Optional list of labels to exclude from the plots.
     :param heatmap_kws: Keyword args and values for seaborn's heatmap function.
     :param ax: Optional matplotlib axes to plot on.
