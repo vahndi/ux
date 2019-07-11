@@ -8,6 +8,7 @@ from ux.calcs.object_calcs.task_success import unordered_task_completion_rate, o
     binary_task_success
 from ux.calcs.object_calcs.utils import sequence_intersects_task
 from ux.interfaces.actions.i_action_sequence import IActionSequence
+from ux.interfaces.actions.i_action_template import IActionTemplate
 from ux.interfaces.tasks.i_task import ITask
 from ux.interfaces.actions.i_user_action import IUserAction
 
@@ -54,6 +55,15 @@ class ActionSequence(IActionSequence):
             user_action.template()
             for user_action in self._user_actions
         ]
+
+    def contains_action_template(self, action_template: IActionTemplate):
+        """
+        Returns True if the sequence contains a User Action which matches the given Template.
+
+        :param action_template: The ActionTemplate to match against.
+        :rtype: bool
+        """
+        return action_template in self.action_templates()
 
     def duration(self):
         """

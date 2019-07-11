@@ -59,6 +59,16 @@ class IActionSequence(object):
         """
         raise NotImplementedError
 
+    def contains_action_template(self, action_template):
+        """
+        Returns True if the sequence contains a User Action which matches the given Template.
+
+        :param action_template: The ActionTemplate to match against.
+        :type action_template: IActionTemplate
+        :rtype: bool
+        """
+        raise NotImplementedError
+
     def __len__(self):
         """
         should return the  number of user actions
