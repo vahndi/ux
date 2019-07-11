@@ -2,7 +2,7 @@ from collections import defaultdict
 from pandas import Series, pivot_table, DataFrame
 from typing import List, Union
 
-from interfaces.actions.i_action_sequence import IActionSequence
+from ux.interfaces.actions.i_action_sequence import IActionSequence
 
 
 def count_transitions(action_sequences):
@@ -35,9 +35,13 @@ def create_transition_table(transitions: dict, get_name: callable = None, exclud
     :type exclude: Union[str, List[str]]
     :rtype: DataFrame
     """
-    get_name = get_name if get_name is not None else lambda a: a.source_id
+    get_name = get_name if get_name is not None else lambda action: action.source_id
     transitions = Series(transitions).reset_index()
     transitions.columns = ['from', 'to', 'count']
+    transitions = transitions.loc[
+        (transitions['from'].notnull()) &
+        (transitions['to'].notnull())
+    ]
     transitions['from'] = transitions['from'].map(get_name)
     transitions['to'] = transitions['to'].map(get_name)
     if exclude is not None:
