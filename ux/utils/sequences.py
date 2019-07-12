@@ -59,7 +59,7 @@ def split_sequences_by_day(sequences: List[IActionSequence],
 def split_sequences_by_week(sequences: List[IActionSequence],
                             start_date: date = None, end_date: date = None):
     """
-    Split a list of ActionSequences into an OrderedDict mapping each date to a new list.
+    Split a list of ActionSequences into an OrderedDict mapping each week's start date to a new list.
 
     Dates without any Sequences will contain an empty list.
 
@@ -80,18 +80,58 @@ def split_sequences_by_week(sequences: List[IActionSequence],
     current_date = start_date
     sequence_dict = OrderedDict()
     while current_date <= end_date:
-        start_date_time = date_to_datetime(current_date)
-        end_date_time = date_to_datetime(current_date + timedelta(days=7))
+        first_date_time = date_to_datetime(current_date)
+        last_date_time = date_to_datetime(current_date + timedelta(days=7))
         date_sequences = [
             sequence for sequence in sequences
             if (
-                    start_date_time <=
+                    first_date_time <=
                     sequence.user_actions[0].time_stamp <
-                    end_date_time
+                    last_date_time
             )
         ]
         sequence_dict[current_date] = date_sequences
         current_date = current_date + timedelta(days=7)
+
+    return sequence_dict
+
+
+def split_sequences_by_month(sequences: List[IActionSequence],
+                             start_date: date = None, end_date: date = None):
+    """
+    Split a list of ActionSequences into an OrderedDict mapping each month's start date to a new list.
+
+    Dates without any Sequences will contain an empty list.
+
+    :param sequences: Original list of sequences to split by day.
+    :param start_date: Optional first date to use to split the sequences.
+    :param end_date: Optional last date to use.
+    :rtype: OrderedDict[date, List[IActionSequence]]
+    """
+    # get start and end dates
+    min_date, max_date = get_sequence_start_end_dates(sequences)
+    if start_date is None:
+        start_date = min_date
+    if end_date is None:
+        end_date = max_date
+    start_date = date(start_date.year, start_date.month, 1)
+    end_date = date(end_date.year, end_date.month, 1)
+    # build the lists of sequences
+    current_date = start_date
+    sequence_dict = OrderedDict()
+    while current_date <= end_date:
+        first_date = current_date
+        last_date = (
+            date(first_date.year, first_date.month + 1, 1)
+            if first_date.month < 12
+            else date(first_date.year + 1, 1, 1)
+        )
+        date_sequences = [
+            sequence for sequence in sequences
+            if first_date <= sequence.user_actions[0].time_stamp.date() < last_date
+        ]
+        sequence_dict[current_date] = date_sequences
+        current_date = last_date
 
     return sequence_dict
 
