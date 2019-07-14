@@ -1,8 +1,6 @@
 from datetime import timedelta
 from typing import List, Callable
 
-from collections import defaultdict
-
 from ux.calcs.object_calcs.efficiency import lostness
 from ux.calcs.object_calcs.task_success import unordered_task_completion_rate, ordered_task_completion_rate, \
     binary_task_success

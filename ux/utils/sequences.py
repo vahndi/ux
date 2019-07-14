@@ -1,4 +1,4 @@
-from collections import OrderedDict
+from collections import OrderedDict, defaultdict
 from datetime import date, timedelta
 from typing import List, Tuple
 
@@ -136,16 +136,25 @@ def split_sequences_by_month(sequences: List[IActionSequence],
     return sequence_dict
 
 
-def count_sequences_where(sequences: List[IActionSequence], condition: callable(IActionSequence)):
+def count_sequences_where(sequences: List[IActionSequence], condition: callable(IActionSequence),
+                          split_by: callable = None):
     """
     Count the number of ActionSequences in the list where the given condition is True.
 
     :param sequences: The list of IActionSequences to test.
     :param condition: The condition to evaluate each condition against.
-    :rtype: int
+    :param split_by: Optional callable to split counts by some attribute of the sequence. Should return a string.
+    :return: Integer count if split_by is None. Otherwise dict of {split_value: count}
     """
-    count = 0
-    for sequence in sequences:
-        if condition(sequence):
-            count += 1
-    return count
+    if split_by is None:
+        count = 0
+        for sequence in sequences:
+            if condition(sequence):
+                count += 1
+        return count
+    else:
+        counts = defaultdict(int)
+        for sequence in sequences:
+            if condition(sequence):
+                counts[split_by(sequence)] += 1
+        return dict(counts)
