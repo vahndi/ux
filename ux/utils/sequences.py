@@ -1,12 +1,12 @@
 from collections import OrderedDict, defaultdict
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 from typing import List, Tuple
 
 from ux.interfaces.actions.i_action_sequence import IActionSequence
-from ux.utils.dates import monday_on_or_before, monday_on_or_after, date_to_datetime
+from ux.utils.dates import monday_on_or_before, date_to_datetime
 
 
-def get_sequence_start_end_dates(sequences: List[IActionSequence]):
+def _get_sequence_start_end_dates(sequences: List[IActionSequence]):
     """
     Find the start and end dates of the sequences using the first UserAction in each sequence.
 
@@ -24,6 +24,59 @@ def get_sequence_start_end_dates(sequences: List[IActionSequence]):
     return start_date, end_date
 
 
+def _get_sequence_start_end_date_times(sequences: List[IActionSequence]):
+    """
+    Find the start and end date-times of the sequences using the first UserAction in each sequence.
+
+    :param sequences: List of IActionSequences to find dates from.
+    :rtype: Tuple[datetime, datetime]
+    """
+    start_date_time = None
+    end_date_time = None
+    for sequence in sequences:
+        sequence_date_time = sequence.user_actions[0].time_stamp
+        if start_date_time is None or sequence_date_time < start_date_time:
+            start_date_time = sequence_date_time
+        if end_date_time is None or sequence_date_time > end_date_time:
+            end_date_time = sequence_date_time
+    return start_date_time, end_date_time
+
+
+def split_sequences_by_hour(sequences: List[IActionSequence],
+                            start_date_time: datetime = None, end_date_time: datetime = None):
+    """
+    Split a list of ActionSequences into an OrderedDict mapping each hour to a new list.
+
+    Hours without any Sequences will contain an empty list.
+
+    :param sequences: Original list of sequences to split by day.
+    :param start_date_time: Optional first date-time to use to split the sequences.
+    :param end_date_time: Optional last date-time to use.
+    :rtype: OrderedDict[date, List[IActionSequence]]
+    """
+    # get start and end dates
+    min_date, max_date = _get_sequence_start_end_date_times(sequences)
+    if start_date_time is None:
+        start_date_time = datetime(min_date.year, min_date.month, min_date.day,
+                                   min_date.hour, 0, 0)
+    if end_date_time is None:
+        end_date_time = datetime(max_date.year, max_date.month, max_date.day,
+                                 max_date.hour, 0, 0)
+    # build the lists of sequences
+    current_date_time = start_date_time
+    sequence_dict = OrderedDict()
+    while current_date_time <= end_date_time:
+        date_sequences = [
+            sequence for sequence in sequences
+            if sequence.user_actions[0].time_stamp.date() == current_date_time.date() and
+               sequence.user_actions[0].time_stamp.hour == current_date_time.hour
+        ]
+        sequence_dict[current_date_time] = date_sequences
+        current_date_time = current_date_time + timedelta(hours=1)
+
+    return sequence_dict
+
+
 def split_sequences_by_day(sequences: List[IActionSequence],
                            start_date: date = None, end_date: date = None):
     """
@@ -37,7 +90,7 @@ def split_sequences_by_day(sequences: List[IActionSequence],
     :rtype: OrderedDict[date, List[IActionSequence]]
     """
     # get start and end dates
-    min_date, max_date = get_sequence_start_end_dates(sequences)
+    min_date, max_date = _get_sequence_start_end_dates(sequences)
     if start_date is None:
         start_date = min_date
     if end_date is None:
@@ -69,7 +122,7 @@ def split_sequences_by_week(sequences: List[IActionSequence],
     :rtype: OrderedDict[date, List[IActionSequence]]
     """
     # get start and end dates
-    min_date, max_date = get_sequence_start_end_dates(sequences)
+    min_date, max_date = _get_sequence_start_end_dates(sequences)
     if start_date is None:
         start_date = min_date
     if end_date is None:
@@ -109,7 +162,7 @@ def split_sequences_by_month(sequences: List[IActionSequence],
     :rtype: OrderedDict[date, List[IActionSequence]]
     """
     # get start and end dates
-    min_date, max_date = get_sequence_start_end_dates(sequences)
+    min_date, max_date = _get_sequence_start_end_dates(sequences)
     if start_date is None:
         start_date = min_date
     if end_date is None:
