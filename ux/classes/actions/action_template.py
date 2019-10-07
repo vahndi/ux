@@ -61,9 +61,9 @@ class ActionTemplate(IActionTemplate):
         :type other: ActionTemplate
         """
         return (
-            self.action_type == other._action_type and
-            self.source_id == other._source_id and
-            self.target_id == other._target_id
+            (self._action_type == other._action_type or '*' in (self._action_type, other._action_type)) and
+            (self._source_id == other._source_id or '*' in (self._source_id, other._source_id)) and
+            (self._target_id == other._target_id or '*' in (self._target_id, other._target_id))
         )
 
     def __repr__(self):
