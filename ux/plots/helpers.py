@@ -1,17 +1,31 @@
 from math import cos, sin, radians
 import matplotlib.pyplot as plt
+from matplotlib.axis import Axis
 from matplotlib.axes import Axes
 from typing import List, Union
 
 from ux.interfaces.i_location import ILocation
 
 
-def new_axes():
+def new_axes(width: int = 16, height: int = 9):
     """
     :rtype: Axes
     """
-    _, ax = plt.subplots(figsize=(16, 9))
+    _, ax = plt.subplots(figsize=(width, height))
     return ax
+
+
+def set_axis_tick_label_rotation(ax: Axis, rotation: int):
+    """
+    Set the rotation of axis tick labels.
+
+    :param ax: The axis whose tick label rotation to set.
+    :param rotation: The rotation value to set.
+    """
+    if ax.get_majorticklabels():
+        plt.setp(ax.get_majorticklabels(), rotation=rotation)
+    if ax.get_minorticklabels():
+        plt.setp(ax.get_minorticklabels(), rotation=rotation)
 
 
 def get_hist_index(bin_values: List[int]):

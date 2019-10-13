@@ -3,10 +3,11 @@ from matplotlib.axes import Axes
 
 from ux.interfaces.i_database_manager import IDatabaseManager
 from ux.plots.helpers import new_axes
-from ux.utils.versioning import find_location_history
+from ux.utils.versioning import find_location_history, find_action_type_history
 
 
-def plot_location_history(manager: IDatabaseManager, start: datetime = None, end: datetime = None, ax: Axes = None):
+def plot_history(manager: IDatabaseManager, start: datetime = None, end: datetime = None, ax: Axes = None,
+                 history_type: str = 'location'):
     """
     Plot the history of each Location's appearance in the set of logs in Manager.
 
@@ -17,7 +18,13 @@ def plot_location_history(manager: IDatabaseManager, start: datetime = None, end
     :rtype: Axes
     """
     ax = ax or new_axes()
-    history = find_location_history(manager=manager, start=start, end=end)
+    if history_type == 'location':
+        find_history = find_location_history
+    elif history_type == 'action-type':
+        find_history = find_action_type_history
+    else:
+        raise ValueError("history_type must be 'location' or 'action-type'")
+    history = find_history(manager=manager, start=start, end=end)
     locations = list(history.keys())
     # sort locations by first session
     locations = sorted(locations, key=lambda loc: history[loc][0])
