@@ -1,6 +1,7 @@
 from typing import List, Set
 
 from ux.interfaces.actions.i_user_action import IUserAction
+from ux.interfaces.actions.i_action_template import IActionTemplate
 from ux.interfaces.i_location import ILocation
 
 
@@ -53,6 +54,12 @@ class IActionSequence(object):
         """
         raise NotImplementedError
 
+    def action_types(self):
+        """
+        :rtype: Set[str]
+        """
+        raise NotImplementedError
+
     def location_ids(self):
         """
         :rtype: Set[str]
@@ -66,6 +73,25 @@ class IActionSequence(object):
         :param action_template: The ActionTemplate to match against.
         :type action_template: IActionTemplate
         :rtype: bool
+        """
+        raise NotImplementedError
+
+    def first_action_occurrence(self, action_template):
+        """
+        Return the first action matching the given action template. Returns None if the template is not matched.
+
+        :param action_template: The ActionTemplate to match against.
+        :rtype: IUserAction
+        """
+        raise NotImplementedError
+
+    def all_action_occurrences(self, action_template):
+        """
+        Return a list of all the actions matching the given action template.
+        Returns an empty list if the template is not matched.
+
+        :param action_template: The ActionTemplate to match against.
+        :rtype: list[IUserAction]
         """
         raise NotImplementedError
 

@@ -54,14 +54,40 @@ class ActionSequence(IActionSequence):
             for user_action in self._user_actions
         ]
 
-    def contains_action_template(self, action_template: IActionTemplate):
+    def contains_action_template(self, action_template):
         """
         Returns True if the sequence contains a User Action which matches the given Template.
 
         :param action_template: The ActionTemplate to match against.
+        :type action_template: IActionTemplate
         :rtype: bool
         """
         return action_template in self.action_templates()
+
+    def first_action_occurrence(self, action_template):
+        """
+        Return the first action matching the given action template. Returns None if the template is not matched.
+
+        :type action_template: IActionTemplate
+        :rtype: IUserAction
+        """
+        occurrences = self.all_action_occurrences(action_template)
+        if len(occurrences):
+            return occurrences[0]
+        else:
+            return None
+
+    def all_action_occurrences(self, action_template):
+        """
+        Return a list of all the actions matching the given action template.
+        Returns an empty list if the template is not matched.
+
+        :param action_template: The ActionTemplate to match against.
+        :type action_template: IActionTemplate
+        :rtype: list[IUserAction]
+        """
+        return [action for action in self.user_actions
+                if action.template() == action_template]
 
     def duration(self):
         """
@@ -155,6 +181,14 @@ class ActionSequence(IActionSequence):
             if action.target_id:
                 location_ids.add(action.target_id)
         return location_ids
+
+    def action_types(self):
+        """
+        Return a set of the unique action types carried out in the sequence.
+
+        :rtype: Set[str]
+        """
+        return set([action.action_type for action in self.user_actions])
 
     def __repr__(self):
 
