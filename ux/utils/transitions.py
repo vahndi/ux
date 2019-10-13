@@ -1,18 +1,18 @@
 from collections import defaultdict
-from pandas import Series, pivot_table, DataFrame
+from pandas import Series, pivot_table, DataFrame, notnull
 from typing import List, Union
 
 from ux.interfaces.actions.i_action_sequence import IActionSequence
 
 
-def count_transitions(action_sequences):
+def count_action_transitions(action_sequences):
     """
-    Count the transitions  from each action to each other action in the given sequences.
+    Count the transitions from each action to each other action in the given sequences.
 
     :param action_sequences: List of IActionSequence to count transitions in.
     :type action_sequences: List[IActionSequence]
     :return: Dictionary of {(from, to) => count}
-    :rtype: Dict[Tuple[IActionTemplate, IActionTemplate], int]
+    :rtype: dict[tuple[IActionTemplate, IActionTemplate], int]
     """
     transitions = defaultdict(int)
     # count transitions
@@ -21,6 +21,25 @@ def count_transitions(action_sequences):
             from_action = sequence.user_actions[a].template()
             to_action = sequence.user_actions[a + 1].template()
             transitions[(from_action, to_action)] += 1
+    return transitions
+
+
+def count_location_transitions(action_sequences):
+    """
+    Count the transitions from each location to each other location in actions in the given sequences.
+
+    :param action_sequences: List of IActionSequence to count transitions in.
+    :type action_sequences: List[IActionSequence]
+    :rtype: dict[tuple[str, str], int]
+    """
+    transitions = defaultdict(int)
+    # count transitions
+    for sequence in action_sequences:
+        for action in sequence.user_actions:
+            source = action.source_id
+            target = action.target_id
+            if notnull(source) and notnull(target):
+                transitions[(source, target)] += 1
     return transitions
 
 
@@ -77,8 +96,8 @@ def create_transition_matrix(transitions: dict, get_name: callable = None,
         data=transitions, values='count',
         index='to', columns='from'
     )
-    matrix = matrix.loc[order_names]
-    matrix = matrix[order_names]
+    matrix = matrix.loc[filter(lambda n: n in matrix.index, order_names)]
+    matrix = matrix[filter(lambda n: n in matrix.columns, order_names)]
     return matrix
 
 

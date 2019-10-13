@@ -3,6 +3,7 @@ from datetime import date, timedelta, datetime
 from typing import List, Tuple
 
 from ux.interfaces.actions.i_action_sequence import IActionSequence
+from ux.interfaces.actions.i_user_action import IUserAction
 from ux.utils.dates import monday_on_or_before, date_to_datetime
 
 
@@ -189,14 +190,15 @@ def split_sequences_by_month(sequences: List[IActionSequence],
     return sequence_dict
 
 
-def count_sequences_where(sequences: List[IActionSequence], condition: callable(IActionSequence),
-                          split_by: callable = None):
+def count_sequences_where(sequences: List[IActionSequence], condition, split_by=None):
     """
     Count the number of ActionSequences in the list where the given condition is True.
 
     :param sequences: The list of IActionSequences to test.
-    :param condition: The condition to evaluate each condition against.
-    :param split_by: Optional callable to split counts by some attribute of the sequence. Should return a string.
+    :param condition: The condition to evaluate each sequence against.
+    :type condition: Callable[[IActionSequence], bool]
+    :param split_by: Optional callable to split counts by some attribute of each sequence. Should return a string.
+    :type split_by: Callable[[IActionSequence], str]
     :return: Integer count if split_by is None. Otherwise dict of {split_value: count}
     """
     if split_by is None:
@@ -210,4 +212,41 @@ def count_sequences_where(sequences: List[IActionSequence], condition: callable(
         for sequence in sequences:
             if condition(sequence):
                 counts[split_by(sequence)] += 1
+        return dict(counts)
+
+
+def count_actions_where(sequences: List[IActionSequence],
+                        action_condition: callable(IUserAction),
+                        sequence_condition: callable(IActionSequence) = None,
+                        split_by: callable = None):
+    """
+    Count the number of UserActions in the ActionSequences where the given condition is True.
+
+    :param sequences: The list of IActionSequences to test.
+    :param action_condition: Condition to evaluate each user against.
+    :param sequence_condition: Optional condition to evaluate each sequence against before checking action_condition.
+    :param split_by: Optional callable to split counts by some attribute of each action.
+    """
+    if sequence_condition is None:
+        sequence_condition = lambda seq: True
+    if split_by is None:
+        count = 0
+        for sequence in sequences:
+            if sequence_condition(sequence):
+                for action in sequence.user_actions:
+                    if action_condition(action):
+                        count += 1
+        return count
+    else:
+        counts = defaultdict(int)
+        for sequence in sequences:
+            if sequence_condition(sequence):
+                for action in sequence.user_actions:
+                    if action_condition(action):
+                        split_result = split_by(action)
+                        if type(split_result) is list:
+                            for result in split_result:
+                                counts[result] += 1
+                        else:
+                            counts[split_result] += 1
         return dict(counts)
