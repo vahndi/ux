@@ -55,6 +55,7 @@ class ActionSequence(IActionSequence):
                 user_action.template()
                 for user_action in self._user_actions
             ]
+        return self._action_templates
 
     def contains_action_template(self, action_template):
         """
