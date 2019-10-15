@@ -24,6 +24,7 @@ class ActionSequence(IActionSequence):
         """
         self._user_actions = user_actions or []
         self._meta = meta
+        self._action_templates = None
 
     @property
     def user_actions(self):
@@ -49,10 +50,11 @@ class ActionSequence(IActionSequence):
 
         :rtype: List[IActionTemplate]
         """
-        return [
-            user_action.template()
-            for user_action in self._user_actions
-        ]
+        if self._action_templates is None:
+            self._action_templates = [
+                user_action.template()
+                for user_action in self._user_actions
+            ]
 
     def contains_action_template(self, action_template):
         """
