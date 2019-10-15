@@ -33,6 +33,7 @@ class UserAction(IUserAction):
         self._user_id = user_id
         self._session_id = session_id
         self._meta = meta
+        self._action_template = None
 
     @property
     def action_type(self):
@@ -112,11 +113,13 @@ class UserAction(IUserAction):
 
         :rtype: IActionTemplate
         """
-        return ActionTemplate(
-            action_type=self._action_type,
-            source_id=self._source_id,
-            target_id=self._target_id
-        )
+        if self._action_template is None:
+            self._action_template = ActionTemplate(
+                action_type=self._action_type,
+                source_id=self._source_id,
+                target_id=self._target_id
+            )
+        return self._action_template
 
     @staticmethod
     def templates(user_actions):
