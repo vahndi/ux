@@ -3,7 +3,8 @@ from typing import List, Dict
 
 from ux.interfaces.actions.i_action_sequence import IActionSequence
 from ux.interfaces.actions.i_user_action import IUserAction
-from ux.utils.count_config import CountConfig
+from ux.classes.counts.count_config import CountConfig
+from ux.classes.counts.temporal_count import TemporalCount
 
 
 def count_actions_where(sequences: List[IActionSequence],
@@ -72,15 +73,16 @@ def count_sequences_where(sequences: List[IActionSequence], condition, split_by=
 def temporal_counts_by_config(sequences: List[IActionSequence], configs: List[CountConfig],
                               temporal_split: callable):
     """
+    Count metrics using the settings in a list of CountConfigs.
 
-    :param sequences:
-    :param configs:
-    :rtype: Dict[str, Dict[datetime, Union[Dict[str, int], int]]]
-    :return Dict[config.name, Dict[datetime, int count or count dict]
+    :param sequences: List of ActionSequences containing actions to measure metrics.
+    :param configs: List of CountConfigs defining the metrics to count.
+    :rtype: Dict[str, TemporalCount]
+    :return Dict[config.name, TemporalCount for config]
     """
     total_counts = dict()
     for config in configs:
-        total_counts[config.name] = dict()
+        total_counts[config.name] = TemporalCount(config.name)
     sequence_groups = temporal_split(sequences)
     for sequence_date, date_sequences in sequence_groups.items():
         for config in configs:
