@@ -91,3 +91,18 @@ def get_color(color: Union[None, str, callable], state: ILocation, default: str)
         return color(state)
     else:
         raise TypeError
+
+
+def transform_axis_tick_labels(ax: Axis, transformation: callable):
+    """
+    Transforms the labels of each label along the axis by a transformation function.
+
+    :param ax: The axis whose tick labels to transform.
+    :param transformation: The transformation function e.g. `lambda t: t.split('T')[0]`.
+    """
+    ax.figure.canvas.draw()  # make sure the figure has been drawn so the labels are available to be got
+    labels = ax.get_ticklabels()
+    for l in labels:
+        new_label = transformation(l.get_text())
+        l.set_text(new_label)
+    ax.set_ticklabels(labels)
