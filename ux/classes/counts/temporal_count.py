@@ -35,6 +35,13 @@ class TemporalCount(dict):
     def name(self):
         return self._name
 
+    def rename(self, name: str):
+        """
+        :rtype: TemporalCount
+        """
+        self._name = name
+        return self
+
     @property
     def is_split(self):
         """
@@ -191,7 +198,10 @@ class TemporalCount(dict):
                 div_data = div_data.to_dict(orient='index')
             return TemporalCount.from_dict(div_data, name=new_name)
         elif isnumeric(type(other)):
-            div_data = (self.to_pandas() / other)
+            if self.is_split:
+                div_data = (self.to_frame().droplevel(0, axis=1) / other).to_dict(orient='index')
+            else:
+                div_data = (self.to_series() / other).to_dict()
             return TemporalCount.from_dict(div_data, name='{} / {}'.format(self.name, other))
         else:
             raise TypeError('Can only divide a TemporalCount by another TemporalCount or a numeric value.')
@@ -213,7 +223,10 @@ class TemporalCount(dict):
                 div_data = div_data.to_dict(orient='index')
             return TemporalCount.from_dict(div_data, name=new_name)
         elif isnumeric(type(other)):
-            div_data = (other / self.to_pandas())
+            if self.is_split:
+                div_data = (other / self.to_frame().droplevel(0, axis=1)).to_dict(orient='index')
+            else:
+                div_data = (other / self.to_series()).to_dict()
             return TemporalCount.from_dict(div_data, name='{} / {}'.format(other, self.name))
         else:
             raise TypeError('Can only divide another TemporalCount or a numeric value by a TemporalCount.')
@@ -233,9 +246,12 @@ class TemporalCount(dict):
             else:
                 mul_data = self.to_frame().droplevel(0, axis=1).mul(other.to_frame().droplevel(0, axis=1), fill_value=0)
                 mul_data = mul_data.to_dict(orient='index')
-            return TemporalCount.from_dict(mul_data, name='{} * {}'.format(self.name, other.name))
+            return TemporalCount.from_dict(mul_data, name=new_name)
         elif isnumeric(type(other)):
-            mul_data = (self.to_pandas() * other)
+            if self.is_split:
+                mul_data = (self.to_frame().droplevel(0, axis=1) * other).to_dict(orient='index')
+            else:
+                mul_data = (self.to_series() * other).to_dict()
             return TemporalCount.from_dict(mul_data, name='{} * {}'.format(self.name, other))
         else:
             raise TypeError('Can only multiply a TemporalCount by another TemporalCount or a numeric value.')
@@ -257,7 +273,10 @@ class TemporalCount(dict):
                 mul_data = mul_data.to_dict(orient='index')
             return TemporalCount.from_dict(mul_data, name=new_name)
         elif isnumeric(type(other)):
-            mul_data = (other * self.to_pandas())
+            if self.is_split:
+                mul_data = (other * self.to_frame().droplevel(0, axis=1)).to_dict(orient='index')
+            else:
+                mul_data = (other * self.to_series()).to_dict()
             return TemporalCount.from_dict(mul_data, name='{} * {}'.format(other, self.name))
         else:
             raise TypeError('Can only multiply a TemporalCount by another TemporalCount or a numeric value.')
@@ -279,7 +298,10 @@ class TemporalCount(dict):
                 add_data = add_data.to_dict(orient='index')
             return TemporalCount.from_dict(add_data, name=new_name)
         elif isnumeric(type(other)):
-            add_data = (self.to_pandas() + other)
+            if self.is_split:
+                add_data = (self.to_frame().droplevel(0, axis=1) + other).to_dict(orient='index')
+            else:
+                add_data = (self.to_series() + other).to_dict()
             return TemporalCount.from_dict(add_data, name='{} + {}'.format(self.name, other))
         else:
             raise TypeError('Can only add a TemporalCount to another TemporalCount or a numeric value.')
@@ -301,7 +323,10 @@ class TemporalCount(dict):
                 add_data = add_data.to_dict(orient='index')
             return TemporalCount.from_dict(add_data, name=new_name)
         elif isnumeric(type(other)):
-            add_data = (other + self.to_pandas())
+            if self.is_split:
+                add_data = (other + self.to_frame().droplevel(0, axis=1)).to_dict(orient='index')
+            else:
+                add_data = (other + self.to_series()).to_dict()
             return TemporalCount.from_dict(add_data, name='{} + {}'.format(other, self.name))
         else:
             raise TypeError('Can only add another TemporalCount or a numeric value to a TemporalCount.')
@@ -323,7 +348,10 @@ class TemporalCount(dict):
                 sub_data = sub_data.to_dict(orient='index')
             return TemporalCount.from_dict(sub_data, name=new_name)
         elif isnumeric(type(other)):
-            sub_data = (self.to_pandas() - other)
+            if self.is_split:
+                sub_data = (self.to_frame().droplevel(0, axis=1) - other).to_dict(orient='index')
+            else:
+                sub_data = (self.to_series() - other).to_dict()
             return TemporalCount.from_dict(sub_data, name='{} - {}'.format(self.name, other))
         else:
             raise TypeError(
@@ -347,7 +375,10 @@ class TemporalCount(dict):
                 sub_data = sub_data.to_dict(orient='index')
             return TemporalCount.from_dict(sub_data, name=new_name)
         elif isnumeric(type(other)):
-            sub_data = (other - self.to_pandas())
+            if self.is_split:
+                sub_data = (other - self.to_frame().droplevel(0, axis=1)).to_dict(orient='index')
+            else:
+                sub_data = (other - self.to_series()).to_dict()
             return TemporalCount.from_dict(sub_data, name='{} - {}'.format(other, self.name))
         else:
             raise TypeError(
