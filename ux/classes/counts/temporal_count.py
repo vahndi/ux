@@ -1,9 +1,10 @@
 from datetime import timedelta
 from matplotlib.axes import Axes
-from pandas import concat, DataFrame, MultiIndex, Series
+from pandas import concat, DataFrame, MultiIndex, Series, pivot_table
 from typing import List
 from numpy import nan
 from pandas.core.computation.ops import isnumeric
+from seaborn import heatmap
 
 from ux.plots.helpers import new_axes, transform_axis_tick_labels
 
@@ -14,7 +15,7 @@ class TemporalCount(dict):
         """
         Create a new Temporal Count representing the count of a single or split variable over time.
 
-        :param name: The name of the metric or measure being counted.
+        :param name: The name of the metric or measure being counted
         """
         super(TemporalCount, self).__init__()
         self._name = name
@@ -129,24 +130,45 @@ class TemporalCount(dict):
         """
         Return the most natural representation of the count as a pandas object.
 
-        :return: Pandas DataFrame if the count is split otherwise a Series.
+        :return: Pandas DataFrame if the count is split otherwise a Series
         """
         if self.is_split:
             return self.to_frame()
         else:
             return self.to_series()
 
-    def plot(self, stacked: bool = True, ax: Axes = None, axis_kws: dict = None):
+    def plot(self, plot_type: str = 'bar', stacked: bool = True, top: int = None,
+             ax: Axes = None, axis_kws: dict = None):
         """
         Plot the count.
 
+        :param plot_type: Type of plot for split counts. One of ('bar', 'heatmap')
+        :param stacked: If barplot is stacked
+        :param top: Number of results to show in heatmaps. Leave as None to show all.
+        :param ax: Optional matplotlib axes to plot on
+        :param axis_kws: Optional dict of values to call ax.set() with
         :rtype: Axes
         """
+        assert(plot_type in ('bar', 'heatmap'))
         ax = ax or new_axes()
         ax.set_title(self.name)
         if self.is_split:
-            data = self.to_frame()
-            data.droplevel(0, axis=1).plot.bar(ax=ax, stacked=stacked)
+            if plot_type == 'bar':
+                data = self.to_frame()
+                data.droplevel(0, axis=1).plot.bar(ax=ax, stacked=stacked)
+            else:  # heatmap
+                data = self.to_series().reset_index()
+                pt = pivot_table(data, index='date_time', columns=self.name, values='count').astype(int)
+                pt = (
+                    pt.append(Series(data=pt.sum(), name='#TOTAL#'))
+                      .sort_values('#TOTAL#', axis=1, ascending=False)
+                      .drop('#TOTAL#', axis=0)
+                )
+                if top is not None:
+                    pt = pt.T.head(top).T
+                heatmap(data=pt.T, annot=True, fmt='d', ax=ax)
+                y_lim = ax.get_ylim()
+                ax.set_ylim(max(y_lim) + 0.5, min(y_lim) - 0.5)
         else:
             data = self.to_series()
             data.plot.bar(ax=ax)
@@ -163,10 +185,10 @@ class TemporalCount(dict):
         """
         Plot a comparison of several counts.
 
-        :param temporal_counts: Counts to compare.
+        :param temporal_counts: Counts to compare
         :type temporal_counts: List[TemporalCount]
         :param ax: Optional matplotlib axes to plot on
-        :param axis_kws: Optional dict of values to call ax.set() with.
+        :param axis_kws: Optional dict of values to call ax.set() with
         """
         data = concat([
             temporal_count.to_series()
