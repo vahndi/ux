@@ -6,7 +6,7 @@ from numpy import nan
 from pandas.core.computation.ops import isnumeric
 from seaborn import heatmap
 
-from ux.plots.helpers import new_axes, transform_axis_tick_labels
+from ux.plots.helpers import new_axes, transform_axis_tick_labels, set_axis_tick_label_rotation
 
 
 class TemporalCount(dict):
@@ -156,6 +156,7 @@ class TemporalCount(dict):
             if plot_type == 'bar':
                 data = self.to_frame()
                 data.droplevel(0, axis=1).plot.bar(ax=ax, stacked=stacked)
+                ax.set_ylabel('Count')
             else:  # heatmap
                 data = self.to_series().reset_index()
                 pt = pivot_table(data, index='date_time', columns=self.name, values='count').astype(int)
@@ -169,12 +170,13 @@ class TemporalCount(dict):
                 heatmap(data=pt.T, annot=True, fmt='d', ax=ax)
                 y_lim = ax.get_ylim()
                 ax.set_ylim(max(y_lim) + 0.5, min(y_lim) - 0.5)
+                set_axis_tick_label_rotation(ax.yaxis, 0)
+                ax.set_ylabel(self.name)
         else:
             data = self.to_series()
             data.plot.bar(ax=ax)
         transform_axis_tick_labels(ax.xaxis, self.freq_formatter())
         ax.set_xlabel('Date Time')
-        ax.set_ylabel('Count')
         if axis_kws is not None:
             ax.set(**axis_kws)
         return ax
