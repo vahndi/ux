@@ -54,6 +54,8 @@ def split_sequences_by_hour(sequences: List[IActionSequence],
     :param end_date_time: Optional last date-time to use.
     :rtype: OrderedDict[date, List[IActionSequence]]
     """
+    if not sequences:
+        return OrderedDict()
     # get start and end dates
     min_date, max_date = _get_sequence_start_end_date_times(sequences)
     if start_date_time is None:
@@ -89,6 +91,8 @@ def split_sequences_by_day(sequences: List[IActionSequence],
     :param end_date: Optional last date to use.
     :rtype: OrderedDict[date, List[IActionSequence]]
     """
+    if not sequences:
+        return OrderedDict()
     # get start and end dates
     min_date, max_date = _get_sequence_start_end_dates(sequences)
     if start_date is None:
@@ -121,6 +125,8 @@ def split_sequences_by_week(sequences: List[IActionSequence],
     :param end_date: Optional last date to use.
     :rtype: OrderedDict[date, List[IActionSequence]]
     """
+    if not sequences:
+        return OrderedDict()
     # get start and end dates
     min_date, max_date = _get_sequence_start_end_dates(sequences)
     if start_date is None:
@@ -161,6 +167,8 @@ def split_sequences_by_month(sequences: List[IActionSequence],
     :param end_date: Optional last date to use.
     :rtype: OrderedDict[date, List[IActionSequence]]
     """
+    if not sequences:
+        return OrderedDict()
     # get start and end dates
     min_date, max_date = _get_sequence_start_end_dates(sequences)
     if start_date is None:
