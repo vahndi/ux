@@ -83,6 +83,12 @@ class TemporalCount(dict):
         freq_str = self.freq_str
         if freq_str == 'hourly':
             return lambda d: d[-8: -3]
+        elif freq_str in ('daily', 'weekly'):
+            return lambda d: d[: 10]
+        elif freq_str == 'monthly':
+            return lambda d: d[: 7]
+        elif freq_str == 'annual':
+            return lambda d: d[: 4]
         else:
             return lambda d: d
 
