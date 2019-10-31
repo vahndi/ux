@@ -5,7 +5,7 @@ from ux.calcs.object_calcs.efficiency import lostness
 from ux.calcs.object_calcs.task_success import unordered_task_completion_rate, ordered_task_completion_rate, \
     binary_task_success
 from ux.calcs.object_calcs.utils import sequence_intersects_task
-from ux.interfaces.actions.i_action_sequence import IActionSequence
+from ux.interfaces.sequences.i_action_sequence import IActionSequence
 from ux.interfaces.actions.i_action_template import IActionTemplate
 from ux.interfaces.tasks.i_task import ITask
 from ux.interfaces.actions.i_user_action import IUserAction
@@ -25,6 +25,7 @@ class ActionSequence(IActionSequence):
         self._user_actions = user_actions or []
         self._meta = meta
         self._action_templates = None
+        self._location_ids = None
 
     @property
     def user_actions(self):
@@ -178,12 +179,22 @@ class ActionSequence(IActionSequence):
 
         :rtype: Set[str]
         """
-        location_ids = set()
-        for action in self._user_actions:
-            location_ids.add(action.source_id)
-            if action.target_id:
-                location_ids.add(action.target_id)
-        return location_ids
+        if self._location_ids is None:
+            location_ids = set()
+            for action in self._user_actions:
+                location_ids.add(action.source_id)
+                if action.target_id:
+                    location_ids.add(action.target_id)
+            self._location_ids = location_ids
+        return self._location_ids
+
+    def contains_location_id(self, location_id: str):
+        """
+        Determine whether the location was visited in the sequence.
+
+        :rtype: bool
+        """
+        return location_id in self.location_ids()
 
     def action_types(self):
         """

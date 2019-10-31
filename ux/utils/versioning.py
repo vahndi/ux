@@ -1,7 +1,7 @@
 from collections import defaultdict
 from datetime import datetime
 
-from ux.interfaces.actions.i_action_sequence import IActionSequence
+from ux.interfaces.sequences.i_action_sequence import IActionSequence
 from ux.interfaces.i_database_manager import IDatabaseManager
 
 

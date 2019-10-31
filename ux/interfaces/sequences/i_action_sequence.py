@@ -66,6 +66,14 @@ class IActionSequence(object):
         """
         raise NotImplementedError
 
+    def contains_location_id(self, location_id: str):
+        """
+        Determine whether the location was visited in the sequence.
+
+        :rtype: bool
+        """
+        raise NotImplementedError
+
     def contains_action_template(self, action_template):
         """
         Returns True if the sequence contains a User Action which matches the given Template.

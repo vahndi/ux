@@ -1,8 +1,8 @@
 from collections import defaultdict
 from pandas import Series, pivot_table, DataFrame, notnull
-from typing import List, Union
+from typing import List
 
-from ux.interfaces.actions.i_action_sequence import IActionSequence
+from ux.interfaces.sequences.i_action_sequence import IActionSequence
 
 
 def count_action_transitions(action_sequences):

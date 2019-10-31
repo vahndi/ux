@@ -1,7 +1,7 @@
 from collections import defaultdict
 from typing import List, Dict
 
-from ux.interfaces.actions.i_action_sequence import IActionSequence
+from ux.interfaces.sequences.i_action_sequence import IActionSequence
 from ux.interfaces.actions.i_user_action import IUserAction
 from ux.classes.counts.count_config import CountConfig
 from ux.classes.counts.temporal_count import TemporalCount
@@ -70,6 +70,31 @@ def count_sequences_where(sequences: List[IActionSequence], condition, split_by=
         return dict(counts)
 
 
+def get_sequences_where(sequences: List[IActionSequence], condition, split_by=None):
+    """
+    Get the ActionSequences in the list where the given condition is True.
+
+    :param sequences: The list of IActionSequences to test.
+    :param condition: The condition to evaluate each sequence against.
+    :type condition: Callable[[IActionSequence], bool]
+    :param split_by: Optional callable to split counts by some attribute of each sequence. Should return a string.
+    :type split_by: Callable[[IActionSequence], str]
+    :return: List of sequences if split_by is None. Otherwise dict of {split_value: sequences}
+    """
+    if split_by is None:
+        filtered = []
+        for sequence in sequences:
+            if condition(sequence):
+                filtered.append(sequence)
+        return filtered
+    else:
+        filtered = defaultdict(list)
+        for sequence in sequences:
+            if condition(sequence):
+                filtered[split_by(sequence)].append(sequence)
+        return dict(filtered)
+
+
 def temporal_counts_by_config(sequences: List[IActionSequence], configs: List[CountConfig],
                               temporal_split: callable):
     """
@@ -77,6 +102,7 @@ def temporal_counts_by_config(sequences: List[IActionSequence], configs: List[Co
 
     :param sequences: List of ActionSequences containing actions to measure metrics.
     :param configs: List of CountConfigs defining the metrics to count.
+    :param temporal_split: lambda function returning OrderedDict[date, List[IActionSequence]]
     :rtype: Dict[str, TemporalCount]
     :return Dict[config.name, TemporalCount for config]
     """

@@ -1,6 +1,6 @@
 from math import sqrt
 
-from ux.interfaces.actions.i_action_sequence import IActionSequence
+from ux.interfaces.sequences.i_action_sequence import IActionSequence
 from ux.interfaces.tasks.i_task import ITask
 
 

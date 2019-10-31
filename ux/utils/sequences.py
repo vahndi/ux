@@ -2,7 +2,7 @@ from collections import OrderedDict
 from datetime import date, timedelta, datetime
 from typing import List, Tuple
 
-from ux.interfaces.actions.i_action_sequence import IActionSequence
+from ux.interfaces.sequences.i_action_sequence import IActionSequence
 from ux.utils.dates import monday_on_or_before, date_to_datetime
 
 
