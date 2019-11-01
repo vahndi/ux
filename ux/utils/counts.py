@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import List, Dict
+from typing import Callable, Dict, List
 
 from ux.interfaces.sequences.i_action_sequence import IActionSequence
 from ux.interfaces.actions.i_user_action import IUserAction
@@ -8,8 +8,8 @@ from ux.classes.counts.temporal_count import TemporalCount
 
 
 def count_actions_where(sequences: List[IActionSequence],
-                        action_condition: callable(IUserAction),
-                        sequence_condition: callable(IActionSequence) = None,
+                        action_condition: Callable[[IUserAction], bool],
+                        sequence_condition: Callable[[IActionSequence], bool] = None,
                         split_by: callable = None):
     """
     Count the number of UserActions in the ActionSequences where the given condition is True.

@@ -10,10 +10,15 @@ class ISequences(object):
         """
         raise NotImplementedError
 
-    @property
     def count(self):
         """
         :rtype: int
+        """
+        raise NotImplementedError
+
+    def copy(self):
+        """
+        :rtype: ISequences
         """
         raise NotImplementedError
 

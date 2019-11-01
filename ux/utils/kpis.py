@@ -43,12 +43,10 @@ def calculate_kpis_by_config(sequences: ISequences,
                 for numer, denom in zip(numerator_key, denominator_key)
             ):
                 continue
-            numerator = sub_sequences[numerator_key].filter(kpi_config.condition).count
-            denominator = sub_sequences[denominator_key].count
+            numerator = sub_sequences[numerator_key].filter(kpi_config.condition).count()
+            denominator = sub_sequences[denominator_key].count()
             results.append(KPI(
-                name=kpi_config.name,
-                numerator=numerator,
-                denominator=denominator,
+                name=kpi_config.name, numerator=numerator, denominator=denominator,
                 numer_config={
                     split_name: numer_key_val
                     for split_name, numer_key_val in zip(split_names, numerator_key)
