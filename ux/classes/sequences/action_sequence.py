@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import datetime, timedelta
 from typing import List, Callable
 
 from ux.calcs.object_calcs.efficiency import lostness
@@ -92,6 +92,18 @@ class ActionSequence(IActionSequence):
         """
         return [action for action in self.user_actions
                 if action.template() == action_template]
+
+    def start_date_time(self):
+        """
+        :rtype: datetime
+        """
+        return self._user_actions[0].time_stamp
+
+    def end_date_time(self):
+        """
+        :rtype: datetime
+        """
+        return self._user_actions[-1].time_stamp
 
     def duration(self):
         """

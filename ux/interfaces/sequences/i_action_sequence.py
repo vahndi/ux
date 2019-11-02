@@ -2,7 +2,6 @@ from typing import List, Set
 
 from ux.interfaces.actions.i_user_action import IUserAction
 from ux.interfaces.actions.i_action_template import IActionTemplate
-from ux.interfaces.i_location import ILocation
 
 
 class IActionSequence(object):
@@ -30,6 +29,18 @@ class IActionSequence(object):
     def duration(self):
         """
         :rtype: timedelta
+        """
+        raise NotImplementedError
+
+    def start_date_time(self):
+        """
+        :rtype: datetime
+        """
+        raise NotImplementedError
+
+    def end_date_time(self):
+        """
+        :rtype: datetime
         """
         raise NotImplementedError
 

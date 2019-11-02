@@ -1,3 +1,8 @@
+from typing import Dict, Callable
+
+from ux.interfaces.sequences.i_action_sequence import IActionSequence
+
+
 class ISequences(object):
 
     @property
@@ -7,6 +12,12 @@ class ISequences(object):
     def filter(self, condition: callable):
         """
         :rtype: ISequences
+        """
+        raise NotImplementedError
+
+    def group_filter(self, filters: Dict[str, Callable[[IActionSequence], bool]]):
+        """
+        :rtype: SequencesGroupBy
         """
         raise NotImplementedError
 
@@ -25,5 +36,25 @@ class ISequences(object):
     def intersection(self, other):
         """
         :rtype: ISequences
+        """
+        raise NotImplementedError
+
+    @staticmethod
+    def intersect_all(sequences):
+        """
+        :type sequences: List[ISequences]
+        :rtype: ISequences
+        """
+        raise NotImplementedError
+
+    def group_by(self, by):
+        """
+        :rtype: ISequencesGroupBy
+        """
+        raise NotImplementedError
+
+    def durations(self):
+        """
+        :rtype: List[timedelta]
         """
         raise NotImplementedError
