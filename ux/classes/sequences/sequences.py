@@ -6,6 +6,7 @@ from typing import List, Dict, Callable
 from ux.classes.sequences.sequences_group_by import SequencesGroupBy
 from ux.interfaces.sequences.i_action_sequence import IActionSequence
 from ux.interfaces.sequences.i_sequences import ISequences
+from ux.utils.misc import get_method_name
 
 
 class Sequences(ISequences):
@@ -18,7 +19,9 @@ class Sequences(ISequences):
 
     @property
     def sequences(self):
-
+        """
+        :rtype: List[IActionSequence]
+        """
         return self._sequences
 
     def filter(self, condition: Callable[[IActionSequence], bool]):
@@ -48,6 +51,9 @@ class Sequences(ISequences):
         return SequencesGroupBy(data=filtered, names=['filter'])
 
     def count(self):
+        """
+        :rtype: int
+        """
         return len(self._sequences)
 
     def copy(self):
@@ -80,26 +86,14 @@ class Sequences(ISequences):
 
     def group_by(self, by):
         """
-        Return a SequencesGroupBy keyed by each value returned by a single grouper, or each combination of groupers
-        for a list of groupers.
+        Return a SequencesGroupBy keyed by each value returned by a single grouper,
+        or each combination of groupers for a list of groupers.
         Each grouper should be a lambda function that returns a picklable value e.g. str.
 
         :param by: lambda(Sequence) or dict[group_name, lambda(Sequence)] or list[str or lambda(Sequence)].
         :type by: Union[Callable[[IActionSequence], Any], Dict[str, Union[Callable[[IActionSequence], Any]]
         :rtype: SequencesGroupBy
         """
-        num_lambdas = 0
-
-        def get_method_name(method, num_lambdas):
-            """
-            :rtype: str
-            """
-            if method.__name__ == '<lambda>':
-                num_lambdas += 1
-                return '<lambda>_{}'.format(num_lambdas), num_lambdas
-            else:
-                return method.__name__, num_lambdas
-
         def apply_group_by(method):
             """
             :rtype: Dict[str, Sequences]
@@ -126,6 +120,7 @@ class Sequences(ISequences):
             'start_weekday': lambda seq: seq.start_date_time().isoweekday(),
             'end_weekday': lambda seq: seq.end_date_time().isoweekday()
         }
+
         # build groupers dict mapping name to grouping function
         groupers = OrderedDict()
         if isinstance(by, FunctionType):
@@ -142,10 +137,11 @@ class Sequences(ISequences):
                 if isinstance(element, str):
                     groupers[element] = lookups[element]
                 elif isinstance(element, FunctionType):
-                    method_name, num_lambdas = get_method_name(element, num_lambdas)
+                    method_name, num_lambdas = get_method_name(element)
                     groupers[method_name] = element
                 else:
                     raise TypeError('List elements must be strings or functions.')
+
         # calculate dict mapping group-by split names to Sequences
         group_by_names = list(groupers.keys())
         group_bys = OrderedDict([
@@ -166,6 +162,38 @@ class Sequences(ISequences):
         return [
             sequence.duration() for sequence in self._sequences
         ]
+
+    def map(self, mapper):
+        """
+        Apply a map function to every action in the Sequence and return the results.
+
+        :param mapper: The method or methods to apply to each UserAction
+        :type mapper: Union[str, dict, list, Callable[[IUserAction], Any]]
+        """
+        def map_items(item_mapper):
+            if isinstance(item_mapper, str):
+                if hasattr(IActionSequence, item_mapper):
+                    if callable(getattr(self._sequences[0], item_mapper)):
+                        return [getattr(sequence, item_mapper)() for sequence in self._sequences]
+                    else:
+                        return [getattr(sequence, item_mapper) for sequence in self._sequences]
+            elif isinstance(item_mapper, FunctionType):
+                return [item_mapper(sequence) for sequence in self._sequences]
+
+        if isinstance(mapper, str) or isinstance(mapper, FunctionType):
+            results = {get_method_name(mapper): map_items(mapper)}
+        elif isinstance(mapper, dict):
+            results = {
+                get_method_name(key): map_items(value)
+                for key, value in mapper.items()
+            }
+        else:
+            raise TypeError('mapper must be of type dict, str or function')
+        return results
+
+    def __getitem__(self, item):
+
+        return self._sequences[item]
 
     def __repr__(self):
 

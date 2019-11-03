@@ -1,9 +1,10 @@
-from ux.interfaces.sequences.i_sequences import ISequences
+from pandas import DataFrame, Series, MultiIndex
+from types import FunctionType
 from typing import List
 
-from pandas import DataFrame, Series, MultiIndex
-
+from ux.interfaces.sequences.i_sequences import ISequences
 from ux.interfaces.sequences.i_sequences_group_by import ISequencesGroupBy
+from ux.utils.misc import get_method_name
 
 
 class SequencesGroupBy(ISequencesGroupBy):
@@ -37,6 +38,43 @@ class SequencesGroupBy(ISequencesGroupBy):
                     index=MultiIndex.from_tuples(out_dict.keys(), names=self._names)
                 ).reset_index().rename(columns={0: 'count'})
                 return out_data
+
+    def map(self, mapper):
+        """
+        Apply a map function to every action in the Sequence and return the results.
+
+        :param mapper: The method or methods to apply to each UserAction
+        :type mapper: Union[str, dict, list, Callable[[IUserAction], Any]]
+        """
+        def map_items(item_mapper):
+            if isinstance(item_mapper, str):
+                if hasattr(ISequences, item_mapper):
+                    if callable(getattr(ISequences, item_mapper)):
+                        return {
+                            name: getattr(sequences, item_mapper)()
+                            for name, sequences in self.items()
+                        }
+                    else:
+                        return {
+                            name: getattr(sequences, item_mapper)
+                            for name, sequences in self.items()
+                        }
+            elif isinstance(item_mapper, FunctionType):
+                return {
+                    name: item_mapper(sequences)
+                    for name, sequences in self.items()
+                }
+
+        if isinstance(mapper, str) or isinstance(mapper, FunctionType):
+            results = {get_method_name(mapper): map_items(mapper)}
+        elif isinstance(mapper, dict):
+            results = {
+                get_method_name(key): map_items(value)
+                for key, value in mapper.items()
+            }
+        else:
+            raise TypeError('mapper must be of type dict, str or function')
+        return results
 
     def items(self):
 

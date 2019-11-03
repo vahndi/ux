@@ -27,6 +27,10 @@ class ISequencesGroupBy(object):
         """
         raise NotImplementedError
 
+    def map(self, mapper):
+
+        raise NotImplementedError
+
     def __getitem__(self, item):
         """
         :rtype: ISequences

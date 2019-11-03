@@ -1,4 +1,4 @@
-from typing import List, Set
+from typing import List, Set, Callable, Any
 
 from ux.interfaces.actions.i_user_action import IUserAction
 from ux.interfaces.actions.i_action_template import IActionTemplate
@@ -42,6 +42,9 @@ class IActionSequence(object):
         """
         :rtype: datetime
         """
+        raise NotImplementedError
+
+    def map(self, mapper):
         raise NotImplementedError
 
     def unordered_completion_rate(self, task):
@@ -114,8 +117,15 @@ class IActionSequence(object):
         """
         raise NotImplementedError
 
+    def __getitem__(self, item):
+        """
+        :rtype: IUserAction
+        """
+        raise NotImplementedError
+
     def __len__(self):
         """
         should return the  number of user actions
         """
         raise NotImplementedError
+

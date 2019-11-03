@@ -58,3 +58,7 @@ class ISequences(object):
         :rtype: List[timedelta]
         """
         raise NotImplementedError
+
+    def map(self, mapper):
+
+        raise NotImplementedError
