@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from pandas import DataFrame, Series, MultiIndex
 from types import FunctionType
 from typing import List
@@ -74,6 +76,32 @@ class SequencesGroupBy(ISequencesGroupBy):
             }
         else:
             raise TypeError('mapper must be of type dict, str or function')
+        return results
+
+    def agg(self, agg_funcs: dict):
+        """
+        :param agg_funcs: dict mapping attributes to one or more aggregation functions e.g. duration -> np.median
+        :rtype: dict
+        """
+        results = defaultdict(dict)
+
+        # build list of agg_key, agg_func pairs
+        agg_pairs = []
+        for k, v in agg_funcs.items():
+            if isinstance(v, FunctionType):
+                agg_pairs.append((k, v))
+            else:
+                for f in v:
+                    agg_pairs.append((k, f))
+        for agg_key, agg_func in agg_pairs:
+            agg_name = get_method_name(agg_func)
+            for name, sequences in self.items():
+                if hasattr(ISequences, agg_key):
+                    if callable(getattr(ISequences, agg_key)):
+                        values = getattr(sequences, agg_key)()
+                    else:
+                        values = getattr(sequences, agg_key)
+                    results[name]['{}({})'.format(agg_name, agg_key)] = agg_func(values)
         return results
 
     def items(self):
