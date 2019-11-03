@@ -1,4 +1,6 @@
 from math import cos, sin, radians
+from types import FunctionType
+
 import matplotlib.pyplot as plt
 from matplotlib.axis import Axis
 from matplotlib.axes import Axes
@@ -74,7 +76,7 @@ def circle_edge(point_1: tuple, point_2: tuple, radius: float, rotation_angle: f
     return edge_point
 
 
-def get_color(color: Union[None, str, callable], state: ILocation, default: str):
+def get_color(color: Union[None, str, FunctionType], state: ILocation, default: str):
     """
     Return a matplotlib color string depending on the type of `color`
 
@@ -93,7 +95,7 @@ def get_color(color: Union[None, str, callable], state: ILocation, default: str)
         raise TypeError
 
 
-def transform_axis_tick_labels(ax: Axis, transformation: callable):
+def transform_axis_tick_labels(ax: Axis, transformation: FunctionType):
     """
     Transforms the labels of each label along the axis by a transformation function.
 

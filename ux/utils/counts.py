@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import Callable, Dict, List
+from typing import Any, Callable, Dict, List
 
 from ux.interfaces.sequences.i_action_sequence import IActionSequence
 from ux.interfaces.actions.i_user_action import IUserAction
@@ -10,7 +10,7 @@ from ux.classes.counts.temporal_count import TemporalCount
 def count_actions_where(sequences: List[IActionSequence],
                         action_condition: Callable[[IUserAction], bool],
                         sequence_condition: Callable[[IActionSequence], bool] = None,
-                        split_by: callable = None):
+                        split_by: Callable[[IActionSequence], Any] = None):
     """
     Count the number of UserActions in the ActionSequences where the given condition is True.
 
@@ -96,13 +96,14 @@ def get_sequences_where(sequences: List[IActionSequence], condition, split_by=No
 
 
 def temporal_counts_by_config(sequences: List[IActionSequence], configs: List[CountConfig],
-                              temporal_split: callable):
+                              temporal_split):
     """
     Count metrics using the settings in a list of CountConfigs.
 
     :param sequences: List of ActionSequences containing actions to measure metrics.
     :param configs: List of CountConfigs defining the metrics to count.
     :param temporal_split: lambda function returning OrderedDict[date, List[IActionSequence]]
+    :type temporal_split: Callable[[List[IActionSequence]], List[IActionSequence]]
     :rtype: Dict[str, TemporalCount]
     :return Dict[config.name, TemporalCount for config]
     """

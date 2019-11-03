@@ -43,13 +43,14 @@ def count_location_transitions(action_sequences):
     return transitions
 
 
-def create_transition_table(transitions: dict, get_name: callable = None, exclude=None):
+def create_transition_table(transitions: dict, get_name=None, exclude=None):
     """
     Create a DataFrame of transitions with columns ['from', 'to', 'count']
 
     :param transitions: Dictionary of transitions and their counts or probabilities.
     :type transitions: Dict[Tuple[object, object], Union[float, int]]
     :param get_name: Optional lambda function to call to convert states to labels.
+    :type get_name: Callable[[IUserAction], str]
     :param exclude: Optional list of names to exclude from the table.
     :type exclude: Union[str, List[str]]
     :rtype: DataFrame
@@ -73,7 +74,7 @@ def create_transition_table(transitions: dict, get_name: callable = None, exclud
     return transitions
 
 
-def create_transition_matrix(transitions: dict, get_name: callable = None,
+def create_transition_matrix(transitions: dict, get_name=None,
                              order_by='from', exclude=None):
     """
     Create a transition matrix from a dictionary of transition counts.
@@ -81,6 +82,7 @@ def create_transition_matrix(transitions: dict, get_name: callable = None,
     :param transitions: Dictionary of transitions and their counts or probabilities.
     :type transitions: Dict[Tuple[object, object], Union[float, int]]
     :param get_name: Optional lambda function to call to convert states to labels.
+    :type get_name: Callable[[IUserAction], str]
     :param order_by: Order labels by descending count of `from` or `to`, or pass a list to set order explicitly.
     :type order_by: Union[str, List[str]]
     :param exclude: Optional list of labels to exclude from the plots.
@@ -101,13 +103,14 @@ def create_transition_matrix(transitions: dict, get_name: callable = None,
     return matrix
 
 
-def find_most_probable_sequence(transitions, get_name: callable = None, exclude=None, start_at: str = None):
+def find_most_probable_sequence(transitions, get_name=None, exclude=None, start_at: str = None):
     """
     Find the most probable transition sequence.
 
     :param transitions: Dictionary of transitions and their counts or probabilities.
     :type transitions: Dict[Tuple[object, object], Union[float, int]]
     :param get_name: Optional lambda function to call to convert states to labels.
+    :type get_name: Callable[[IUserAction], str]
     :param exclude: Optional list of names to exclude from the sequence.
     :type exclude: Union[str, List[str]]
     :param start_at: Optional name of start state. Leave as None to use most common state.

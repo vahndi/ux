@@ -1,9 +1,11 @@
-from typing import Dict, List
+from typing import Dict, List, Callable
+
+from ux.interfaces.sequences.i_action_sequence import IActionSequence
 
 
 class KPIConfig(object):
 
-    def __init__(self, name: str, condition: callable,
+    def __init__(self, name: str, condition: Callable[[IActionSequence], bool],
                  numerator_splits: List[str], denominator_splits: List[str],
                  split_defs: Dict[str, Dict[str, callable]] = None):
         """

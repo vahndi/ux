@@ -1,14 +1,13 @@
 from matplotlib.axes import Axes
 from matplotlib.patches import Circle, FancyArrowPatch, ConnectionStyle, ArrowStyle
-from pandas import Series, pivot_table
 from seaborn import heatmap
-from typing import Dict, Union, Callable, List
+from typing import Dict, Callable
 
-from ux.utils.transitions import create_transition_matrix
 from ux.plots.helpers import new_axes, point_distance, circle_edge, get_color
+from ux.utils.transitions import create_transition_matrix
 
 
-def plot_transition_matrix(transitions, get_name: callable = None,
+def plot_transition_matrix(transitions, get_name=None,
                            order_by='from', exclude=None,
                            ax: Axes = None, heatmap_kws: dict = None):
     """
@@ -17,6 +16,7 @@ def plot_transition_matrix(transitions, get_name: callable = None,
     :param transitions: Dictionary of transitions and their counts or probabilities.
     :type transitions: Dict[Tuple[object, object], Union[float, int]]
     :param get_name: Optional lambda function to call to convert states to labels.
+    :type get_name: Callable[[IUserAction], str]
     :param order_by: Order labels by descending count of `from` or `to`, or pass a list to set order explicitly.
     :type order_by: Union[str, List[str]]
     :param exclude: Optional list of labels to exclude from the plots.
@@ -38,8 +38,7 @@ def plot_transition_matrix(transitions, get_name: callable = None,
     return ax
 
 
-def plot_markov_chain(transitions,
-                      get_location: callable, get_name: callable = None,
+def plot_markov_chain(transitions, get_location, get_name=None,
                       state_color=None, transition_color=None, arc_scale: float = 0.1,
                       text_kws: dict = None, circle_kws: dict = None, arrowstyle_kws: dict = None,
                       ax: Axes = None):
@@ -49,7 +48,9 @@ def plot_markov_chain(transitions,
     :param transitions: List of transitions and their counts or probabilities.
     :type transitions: Dict[Tuple[object, object], Union[float, int]]
     :param get_location: Lambda function to call to get state plot locations.
+    :type get_location: Callable[[IUserAction], (float, float)]
     :param get_name: Optional lambda function to call to convert states to labels.
+    :type get_name: Callable[[IUserAction], str]
     :param state_color: string or callable(state) to generate color for each state.
     :type state_color: Union[str, Callable]
     :param transition_color: string or callable(state) to generate color for each transition.

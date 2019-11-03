@@ -9,7 +9,7 @@ class ISequences(object):
     def sequences(self):
         raise NotImplementedError
 
-    def filter(self, condition: callable):
+    def filter(self, condition: Callable[[IActionSequence], bool]):
         """
         :rtype: ISequences
         """
