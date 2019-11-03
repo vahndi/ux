@@ -3,6 +3,8 @@ from itertools import product
 from types import FunctionType
 from typing import List, Dict, Callable
 
+from pandas import DataFrame
+
 from ux.classes.sequences.sequences_group_by import SequencesGroupBy
 from ux.interfaces.sequences.i_action_sequence import IActionSequence
 from ux.interfaces.sequences.i_sequences import ISequences
@@ -163,12 +165,13 @@ class Sequences(ISequences):
             sequence.duration() for sequence in self._sequences
         ]
 
-    def map(self, mapper):
+    def map(self, mapper, rtype: type = dict):
         """
         Apply a map function to every action in the Sequence and return the results.
 
         :param mapper: The method or methods to apply to each UserAction
         :type mapper: Union[str, dict, list, Callable[[IUserAction], Any]]
+        :param rtype: Return type of the result: dict or DataFrame
         """
         def map_items(item_mapper):
             if isinstance(item_mapper, str):
@@ -189,7 +192,12 @@ class Sequences(ISequences):
             }
         else:
             raise TypeError('mapper must be of type dict, str or function')
-        return results
+        if rtype is dict:
+            return results
+        elif rtype is DataFrame:
+            return DataFrame(results)
+        else:
+            raise TypeError('rtype must be dict or DataFrame')
 
     def __getitem__(self, item):
 

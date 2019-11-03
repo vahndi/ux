@@ -78,10 +78,10 @@ class SequencesGroupBy(ISequencesGroupBy):
             raise TypeError('mapper must be of type dict, str or function')
         return results
 
-    def agg(self, agg_funcs: dict):
+    def agg(self, agg_funcs: dict, rtype: type = dict):
         """
         :param agg_funcs: dict mapping attributes to one or more aggregation functions e.g. duration -> np.median
-        :rtype: dict
+        :param rtype: Return type of the result: dict or DataFrame
         """
         results = defaultdict(dict)
 
@@ -102,7 +102,14 @@ class SequencesGroupBy(ISequencesGroupBy):
                     else:
                         values = getattr(sequences, agg_key)
                     results[name]['{}({})'.format(agg_name, agg_key)] = agg_func(values)
-        return results
+        if rtype is dict:
+            return results
+        elif rtype is DataFrame:
+            data = DataFrame(results).T.sort_index()
+            data.index.names = self._names
+            return data
+        else:
+            raise TypeError('rtype must be dict or DataFrame')
 
     def items(self):
 

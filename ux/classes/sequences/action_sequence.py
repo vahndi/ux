@@ -120,17 +120,18 @@ class ActionSequence(IActionSequence):
         end_time = self.user_actions[-1].time_stamp
         return end_time - start_time
 
-    def map(self, mapper):
+    def map(self, mapper, rtype: type = dict):
         """
         Apply a map function to every action in the Sequence and return the results.
 
         :param mapper: The method or methods to apply to each UserAction
         :type mapper: Union[str, dict, Callable[[IUserAction], Any]]
+        :param rtype: Return type of the result: dict or DataFrame
         """
         def map_items(item_mapper):
             if isinstance(item_mapper, str):
                 if hasattr(IUserAction, item_mapper):
-                    if callable(getattr(self.user_actions[0], item_mapper)):
+                    if callable(getattr(IUserAction, item_mapper)):
                         return [getattr(action, item_mapper)() for action in self._user_actions]
                     else:
                         return [getattr(action, item_mapper) for action in self._user_actions]
@@ -146,7 +147,12 @@ class ActionSequence(IActionSequence):
             }
         else:
             raise TypeError('mapper must be of type list, dict, str or function')
-        return results
+        if rtype is dict:
+            return results
+        elif rtype is DataFrame:
+            return DataFrame(results)
+        else:
+            raise TypeError('rtype must be dict or DataFrame')
 
     def intersects_task(self, task: ITask):
         """
