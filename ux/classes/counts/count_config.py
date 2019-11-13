@@ -31,3 +31,8 @@ class CountConfig(object):
         self.sequence_split_by = sequence_split_by
         self.action_condition = action_condition
         self.action_split_by = action_split_by
+
+    def __repr__(self):
+
+        args = ['name', 'sequence_condition', 'sequence_split_by', 'action_condition', 'action_split_by']
+        return 'CountConfig({})'.format(', '.join(['{}={}'.format(arg, getattr(self, arg)) for arg in args]))
