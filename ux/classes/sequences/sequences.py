@@ -3,7 +3,7 @@ from itertools import product
 from types import FunctionType
 from typing import List, Dict, Callable
 
-from pandas import DataFrame
+from pandas import DataFrame, MultiIndex
 
 from ux.classes.sequences.sequences_group_by import SequencesGroupBy
 from ux.interfaces.sequences.i_action_sequence import IActionSequence
@@ -167,7 +167,7 @@ class Sequences(ISequences):
 
     def map(self, mapper, rtype: type = dict):
         """
-        Apply a map function to every action in the Sequence and return the results.
+        Apply a map function to every Sequence in the Sequences and return the results.
 
         :param mapper: The method or methods to apply to each UserAction
         :type mapper: Union[str, dict, list, Callable[[IUserAction], Any]]
