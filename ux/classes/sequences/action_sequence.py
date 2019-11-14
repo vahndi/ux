@@ -186,25 +186,54 @@ class ActionSequence(IActionSequence):
         """
         return lostness(task=task, action_sequence=self)
 
-    def split_after(self, condition: Callable[[IUserAction], bool], copy_meta: bool):
+    def split(self, split, how: str = 'at', copy_meta: bool = False):
         """
         Split into a list of new ActionSequences after each `UserAction` where `condition` is met.
 
-        :param condition: Lambda function to test when to break the sequence.
+        :param split: Lambda function to test when to break the sequence.
+        :type split: Union[Callable[[IUserAction], bool], IActionTemplate]
+        :param how: How to split the Sequence. One of `['before', 'after', 'at']`
         :param copy_meta: Whether to copy the `meta` dict into the new Sequences.
         :rtype: List[IActionSequence]
         """
-        new_sequences = []
-        sequence_actions = []
+        # find matching locations
+        match_locs = []
+        if isinstance(split, IActionTemplate):
+            condition = lambda action: action.template() == split
+        else:
+            condition = split
         for a, action in enumerate(self.user_actions):
-            sequence_actions.append(action)
             if condition(action):
-                new_sequences.append(ActionSequence(
-                    user_actions=sequence_actions,
-                    meta=self.meta.copy() if copy_meta else None
-                ))
-                sequence_actions = []
-        return new_sequences
+                match_locs.append(a)
+        # split at right locations depending on the value of `how`
+        if how == 'before':
+            seq_starts = [m for m in match_locs]
+            seq_ends = [m for m in match_locs if m != 0] + [len(self)]
+            if match_locs[0] != 0:
+                seq_starts.insert(0, 0)
+            if match_locs[-1] == len(self):
+                seq_ends = seq_ends[: -1]
+        elif how == 'after':
+            seq_starts = [0] + [m + 1 for m in match_locs]
+            if seq_starts[-1] == len(self):
+                seq_starts = seq_starts[: -1]
+            seq_ends = [m + 1 for m in match_locs]
+            if seq_ends[-1] != len(self):
+                seq_ends.append(len(self))
+        elif how == 'at':
+            seq_starts = [m + 1 for m in match_locs if m != len(self) - 1]
+            if match_locs[0] != 0:
+                seq_starts.insert(0, 0)
+            seq_ends = [m for m in match_locs if m != 0]
+            if match_locs[-1] != len(self) - 1:
+                seq_ends.append(len(self))
+        else:
+            raise ValueError("'how' must be set to one of ['before', 'after', 'at']")
+
+        return [ActionSequence(
+            user_actions=self.user_actions[start: end],
+            meta=self._meta if copy_meta else None
+        ) for start, end in zip(seq_starts, seq_ends)]
 
     def unordered_completion_rate(self, task: ITask):
         """
