@@ -48,7 +48,11 @@ class TemporalCount(dict):
         """
         :rtype: bool
         """
-        return type(list(self.values())[0]) is dict
+        values = list(self.values())
+        if not values:
+            return None
+        else:
+            return type(values[0]) is dict
 
     @property
     def frequency(self):
