@@ -1,6 +1,5 @@
 from datetime import datetime
 
-from ux.classes.actions.action_template import ActionTemplate
 from ux.classes.actions.user_action import UserAction
 from ux.classes.sequences.action_sequence import ActionSequence
 
@@ -25,9 +24,12 @@ seq_3 = ActionSequence([s, n, n, n, n, s, n])
 for seq in (seq_1, seq_2, seq_3):
     print()
     print(seq)
-    # for split_seq in seq.split(s.template(), how='before'):
-    #     print(split_seq)
-    # for split_seq in seq.split(s.template(), how='after'):
-    #     print(split_seq)
+    print()
+    for split_seq in seq.split(s.template(), how='before'):
+        print(split_seq)
+    print()
+    for split_seq in seq.split(s.template(), how='after'):
+        print(split_seq)
+    print()
     for split_seq in seq.split(s.template(), how='at'):
         print(split_seq)

@@ -12,6 +12,7 @@ from ux.interfaces.sequences.i_action_sequence import IActionSequence
 from ux.interfaces.actions.i_action_template import IActionTemplate
 from ux.interfaces.tasks.i_task import ITask
 from ux.interfaces.actions.i_user_action import IUserAction
+from ux.utils.actions import create_action_template_condition
 from ux.utils.misc import get_method_name
 
 
@@ -190,7 +191,7 @@ class ActionSequence(IActionSequence):
         """
         Split into a list of new ActionSequences after each `UserAction` where `condition` is met.
 
-        :param split: Lambda function to test when to break the sequence.
+        :param split: Lambda function or Action Template to use to break the sequence.
         :type split: Union[Callable[[IUserAction], bool], IActionTemplate]
         :param how: How to split the Sequence. One of `['before', 'after', 'at']`
         :param copy_meta: Whether to copy the `meta` dict into the new Sequences.
@@ -198,10 +199,7 @@ class ActionSequence(IActionSequence):
         """
         # find matching locations
         match_locs = []
-        if isinstance(split, IActionTemplate):
-            condition = lambda action: action.template() == split
-        else:
-            condition = split
+        condition = create_action_template_condition(split)
         for a, action in enumerate(self.user_actions):
             if condition(action):
                 match_locs.append(a)
@@ -234,6 +232,50 @@ class ActionSequence(IActionSequence):
             user_actions=self.user_actions[start: end],
             meta=self._meta if copy_meta else None
         ) for start, end in zip(seq_starts, seq_ends)]
+
+    def crop(self, start, end, how: str, copy_meta: bool = False):
+        """
+        Crop the sequence to start and end ActionTemplates or conditions.
+        Returns None if both conditions are not found in order.
+
+        :param start: The start of the subsequence to crop to.
+        :param end: The end of the subsequence to crop to.
+        :param how: 'first' or 'last'
+        :rtype: IActionSequence
+        """
+        start = create_action_template_condition(start)
+        end = create_action_template_condition(end)
+        a_start = None
+        a_end = None
+        if how == 'first':
+            for a in range(len(self)):
+                if start(self[a].template()):
+                    a_start = a
+                    break
+            if a_start is not None and a_start < len(self) - 1:
+                for a in range(a_start + 1, len(self)):
+                    if end(self[a].template()):
+                        a_end = a
+                        break
+        elif how == 'last':
+            for a in range(len(self) - 1, -1, -1):
+                if end(self[a].template()):
+                    a_end = a
+                    break
+            if a_end is not None and a_end > 0:
+                for a in range(a_end - 1, -1, -1):
+                    if start(self[a].template()):
+                        a_start = a
+                        break
+        else:
+            raise ValueError("'how' must be one of 'first' or 'last'")
+        if None in (a_start, a_end):
+            return None
+        else:
+            return ActionSequence(
+                user_actions=self.user_actions[a_start: a_end + 1],
+                meta=self._meta if copy_meta else None
+            )
 
     def unordered_completion_rate(self, task: ITask):
         """
