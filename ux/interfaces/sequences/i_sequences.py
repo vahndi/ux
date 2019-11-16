@@ -78,6 +78,15 @@ class ISequences(object):
         """
         raise NotImplementedError
 
+    def action_template_transition_counts(self, rtype: type = dict):
+        """
+        Return counts of transitions between pairs of Actions from each Sequence in the collection.
+
+        :return: Dictionary of {(from, to) => count}
+        :rtype: Dict[tuple[IActionTemplate, IActionTemplate], int]
+        """
+        raise NotImplementedError
+
     def map(self, mapper, rtype: type = dict):
 
         raise NotImplementedError

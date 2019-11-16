@@ -219,6 +219,30 @@ class Sequences(ISequences):
         else:
             raise TypeError('rtype must be dict or Series')
 
+    def action_template_transition_counts(self, rtype: type = dict):
+        """
+        Return counts of transitions between pairs of Actions from each Sequence in the collection.
+
+        :return: Dictionary of {(from, to) => count}
+        :rtype: Dict[tuple[IActionTemplate, IActionTemplate], int]
+        """
+        transitions = defaultdict(int)
+        # count transitions
+        for sequence in self._sequences:
+            for a in range(len(sequence) - 1):
+                from_action = sequence.user_actions[a].template()
+                to_action = sequence.user_actions[a + 1].template()
+                transitions[(from_action, to_action)] += 1
+        if rtype is dict:
+            return dict(transitions)
+        elif rtype is Series:
+            transitions = Series(transitions).sort_values(ascending=False)
+            transitions.name = 'count'
+            transitions.index.name = ['from', 'to']
+            return transitions
+        else:
+            raise TypeError('rtype must be dict or Series')
+
     def map(self, mapper, rtype: type = dict):
         """
         Apply a map function to every Sequence in the Sequences and return the results.
