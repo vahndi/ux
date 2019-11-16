@@ -1,9 +1,9 @@
 from collections import defaultdict, OrderedDict
-from itertools import product
+from itertools import product, chain
 from types import FunctionType
 from typing import List, Dict, Callable
 
-from pandas import DataFrame, MultiIndex
+from pandas import DataFrame, MultiIndex, concat, Series
 
 from ux.classes.sequences.sequences_group_by import SequencesGroupBy
 from ux.interfaces.sequences.i_action_sequence import IActionSequence
@@ -15,13 +15,17 @@ class Sequences(ISequences):
 
     def __init__(self, sequences: List[IActionSequence]):
         """
-        :param sequences:
+        Create a new Sequences collection.
+
+        :param sequences: List of ActionSequences to use to create the object.
         """
         self._sequences = sequences
 
     @property
     def sequences(self):
         """
+        Return a list of the individual Sequences in the collection.
+
         :rtype: List[IActionSequence]
         """
         return self._sequences
@@ -31,7 +35,7 @@ class Sequences(ISequences):
         Return a new Sequences containing only the sequences matching the `condition`.
 
         :param condition: lambda(sequence) that returns True include a sequence.
-        :rtype: Sequences
+        :rtype: ISequences
         """
         filtered = []
         for sequence in self._sequences:
@@ -54,20 +58,26 @@ class Sequences(ISequences):
 
     def count(self):
         """
+        Return the number of ActionSequences in the collection.
+
         :rtype: int
         """
         return len(self._sequences)
 
     def copy(self):
         """
+        Return a new collection referencing this collection's ActionSequences.
+
         :rtype: ISequences
         """
         return Sequences(self._sequences)
 
     def intersection(self, other):
         """
+        Return a new collection representing the ActionSequences in both collections.
+
         :type other: Union[Sequences, List[IActionSequence]]
-        :rtype: Sequences
+        :rtype: ISequences
         """
         if type(other) is Sequences:
             other = other.sequences
@@ -78,6 +88,8 @@ class Sequences(ISequences):
     @staticmethod
     def intersect_all(sequences):
         """
+        Return a new collection representing the ActionSequences in every collection.
+
         :type sequences: List[ISequences]
         :rtype: ISequences
         """
@@ -157,13 +169,55 @@ class Sequences(ISequences):
             result[result_key] = Sequences.intersect_all(result_sequences)
         return SequencesGroupBy(result, names=group_by_names)
 
-    def durations(self):
+    def durations(self, rtype: type = list):
         """
         :rtype: List[timedelta]
         """
-        return [
+        durations = [
             sequence.duration() for sequence in self._sequences
         ]
+        if rtype is list:
+            return durations
+        elif rtype is Series:
+            return Series(
+                data=durations,
+                name='durations'
+            )
+        else:
+            raise TypeError('rtype must be list or Series')
+
+    def action_template_counts(self, rtype: type = dict):
+        """
+        Return a total count of all the ActionTemplates in the ActionSequences in the collection.
+
+        :rtype: Dict[IActionTemplate, int]
+        """
+        total = concat([
+            sequence.action_template_counts()
+            for sequence in self._sequences
+        ], axis=1).sum(axis=1).astype(int)
+        if rtype is Series:
+            return total
+        elif rtype is dict:
+            return total.to_dict()
+        else:
+            raise TypeError('rtype must be dict or Series')
+
+    def action_template_sequence_counts(self, rtype: type = dict):
+        """
+        Return a total count of the number of ActionSequences containing each ActionTemplate in the collection.
+
+        :rtype: Dict[IActionTemplate, int]
+        """
+        counts = Series(chain.from_iterable([
+            list(sequence.action_template_set()) for sequence in self._sequences
+        ])).value_counts()
+        if rtype is Series:
+            return counts
+        elif rtype is dict:
+            return counts.to_dict()
+        else:
+            raise TypeError('rtype must be dict or Series')
 
     def map(self, mapper, rtype: type = dict):
         """
@@ -206,3 +260,7 @@ class Sequences(ISequences):
     def __repr__(self):
 
         return 'Sequences({})'.format(len(self._sequences))
+
+    def __len__(self):
+
+        return len(self._sequences)

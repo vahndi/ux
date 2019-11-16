@@ -7,6 +7,11 @@ class ISequences(object):
 
     @property
     def sequences(self):
+        """
+        Return a list of the individual Sequences in the collection.
+
+        :rtype: List[IActionSequence]
+        """
         raise NotImplementedError
 
     def filter(self, condition: Callable[[IActionSequence], bool]):
@@ -56,6 +61,20 @@ class ISequences(object):
     def durations(self):
         """
         :rtype: List[timedelta]
+        """
+        raise NotImplementedError
+
+    def action_template_counts(self, rtype: type = dict):
+        """
+        :rtype: Dict[IActionTemplate, int]
+        """
+        raise NotImplementedError
+
+    def action_template_sequence_counts(self, rtype: type = dict):
+        """
+        Return a total count of the number of ActionSequences containing each ActionTemplate in the collection.
+
+        :rtype: Dict[IActionTemplate, int]
         """
         raise NotImplementedError
 

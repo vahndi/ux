@@ -19,6 +19,22 @@ class IActionSequence(object):
         """
         raise NotImplementedError
 
+    def action_template_set(self):
+        """
+        Return a set of ActionTemplates representing the UserActions in the ActionSequence.
+
+        :rtype: Set[IActionTemplate]
+        """
+        raise NotImplementedError
+
+    def action_template_counts(self, rtype: type = dict):
+        """
+        Return a count of each ActionTemplate representing one or more UserActions in the ActionSequence.
+
+        :rtype: Dict[IActionTemplate, int]
+        """
+        raise NotImplementedError
+
     @property
     def meta(self):
         """

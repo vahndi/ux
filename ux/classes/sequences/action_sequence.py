@@ -1,6 +1,7 @@
+from collections import defaultdict
 from datetime import datetime, timedelta
 from types import FunctionType
-from typing import List, Callable, Any
+from typing import List, Callable, Any, Set
 
 from pandas import Series, DataFrame
 
@@ -63,6 +64,30 @@ class ActionSequence(IActionSequence):
                 for user_action in self._user_actions
             ]
         return self._action_templates
+
+    def action_template_set(self):
+        """
+        Return a set of ActionTemplates representing the UserActions in the ActionSequence.
+
+        :rtype: Set[IActionTemplate]
+        """
+        return set(self._action_templates)
+
+    def action_template_counts(self, rtype: type = dict):
+        """
+        Return a count of each ActionTemplate representing one or more UserActions in the ActionSequence.
+
+        :rtype: Dict[IActionTemplate, int]
+        """
+        counts = defaultdict(int)
+        for template in self.action_templates():
+            counts[template] += 1
+        if rtype is dict:
+            return dict(counts)
+        elif rtype is Series:
+            return Series(counts).sort_values(ascending=False)
+        else:
+            raise TypeError('rtype must be dict or Series')
 
     def contains_action_template(self, action_template):
         """
@@ -241,6 +266,7 @@ class ActionSequence(IActionSequence):
         :param start: The start of the subsequence to crop to.
         :param end: The end of the subsequence to crop to.
         :param how: 'first' or 'last'
+        :param copy_meta: Whether to copy the `meta` dict into the new Sequence.
         :rtype: IActionSequence
         """
         start = create_action_template_condition(start)
