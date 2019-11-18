@@ -367,3 +367,12 @@ class ActionSequence(IActionSequence):
     def __len__(self):
 
         return len(self._user_actions)
+
+    def __contains__(self, item):
+
+        if isinstance(item, IUserAction):
+            return item in self._user_actions
+        elif isinstance(item, IActionTemplate):
+            return item in self.action_templates()
+        else:
+            raise TypeError('item must be IUserAction or IActionTemplate')

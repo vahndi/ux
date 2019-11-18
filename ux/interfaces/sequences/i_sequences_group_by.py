@@ -31,6 +31,13 @@ class ISequencesGroupBy(object):
 
         raise NotImplementedError
 
+    def agg(self, agg_funcs: dict, rtype: type = dict):
+        """
+        :param agg_funcs: dict mapping attributes to one or more aggregation functions e.g. duration -> np.median
+        :param rtype: Return type of the result: dict or DataFrame
+        """
+        raise NotImplementedError
+
     def __getitem__(self, item):
         """
         :rtype: ISequences

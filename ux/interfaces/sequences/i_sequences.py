@@ -90,3 +90,15 @@ class ISequences(object):
     def map(self, mapper, rtype: type = dict):
 
         raise NotImplementedError
+
+    def __getitem__(self, item):
+
+        raise NotImplementedError
+
+    def __len__(self):
+
+        raise NotImplementedError
+
+    def __contains__(self, item: IActionSequence):
+
+        raise NotImplementedError

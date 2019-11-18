@@ -307,3 +307,10 @@ class Sequences(ISequences):
     def __len__(self):
 
         return len(self._sequences)
+
+    def __contains__(self, item: IActionSequence):
+
+        if isinstance(item, IActionSequence):
+            return item in self._sequences
+        else:
+            raise TypeError('item must be IActionSequence')

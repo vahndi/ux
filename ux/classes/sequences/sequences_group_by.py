@@ -43,10 +43,11 @@ class SequencesGroupBy(ISequencesGroupBy):
 
     def map(self, mapper):
         """
-        Apply a map function to every action in the Sequence and return the results.
+        Apply a map function to every Sequences in the GroupBy and return the results.
 
         :param mapper: The method or methods to apply to each UserAction
         :type mapper: Union[str, dict, list, Callable[[IUserAction], Any]]
+        :rtype: dict
         """
         def map_items(item_mapper):
             if isinstance(item_mapper, str):
