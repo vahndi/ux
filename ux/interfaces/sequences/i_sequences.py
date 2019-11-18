@@ -1,5 +1,6 @@
 from typing import Dict, Callable
 
+from ux.custom_types import SequenceFilter
 from ux.interfaces.sequences.i_action_sequence import IActionSequence
 
 
@@ -14,7 +15,7 @@ class ISequences(object):
         """
         raise NotImplementedError
 
-    def filter(self, condition: Callable[[IActionSequence], bool]):
+    def filter(self, condition: SequenceFilter):
         """
         :rtype: ISequences
         """

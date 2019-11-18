@@ -1,11 +1,11 @@
-from typing import Dict, List, Callable
+from typing import Dict, List
 
-from ux.interfaces.sequences.i_action_sequence import IActionSequence
+from ux.custom_types import SequenceFilter
 
 
 class KPIConfig(object):
 
-    def __init__(self, name: str, condition: Callable[[IActionSequence], bool],
+    def __init__(self, name: str, condition: SequenceFilter,
                  numerator_splits: List[str], denominator_splits: List[str],
                  split_defs: Dict[str, Dict[str, callable]] = None):
         """

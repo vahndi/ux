@@ -51,7 +51,7 @@ def count_sequences_where(sequences: List[IActionSequence], condition, split_by=
 
     :param sequences: The list of IActionSequences to test.
     :param condition: The condition to evaluate each sequence against.
-    :type condition: Callable[[IActionSequence], bool]
+    :type condition: SequenceFilter
     :param split_by: Optional callable to split counts by some attribute of each sequence. Should return a string.
     :type split_by: Callable[[IActionSequence], str]
     :return: Integer count if split_by is None. Otherwise dict of {split_value: count}
@@ -76,7 +76,7 @@ def get_sequences_where(sequences: List[IActionSequence], condition, split_by=No
 
     :param sequences: The list of IActionSequences to test.
     :param condition: The condition to evaluate each sequence against.
-    :type condition: Callable[[IActionSequence], bool]
+    :type condition: SequenceFilter
     :param split_by: Optional callable to split counts by some attribute of each sequence. Should return a string.
     :type split_by: Callable[[IActionSequence], str]
     :return: List of sequences if split_by is None. Otherwise dict of {split_value: sequences}
