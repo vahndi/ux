@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from numpy.ma import clip
 from numpy.random import normal
 
-from plots.usability.task_success import (
+from ux.plots.usability.task_success import (
     plot_task_success_rates, plot_task_success_frequencies, plot_task_success_level
 )
 

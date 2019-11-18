@@ -217,7 +217,7 @@ class ActionSequence(IActionSequence):
         Split into a list of new ActionSequences after each `UserAction` where `condition` is met.
 
         :param split: Lambda function or Action Template to use to break the sequence.
-        :type split: Union[Callable[[IUserAction], bool], IActionTemplate]
+        :type split: Union[ActionFilter, IActionTemplate]
         :param how: How to split the Sequence. One of `['before', 'after', 'at']`
         :param copy_meta: Whether to copy the `meta` dict into the new Sequences.
         :rtype: List[IActionSequence]

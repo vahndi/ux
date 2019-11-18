@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 from numpy.random import randint
 
-from plots.usability.learnability import plot_task_learnability
+from ux.plots.usability.learnability import plot_task_learnability
 
 
 def time_on_task_over_trials():

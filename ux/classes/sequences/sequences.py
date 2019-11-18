@@ -1,11 +1,12 @@
 from collections import defaultdict, OrderedDict
-from itertools import product, chain
+from itertools import chain, product
 from types import FunctionType
-from typing import List, Dict, Callable
+from typing import Dict, List
 
-from pandas import DataFrame, MultiIndex, concat, Series
+from pandas import concat, DataFrame, Series
 
 from ux.classes.sequences.sequences_group_by import SequencesGroupBy
+from ux.custom_types import SequenceFilter
 from ux.interfaces.sequences.i_action_sequence import IActionSequence
 from ux.interfaces.sequences.i_sequences import ISequences
 from ux.utils.misc import get_method_name
@@ -30,7 +31,7 @@ class Sequences(ISequences):
         """
         return self._sequences
 
-    def filter(self, condition: Callable[[IActionSequence], bool]):
+    def filter(self, condition: SequenceFilter):
         """
         Return a new Sequences containing only the sequences matching the `condition`.
 
@@ -43,17 +44,35 @@ class Sequences(ISequences):
                 filtered.append(sequence)
         return Sequences(filtered)
 
-    def group_filter(self, filters: Dict[str, Callable[[IActionSequence], bool]]):
+    def group_filter(self, filters: Dict[str, SequenceFilter]):
         """
-        Return a new SequencesGroupBy keyed by the dict key with values matching each filter.
+        Return a new SequencesGroupBy keyed by the dict key with values matching each filter, applied in parallel.
 
-        :param filters: dict[str, lambda(Sequence)]
+        :param filters: Dictionary of filters to apply.
         :rtype: SequencesGroupBy
         """
         filtered = {
             filter_name: self.filter(filter_condition)
             for filter_name, filter_condition in filters.items()
         }
+        return SequencesGroupBy(data=filtered, names=['filter'])
+
+    def chain_filter(self, filters: Dict[str, SequenceFilter]):
+        """
+        Return a new SequencesGroupBy keyed by the dict key with values matching each filter, applied in series.
+
+        :param filters: Dictionary of filters to apply. Use OrderedDict for Python < 3.7 to preserve key order.
+        :rtype: SequencesGroupBy
+        """
+        filtered = OrderedDict()
+        sequences = self._sequences
+        for filter_name, filter_func in filters.items():
+            filtered_sequences = []
+            for sequence in sequences:
+                if filter_func(sequence):
+                    filtered_sequences.append(sequence)
+            filtered[filter_name] = Sequences(filtered_sequences)
+            sequences = filtered_sequences
         return SequencesGroupBy(data=filtered, names=['filter'])
 
     def count(self):

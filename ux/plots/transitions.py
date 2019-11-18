@@ -1,7 +1,7 @@
 from matplotlib.axes import Axes
 from matplotlib.patches import Circle, FancyArrowPatch, ConnectionStyle, ArrowStyle
 from seaborn import heatmap
-from typing import Dict, Callable
+from typing import Dict
 
 from ux.plots.helpers import new_axes, point_distance, circle_edge, get_color
 from ux.utils.transitions import create_transition_matrix

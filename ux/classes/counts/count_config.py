@@ -1,5 +1,6 @@
 from typing import Callable, Dict
 
+from ux.custom_types import SequenceFilter, ActionFilter
 from ux.interfaces.actions.i_user_action import IUserAction
 from ux.interfaces.sequences.i_action_sequence import IActionSequence
 
@@ -7,9 +8,9 @@ from ux.interfaces.sequences.i_action_sequence import IActionSequence
 class CountConfig(object):
 
     def __init__(self, name: str,
-                 sequence_condition: Callable[[IActionSequence], bool] = None,
+                 sequence_condition: SequenceFilter = None,
                  sequence_split_by: Callable[[IActionSequence], Dict[str, int]] = None,
-                 action_condition: Callable[[IUserAction], bool] = None,
+                 action_condition: ActionFilter = None,
                  action_split_by: Callable[[IUserAction], Dict[str, int]] = None):
         """
         Configuration class for batch calculation of count metrics.
