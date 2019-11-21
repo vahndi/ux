@@ -212,7 +212,7 @@ class Sequences(ISequences):
         :rtype: Dict[IActionTemplate, int]
         """
         total = concat([
-            sequence.action_template_counts()
+            sequence.action_template_counts(Series)
             for sequence in self._sequences
         ], axis=1).sum(axis=1).astype(int)
         if rtype is Series:
