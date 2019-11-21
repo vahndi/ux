@@ -105,3 +105,20 @@ class Task(ITask):
         return 'Task({} [{}])'.format(
             self._name, len(self._action_templates)
         )
+
+    def __getitem__(self, item):
+        """
+        :rtype: IUserAction
+        """
+        return self._action_templates[item]
+
+    def __contains__(self, item):
+
+        if isinstance(item, IActionTemplate):
+            return item in self._action_templates
+        else:
+            raise TypeError('item must be IActionTemplate')
+
+    def __iter__(self):
+
+        return self._action_templates.__iter__()
