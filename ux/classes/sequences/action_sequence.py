@@ -71,7 +71,7 @@ class ActionSequence(IActionSequence):
 
         :rtype: Set[IActionTemplate]
         """
-        return set(self._action_templates)
+        return set(self.action_templates())
 
     def action_template_counts(self, rtype: type = dict):
         """
