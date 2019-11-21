@@ -359,17 +359,23 @@ class ActionSequence(IActionSequence):
         return self._user_actions[item]
 
     def __repr__(self):
-
+        """
+        :rtype: str
+        """
         return 'ActionSequence([{}])'.format(
             len(self._user_actions)
         )
 
     def __len__(self):
-
+        """
+        :rtype: int
+        """
         return len(self._user_actions)
 
     def __contains__(self, item):
-
+        """
+        :rtype: bool
+        """
         if isinstance(item, IUserAction):
             return item in self._user_actions
         elif isinstance(item, IActionTemplate):
@@ -378,5 +384,7 @@ class ActionSequence(IActionSequence):
             raise TypeError('item must be IUserAction or IActionTemplate')
 
     def __iter__(self):
-
+        """
+        :rtype: IUserAction
+        """
         return self._user_actions.__iter__()

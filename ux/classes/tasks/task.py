@@ -97,11 +97,15 @@ class Task(ITask):
         return lostness(task=self, action_sequence=action_sequence)
 
     def __len__(self):
-
+        """
+        :rtype: int
+        """
         return len(self._action_templates)
 
     def __repr__(self):
-
+        """
+        :rtype: str
+        """
         return 'Task({} [{}])'.format(
             self._name, len(self._action_templates)
         )
@@ -113,12 +117,16 @@ class Task(ITask):
         return self._action_templates[item]
 
     def __contains__(self, item):
-
+        """
+        :rtype: bool 
+        """
         if isinstance(item, IActionTemplate):
             return item in self._action_templates
         else:
             raise TypeError('item must be IActionTemplate')
 
     def __iter__(self):
-
+        """
+        :rtype: IActionTemplate 
+        """
         return self._action_templates.__iter__()

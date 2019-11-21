@@ -43,14 +43,18 @@ class ITask(object):
 
     def __len__(self):
         """
-        should return the  number of user actions
+        :rtype: int
         """
         raise NotImplementedError
 
     def __contains__(self, item):
-
+        """
+        :rtype: bool
+        """
         raise NotImplementedError
 
     def __iter__(self):
-
+        """
+        :rtype: IActionTemplate
+        """
         raise NotImplementedError
