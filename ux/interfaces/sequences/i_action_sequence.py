@@ -145,3 +145,10 @@ class IActionSequence(object):
         """
         raise NotImplementedError
 
+    def __contains__(self, item):
+
+        raise NotImplementedError
+
+    def __iter__(self):
+
+        raise NotImplementedError

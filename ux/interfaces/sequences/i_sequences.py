@@ -103,3 +103,7 @@ class ISequences(object):
     def __contains__(self, item: IActionSequence):
 
         raise NotImplementedError
+
+    def __iter__(self):
+
+        raise NotImplementedError

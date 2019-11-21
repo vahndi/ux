@@ -376,3 +376,7 @@ class ActionSequence(IActionSequence):
             return item in self.action_templates()
         else:
             raise TypeError('item must be IUserAction or IActionTemplate')
+
+    def __iter__(self):
+
+        return self._user_actions.__iter__()

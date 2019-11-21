@@ -314,3 +314,7 @@ class Sequences(ISequences):
             return item in self._sequences
         else:
             raise TypeError('item must be IActionSequence')
+
+    def __iter__(self):
+
+        return self._sequences.__iter__()
