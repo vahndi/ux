@@ -4,6 +4,7 @@ from pandas import DataFrame, Series, MultiIndex
 from types import FunctionType
 from typing import List
 
+from ux.custom_types import SequenceFilter
 from ux.interfaces.sequences.i_sequences import ISequences
 from ux.interfaces.sequences.i_sequences_group_by import ISequencesGroupBy
 from ux.utils.misc import get_method_name
@@ -111,6 +112,19 @@ class SequencesGroupBy(ISequencesGroupBy):
             return data
         else:
             raise TypeError('rtype must be dict or DataFrame')
+
+    def filter(self, condition: SequenceFilter):
+        """
+        Return a new Sequences containing only the sequences matching the `condition` in each group.
+
+        :param condition: lambda(sequence) that returns True to include a sequence.
+        :rtype: ISequencesGroupBy
+        """
+        data = {
+            key: value.filter(condition)
+            for key, value in self._data.items()
+        }
+        return SequencesGroupBy(data=data, names=self.names)
 
     def items(self):
 

@@ -35,7 +35,7 @@ class Sequences(ISequences):
         """
         Return a new Sequences containing only the sequences matching the `condition`.
 
-        :param condition: lambda(sequence) that returns True include a sequence.
+        :param condition: lambda(sequence) that returns True to include a sequence.
         :rtype: ISequences
         """
         filtered = []
