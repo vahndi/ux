@@ -151,7 +151,13 @@ class Sequences(ISequences):
             'end_day': lambda seq: seq.end_date_time().day,
             'weekday': lambda seq: seq.start_date_time().isoweekday(),
             'start_weekday': lambda seq: seq.start_date_time().isoweekday(),
-            'end_weekday': lambda seq: seq.end_date_time().isoweekday()
+            'end_weekday': lambda seq: seq.end_date_time().isoweekday(),
+            'week': lambda seq: seq.start_date_time().isocalendar()[1],
+            'start_week': lambda seq: seq.start_date_time().isocalendar()[1],
+            'end_week': lambda seq: seq.end_date_time().isocalendar()[1],
+            'month': lambda seq: seq.start_date_time().month,
+            'start_month': lambda seq: seq.start_date_time().month,
+            'end_month': lambda seq: seq.end_date_time().month
         }
 
         # build groupers dict mapping name to grouping function
