@@ -7,8 +7,7 @@ from ux.custom_types import SequenceFilter
 from ux.interfaces.sequences.i_sequences import ISequences
 
 
-def calculate_kpis_by_config(sequences: ISequences,
-                             kpi_configs: List[KPIConfig],
+def calculate_kpis_by_config(sequences: ISequences, kpi_configs: List[KPIConfig],
                              split_defs: Dict[str, Dict[str, SequenceFilter]]):
     """
     Calculate KPIs for a Sequences instance using a list of configurations.
@@ -18,9 +17,9 @@ def calculate_kpis_by_config(sequences: ISequences,
     :param split_defs: Dictionary mapping names of groupings to dictionaries of filter names to filter functions.
     :rtype: List[KPI]
     """
-    # create subsets of sequences from kpi config split definitions
+    # create sub-sequences from kpi config split definitions for product of split-definition values.
     sub_sequences = {}
-    split_names = sorted(split_defs.keys())
+    split_names: List[str] = sorted(split_defs.keys())
     for filter_names in list(
         product(*[[None] + sorted(split_defs[split_name].keys())
                   for split_name in split_names])
@@ -33,32 +32,36 @@ def calculate_kpis_by_config(sequences: ISequences,
     # calculate kpis for each config
     results = []
     for kpi_config in kpi_configs:
-        numerator_keys = list(product(*[[None] if split_name not in kpi_config.numerator_splits
-                                        else sorted(split_defs[split_name].keys())
-                                        for split_name in split_names]))
-        denominator_keys = list(product(*[[None] if split_name not in kpi_config.denominator_splits
-                                          else sorted(split_defs[split_name].keys())
-                                          for split_name in split_names]))
-        for numerator_key, denominator_key in product(numerator_keys, denominator_keys):
+        # build products of filter name combinations for each split in the numerator and denominator
+        numer_filter_product = list(product(*[[None] if split_name not in kpi_config.numerator_splits
+                                            else sorted(split_defs[split_name].keys())
+                                            for split_name in split_names]))
+        denom_filter_product = list(product(*[[None] if split_name not in kpi_config.denominator_splits
+                                            else sorted(split_defs[split_name].keys())
+                                            for split_name in split_names]))
+        # iterate over product of numerator and denominator filter combinations
+        for numer_filter_names, denom_filter_names in product(numer_filter_product, denom_filter_product):
+            # skip if any numerator and denominator filter names don't match
             if not all(
-                numer == denom or denom is None
-                for numer, denom in zip(numerator_key, denominator_key)
+                numer_filter_name == denom_filter_name or denom_filter_name is None
+                for numer_filter_name, denom_filter_name in zip(numer_filter_names, denom_filter_names)
             ):
                 continue
-            numerator = sub_sequences[numerator_key].filter(kpi_config.condition).count()
-            denominator = sub_sequences[denominator_key].count()
+            # create a new KPI for the combination of numerator and denominator filters
+            numerator = sub_sequences[numer_filter_names].filter(kpi_config.condition).count()
+            denominator = sub_sequences[denom_filter_names].count()
             results.append(KPI(
                 name=kpi_config.name, numerator=numerator, denominator=denominator,
                 numer_config={
-                    split_name: numer_key_val
-                    for split_name, numer_key_val in zip(split_names, numerator_key)
-                    if numer_key_val is not None
+                    split_name: numer_filter_name
+                    for split_name, numer_filter_name in zip(split_names, numer_filter_names)
+                    if numer_filter_name is not None
 
                 },
                 denom_config={
-                    split_name: denom_key_val
-                    for split_name, denom_key_val in zip(split_names, denominator_key)
-                    if denom_key_val is not None
+                    split_name: denom_filter_name
+                    for split_name, denom_filter_name in zip(split_names, denom_filter_names)
+                    if denom_filter_name is not None
                 }
             ))
     return results

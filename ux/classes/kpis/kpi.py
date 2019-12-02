@@ -10,7 +10,8 @@ class KPI(object):
 
         :param numerator: The number of users who did something.
         :param denominator: The set of users who did or did not do the thing.
-        :param config: Optional dict[param, value] of configuration parameters used to calculate the metric.
+        :param numer_config: Optional dict[split_name, filter_name] of config params used to calculate the numerator.
+        :param denom_config: Optional dict[split_name, filter_name] of config params used to calculate the denominator.
         """
         self.name = name
         self.numerator = numerator

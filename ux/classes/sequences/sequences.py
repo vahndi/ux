@@ -1,9 +1,8 @@
 from collections import defaultdict, OrderedDict
 from itertools import chain, product
+from pandas import concat, DataFrame, Series
 from types import FunctionType
 from typing import Dict, List
-
-from pandas import concat, DataFrame, Series
 
 from ux.classes.sequences.sequences_group_by import SequencesGroupBy
 from ux.custom_types import SequenceFilter
