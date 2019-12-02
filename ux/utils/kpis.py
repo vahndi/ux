@@ -3,25 +3,27 @@ from typing import Dict, List
 
 from ux.classes.kpis.kpi import KPI
 from ux.classes.kpis.kpi_config import KPIConfig
+from ux.custom_types import SequenceFilter
 from ux.interfaces.sequences.i_sequences import ISequences
 
 
 def calculate_kpis_by_config(sequences: ISequences,
                              kpi_configs: List[KPIConfig],
-                             split_defs: Dict[str, Dict[str, callable]]):
+                             split_defs: Dict[str, Dict[str, SequenceFilter]]):
     """
     Calculate KPIs for a Sequences instance using a list of configurations.
 
     :param sequences: List of sequences that represent the population of user sessions to calculate from.
     :param kpi_configs: List of KPI Configurations to calculate KPIs with.
+    :param split_defs: Dictionary mapping names of groupings to dictionaries of filter names to filter functions.
     :rtype: List[KPI]
     """
     # create subsets of sequences from kpi config split definitions
     sub_sequences = {}
     split_names = sorted(split_defs.keys())
     for filter_names in list(
-            product(*[[None] + sorted(split_defs[split_name].keys())
-                      for split_name in split_names])
+        product(*[[None] + sorted(split_defs[split_name].keys())
+                  for split_name in split_names])
     ):
         loop_seqs = sequences
         for split_name, filter_name in zip(split_names, filter_names):
