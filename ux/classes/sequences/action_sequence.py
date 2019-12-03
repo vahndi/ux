@@ -90,39 +90,39 @@ class ActionSequence(IActionSequence):
         else:
             raise TypeError('rtype must be dict or Series')
 
-    def find_all(self, action_template):
+    def find_all(self, template: IActionTemplate):
         """
         Return a list of all the actions matching the given action template.
         Returns an empty list if the template is not matched.
 
-        :param action_template: The ActionTemplate to match against.
-        :type action_template: IActionTemplate
+        :param template: The ActionTemplate to match against.
+        :type template: IActionTemplate
         :rtype: list[IUserAction]
         """
         return [action for action in self.user_actions
-                if action.template() == action_template]
+                if action.template() == template]
 
-    def find_first(self, action_template):
+    def find_first(self, template: IActionTemplate):
         """
         Return the first action matching the given action template. Returns None if the template is not matched.
 
-        :type action_template: IActionTemplate
+        :type template: IActionTemplate
         :rtype: IUserAction
         """
-        occurrences = self.find_all(action_template)
+        occurrences = self.find_all(template)
         if len(occurrences):
             return occurrences[0]
         else:
             return None
 
-    def find_last(self, action_template):
+    def find_last(self, template: IActionTemplate):
         """
         Return the first action matching the given action template. Returns None if the template is not matched.
 
-        :type action_template: IActionTemplate
+        :type template: IActionTemplate
         :rtype: IUserAction
         """
-        occurrences = self.find_all(action_template)
+        occurrences = self.find_all(template)
         if len(occurrences):
             return occurrences[-1]
         else:
