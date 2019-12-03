@@ -1,3 +1,6 @@
+from ux.custom_types import SequenceFilter, SequenceFilterSet
+
+
 class ISequencesGroupBy(object):
 
     def count(self, rtype: type = dict):
@@ -35,6 +38,25 @@ class ISequencesGroupBy(object):
         """
         :param agg_funcs: dict mapping attributes to one or more aggregation functions e.g. duration -> np.median
         :param rtype: Return type of the result: dict or DataFrame
+        """
+        raise NotImplementedError
+
+    def filter(self, condition: SequenceFilter):
+        """
+        Return a new Sequences containing only the sequences matching the `condition` in each group.
+
+        :param condition: lambda(sequence) that returns True to include a sequence.
+        :rtype: ISequencesGroupBy
+        """
+        raise NotImplementedError
+
+    def group_filter(self, filters: SequenceFilterSet, group_name: str = None):
+        """
+        Return a new SequencesGroupBy keyed by the filter name with values matching each filter, applied in parallel.
+
+        :param filters: Dictionary of filters to apply.
+        :param group_name: Name to identify the filter group.
+        :rtype: SequencesGroupBy
         """
         raise NotImplementedError
 
