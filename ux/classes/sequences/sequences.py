@@ -306,7 +306,9 @@ class Sequences(ISequences):
             raise TypeError('rtype must be dict or Series')
 
     def __getitem__(self, item):
-
+        """
+        :rtype: IActionSequence
+        """
         return self._sequences[item]
 
     def __repr__(self):
@@ -327,3 +329,19 @@ class Sequences(ISequences):
     def __iter__(self):
 
         return self._sequences.__iter__()
+
+    def __add__(self, other):
+
+        if type(other) is Sequences:
+            other = other.sequences
+        return Sequences(
+            list(set(self._sequences).union(other))
+        )
+
+    def __sub__(self, other):
+
+        if type(other) is Sequences:
+            other = other.sequences
+        return Sequences(list(
+            set(self._sequences) - set(self._sequences).intersection(other)
+        ))
