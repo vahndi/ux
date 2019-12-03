@@ -90,16 +90,6 @@ class ActionSequence(IActionSequence):
         else:
             raise TypeError('rtype must be dict or Series')
 
-    def contains_action_template(self, action_template):
-        """
-        Returns True if the sequence contains a User Action which matches the given Template.
-
-        :param action_template: The ActionTemplate to match against.
-        :type action_template: IActionTemplate
-        :rtype: bool
-        """
-        return action_template in self.action_templates()
-
     def find_all(self, action_template):
         """
         Return a list of all the actions matching the given action template.
