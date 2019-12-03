@@ -1,6 +1,6 @@
-from typing import Dict, Callable
+from typing import Dict
 
-from ux.custom_types import SequenceFilter
+from ux.custom_types import SequenceFilter, SequenceFilterSet
 from ux.interfaces.sequences.i_action_sequence import IActionSequence
 
 
@@ -21,7 +21,7 @@ class ISequences(object):
         """
         raise NotImplementedError
 
-    def group_filter(self, filters: Dict[str, Callable[[IActionSequence], bool]]):
+    def group_filter(self, filters: SequenceFilterSet):
         """
         :rtype: SequencesGroupBy
         """

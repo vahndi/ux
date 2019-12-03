@@ -2,10 +2,10 @@ from collections import defaultdict, OrderedDict
 from itertools import chain, product
 from pandas import concat, DataFrame, Series
 from types import FunctionType
-from typing import Dict, List
+from typing import Dict, List, Union
 
 from ux.classes.sequences.sequences_group_by import SequencesGroupBy
-from ux.custom_types import SequenceFilter
+from ux.custom_types import SequenceFilter, SequenceFilterSet, SequenceGrouper, ActionGrouper
 from ux.interfaces.sequences.i_action_sequence import IActionSequence
 from ux.interfaces.sequences.i_sequences import ISequences
 from ux.utils.misc import get_method_name
@@ -43,7 +43,7 @@ class Sequences(ISequences):
                 filtered.append(sequence)
         return Sequences(filtered)
 
-    def group_filter(self, filters: Dict[str, SequenceFilter]):
+    def group_filter(self, filters: SequenceFilterSet):
         """
         Return a new SequencesGroupBy keyed by the dict key with values matching each filter, applied in parallel.
 
@@ -56,7 +56,7 @@ class Sequences(ISequences):
         }
         return SequencesGroupBy(data=filtered, names=['filter'])
 
-    def chain_filter(self, filters: Dict[str, SequenceFilter]):
+    def chain_filter(self, filters: SequenceFilterSet):
         """
         Return a new SequencesGroupBy keyed by the dict key with values matching each filter, applied in series.
 
@@ -74,14 +74,13 @@ class Sequences(ISequences):
             sequences = filtered_sequences
         return SequencesGroupBy(data=filtered, names=['filter'])
 
-    def group_by(self, by):
+    def group_by(self, by: Union[SequenceGrouper, Dict[str, SequenceGrouper]]):
         """
         Return a SequencesGroupBy keyed by each value returned by a single grouper,
         or each combination of groupers for a list of groupers.
         Each grouper should be a lambda function that returns a picklable value e.g. str.
 
         :param by: lambda(Sequence) or dict[group_name, lambda(Sequence)] or list[str or lambda(Sequence)].
-        :type by: Union[Callable[[IActionSequence], Any], Dict[str, Union[Callable[[IActionSequence], Any]]
         :rtype: SequencesGroupBy
         """
         def apply_group_by(method):
@@ -153,12 +152,11 @@ class Sequences(ISequences):
             result[result_key] = Sequences.intersect_all(result_sequences)
             return SequencesGroupBy(result, names=group_by_names)
 
-    def map(self, mapper, rtype: type = dict):
+    def map(self, mapper: Union[str, dict, list, ActionGrouper], rtype: type = dict):
         """
         Apply a map function to every Sequence in the Sequences and return the results.
 
         :param mapper: The method or methods to apply to each UserAction
-        :type mapper: Union[str, dict, list, Callable[[IUserAction], Any]]
         :param rtype: Return type of the result: dict or DataFrame
         """
         def map_items(item_mapper):

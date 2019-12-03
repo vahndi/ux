@@ -2,9 +2,9 @@ from collections import defaultdict
 
 from pandas import DataFrame, Series, MultiIndex
 from types import FunctionType
-from typing import Dict, List
+from typing import Dict, List, Union
 
-from ux.custom_types import SequenceFilter, SequencesGroupByKey
+from ux.custom_types import SequenceFilter, SequencesGroupByKey, ActionGrouper
 from ux.interfaces.sequences.i_sequences import ISequences
 from ux.interfaces.sequences.i_sequences_group_by import ISequencesGroupBy
 from ux.utils.misc import get_method_name
@@ -45,12 +45,11 @@ class SequencesGroupBy(ISequencesGroupBy):
                 ).reset_index().rename(columns={0: 'count'})
                 return out_data
 
-    def map(self, mapper):
+    def map(self, mapper: Union[str, dict, list, ActionGrouper]):
         """
         Apply a map function to every Sequences in the GroupBy and return the results.
 
         :param mapper: The method or methods to apply to each UserAction
-        :type mapper: Union[str, dict, list, Callable[[IUserAction], Any]]
         :rtype: dict
         """
         def map_items(item_mapper):

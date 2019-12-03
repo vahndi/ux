@@ -1,7 +1,7 @@
 from collections import defaultdict
-from typing import Any, Callable, Dict, List
+from typing import Dict, List
 
-from ux.custom_types import SequenceFilter, ActionFilter
+from ux.custom_types import SequenceFilter, ActionFilter, SequenceGrouper
 from ux.interfaces.sequences.i_action_sequence import IActionSequence
 from ux.classes.counts.count_config import CountConfig
 from ux.classes.counts.temporal_count import TemporalCount
@@ -10,7 +10,7 @@ from ux.classes.counts.temporal_count import TemporalCount
 def count_actions_where(sequences: List[IActionSequence],
                         action_condition: ActionFilter,
                         sequence_condition: SequenceFilter = None,
-                        split_by: Callable[[IActionSequence], Any] = None):
+                        split_by: SequenceGrouper = None):
     """
     Count the number of UserActions in the ActionSequences where the given condition is True.
 
@@ -45,7 +45,7 @@ def count_actions_where(sequences: List[IActionSequence],
         return dict(counts)
 
 
-def count_sequences_where(sequences: List[IActionSequence], condition, split_by=None):
+def count_sequences_where(sequences: List[IActionSequence], condition, split_by: SequenceGrouper = None):
     """
     Count the number of ActionSequences in the list where the given condition is True.
 
@@ -53,7 +53,6 @@ def count_sequences_where(sequences: List[IActionSequence], condition, split_by=
     :param condition: The condition to evaluate each sequence against.
     :type condition: SequenceFilter
     :param split_by: Optional callable to split counts by some attribute of each sequence. Should return a string.
-    :type split_by: Callable[[IActionSequence], str]
     :return: Integer count if split_by is None. Otherwise dict of {split_value: count}
     """
     if split_by is None:
@@ -70,7 +69,7 @@ def count_sequences_where(sequences: List[IActionSequence], condition, split_by=
         return dict(counts)
 
 
-def get_sequences_where(sequences: List[IActionSequence], condition, split_by=None):
+def get_sequences_where(sequences: List[IActionSequence], condition, split_by: SequenceGrouper = None):
     """
     Get the ActionSequences in the list where the given condition is True.
 
@@ -78,7 +77,6 @@ def get_sequences_where(sequences: List[IActionSequence], condition, split_by=No
     :param condition: The condition to evaluate each sequence against.
     :type condition: SequenceFilter
     :param split_by: Optional callable to split counts by some attribute of each sequence. Should return a string.
-    :type split_by: Callable[[IActionSequence], str]
     :return: List of sequences if split_by is None. Otherwise dict of {split_value: sequences}
     """
     if split_by is None:

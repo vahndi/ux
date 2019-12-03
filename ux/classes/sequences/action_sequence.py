@@ -1,7 +1,7 @@
 from collections import defaultdict
 from datetime import datetime, timedelta
 from types import FunctionType
-from typing import List, Callable, Any, Set
+from typing import List, Callable, Set, Union
 
 from pandas import Series, DataFrame
 
@@ -9,6 +9,7 @@ from ux.calcs.object_calcs.efficiency import lostness
 from ux.calcs.object_calcs.task_success import unordered_task_completion_rate, ordered_task_completion_rate, \
     binary_task_success
 from ux.calcs.object_calcs.utils import sequence_intersects_task
+from ux.custom_types import ActionGrouper
 from ux.interfaces.sequences.i_action_sequence import IActionSequence
 from ux.interfaces.actions.i_action_template import IActionTemplate
 from ux.interfaces.tasks.i_task import ITask
@@ -159,12 +160,11 @@ class ActionSequence(IActionSequence):
         end_time = self.user_actions[-1].time_stamp
         return end_time - start_time
 
-    def map(self, mapper, rtype: type = dict):
+    def map(self, mapper: Union[str, dict, ActionGrouper], rtype: type = dict):
         """
         Apply a map function to every action in the Sequence and return the results.
 
         :param mapper: The method or methods to apply to each UserAction
-        :type mapper: Union[str, dict, Callable[[IUserAction], Any]]
         :param rtype: Return type of the result: dict or DataFrame
         """
         def map_items(item_mapper):
