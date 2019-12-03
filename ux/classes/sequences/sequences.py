@@ -45,7 +45,7 @@ class Sequences(ISequences):
 
     def group_filter(self, filters: SequenceFilterSet):
         """
-        Return a new SequencesGroupBy keyed by the dict key with values matching each filter, applied in parallel.
+        Return a new SequencesGroupBy keyed by the filter name with values matching each filter, applied in parallel.
 
         :param filters: Dictionary of filters to apply.
         :rtype: SequencesGroupBy
@@ -74,7 +74,7 @@ class Sequences(ISequences):
             sequences = filtered_sequences
         return SequencesGroupBy(data=filtered, names=['filter'])
 
-    def group_by(self, by: Union[SequenceGrouper, Dict[str, SequenceGrouper]]):
+    def group_by(self, by: Union[SequenceGrouper, Dict[str, SequenceGrouper], str, list]):
         """
         Return a SequencesGroupBy keyed by each value returned by a single grouper,
         or each combination of groupers for a list of groupers.
@@ -83,7 +83,7 @@ class Sequences(ISequences):
         :param by: lambda(Sequence) or dict[group_name, lambda(Sequence)] or list[str or lambda(Sequence)].
         :rtype: SequencesGroupBy
         """
-        def apply_group_by(method):
+        def apply_group_by(method: SequenceGrouper):
             """
             :rtype: Dict[str, Sequences]
             """
@@ -130,9 +130,12 @@ class Sequences(ISequences):
         elif isinstance(by, list):
             for element in by:
                 if isinstance(element, str):
-                    groupers[element] = lookups[element]
+                    if element not in lookups.keys():
+                        raise ValueError('Cannot group by "{}"'.format(element))
+                    else:
+                        groupers[element] = lookups[element]
                 elif isinstance(element, FunctionType):
-                    method_name, num_lambdas = get_method_name(element)
+                    method_name = get_method_name(element)
                     groupers[method_name] = element
                 else:
                     raise TypeError('List elements must be strings or functions.')
