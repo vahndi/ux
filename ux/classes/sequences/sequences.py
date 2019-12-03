@@ -74,48 +74,6 @@ class Sequences(ISequences):
             sequences = filtered_sequences
         return SequencesGroupBy(data=filtered, names=['filter'])
 
-    def count(self):
-        """
-        Return the number of ActionSequences in the collection.
-
-        :rtype: int
-        """
-        return len(self._sequences)
-
-    def copy(self):
-        """
-        Return a new collection referencing this collection's ActionSequences.
-
-        :rtype: ISequences
-        """
-        return Sequences(self._sequences)
-
-    def intersection(self, other):
-        """
-        Return a new collection representing the ActionSequences in both collections.
-
-        :type other: Union[Sequences, List[IActionSequence]]
-        :rtype: ISequences
-        """
-        if type(other) is Sequences:
-            other = other.sequences
-        return Sequences(
-            list(set(self._sequences).intersection(other))
-        )
-
-    @staticmethod
-    def intersect_all(sequences):
-        """
-        Return a new collection representing the ActionSequences in every collection.
-
-        :type sequences: List[ISequences]
-        :rtype: ISequences
-        """
-        intersect = sequences[0].copy()
-        for s in sequences[1:]:
-            intersect = intersect.intersection(s)
-        return intersect
-
     def group_by(self, by):
         """
         Return a SequencesGroupBy keyed by each value returned by a single grouper,
@@ -193,7 +151,83 @@ class Sequences(ISequences):
                 result_key = result_key[0]
             result_sequences = [subgroup[1] for subgroup in subgroups_combo]
             result[result_key] = Sequences.intersect_all(result_sequences)
-        return SequencesGroupBy(result, names=group_by_names)
+            return SequencesGroupBy(result, names=group_by_names)
+
+    def map(self, mapper, rtype: type = dict):
+        """
+        Apply a map function to every Sequence in the Sequences and return the results.
+
+        :param mapper: The method or methods to apply to each UserAction
+        :type mapper: Union[str, dict, list, Callable[[IUserAction], Any]]
+        :param rtype: Return type of the result: dict or DataFrame
+        """
+        def map_items(item_mapper):
+            if isinstance(item_mapper, str):
+                if hasattr(IActionSequence, item_mapper):
+                    if callable(getattr(self._sequences[0], item_mapper)):
+                        return [getattr(sequence, item_mapper)() for sequence in self._sequences]
+                    else:
+                        return [getattr(sequence, item_mapper) for sequence in self._sequences]
+            elif isinstance(item_mapper, FunctionType):
+                return [item_mapper(sequence) for sequence in self._sequences]
+
+        if isinstance(mapper, str) or isinstance(mapper, FunctionType):
+            results = {get_method_name(mapper): map_items(mapper)}
+        elif isinstance(mapper, dict):
+            results = {
+                get_method_name(key): map_items(value)
+                for key, value in mapper.items()
+            }
+        else:
+            raise TypeError('mapper must be of type dict, str or function')
+        if rtype is dict:
+            return results
+        elif rtype is DataFrame:
+            return DataFrame(results)
+        else:
+            raise TypeError('rtype must be dict or DataFrame')
+
+    def count(self):
+        """
+        Return the number of ActionSequences in the collection.
+
+        :rtype: int
+        """
+        return len(self._sequences)
+
+    def copy(self):
+        """
+        Return a new collection referencing this collection's ActionSequences.
+
+        :rtype: ISequences
+        """
+        return Sequences(self._sequences)
+
+    def intersection(self, other):
+        """
+        Return a new collection representing the ActionSequences in both collections.
+
+        :type other: Union[Sequences, List[IActionSequence]]
+        :rtype: ISequences
+        """
+        if type(other) is Sequences:
+            other = other.sequences
+        return Sequences(
+            list(set(self._sequences).intersection(other))
+        )
+
+    @staticmethod
+    def intersect_all(sequences):
+        """
+        Return a new collection representing the ActionSequences in every collection.
+
+        :type sequences: List[ISequences]
+        :rtype: ISequences
+        """
+        intersect = sequences[0].copy()
+        for s in sequences[1:]:
+            intersect = intersect.intersection(s)
+        return intersect
 
     def durations(self, rtype: type = list):
         """
@@ -268,40 +302,6 @@ class Sequences(ISequences):
             return transitions
         else:
             raise TypeError('rtype must be dict or Series')
-
-    def map(self, mapper, rtype: type = dict):
-        """
-        Apply a map function to every Sequence in the Sequences and return the results.
-
-        :param mapper: The method or methods to apply to each UserAction
-        :type mapper: Union[str, dict, list, Callable[[IUserAction], Any]]
-        :param rtype: Return type of the result: dict or DataFrame
-        """
-        def map_items(item_mapper):
-            if isinstance(item_mapper, str):
-                if hasattr(IActionSequence, item_mapper):
-                    if callable(getattr(self._sequences[0], item_mapper)):
-                        return [getattr(sequence, item_mapper)() for sequence in self._sequences]
-                    else:
-                        return [getattr(sequence, item_mapper) for sequence in self._sequences]
-            elif isinstance(item_mapper, FunctionType):
-                return [item_mapper(sequence) for sequence in self._sequences]
-
-        if isinstance(mapper, str) or isinstance(mapper, FunctionType):
-            results = {get_method_name(mapper): map_items(mapper)}
-        elif isinstance(mapper, dict):
-            results = {
-                get_method_name(key): map_items(value)
-                for key, value in mapper.items()
-            }
-        else:
-            raise TypeError('mapper must be of type dict, str or function')
-        if rtype is dict:
-            return results
-        elif rtype is DataFrame:
-            return DataFrame(results)
-        else:
-            raise TypeError('rtype must be dict or DataFrame')
 
     def __getitem__(self, item):
 

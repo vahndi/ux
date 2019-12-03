@@ -114,7 +114,17 @@ class IActionSequence(object):
         """
         raise NotImplementedError
 
-    def first_action_occurrence(self, action_template):
+    def find_all(self, action_template):
+        """
+        Return a list of all the actions matching the given action template.
+        Returns an empty list if the template is not matched.
+
+        :param action_template: The ActionTemplate to match against.
+        :rtype: list[IUserAction]
+        """
+        raise NotImplementedError
+
+    def find_first(self, action_template):
         """
         Return the first action matching the given action template. Returns None if the template is not matched.
 
@@ -123,13 +133,12 @@ class IActionSequence(object):
         """
         raise NotImplementedError
 
-    def all_action_occurrences(self, action_template):
+    def find_last(self, action_template):
         """
-        Return a list of all the actions matching the given action template.
-        Returns an empty list if the template is not matched.
+        Return the first action matching the given action template. Returns None if the template is not matched.
 
         :param action_template: The ActionTemplate to match against.
-        :rtype: list[IUserAction]
+        :rtype: IUserAction
         """
         raise NotImplementedError
 

@@ -99,20 +99,7 @@ class ActionSequence(IActionSequence):
         """
         return action_template in self.action_templates()
 
-    def first_action_occurrence(self, action_template):
-        """
-        Return the first action matching the given action template. Returns None if the template is not matched.
-
-        :type action_template: IActionTemplate
-        :rtype: IUserAction
-        """
-        occurrences = self.all_action_occurrences(action_template)
-        if len(occurrences):
-            return occurrences[0]
-        else:
-            return None
-
-    def all_action_occurrences(self, action_template):
+    def find_all(self, action_template):
         """
         Return a list of all the actions matching the given action template.
         Returns an empty list if the template is not matched.
@@ -123,6 +110,32 @@ class ActionSequence(IActionSequence):
         """
         return [action for action in self.user_actions
                 if action.template() == action_template]
+
+    def find_first(self, action_template):
+        """
+        Return the first action matching the given action template. Returns None if the template is not matched.
+
+        :type action_template: IActionTemplate
+        :rtype: IUserAction
+        """
+        occurrences = self.find_all(action_template)
+        if len(occurrences):
+            return occurrences[0]
+        else:
+            return None
+
+    def find_last(self, action_template):
+        """
+        Return the first action matching the given action template. Returns None if the template is not matched.
+
+        :type action_template: IActionTemplate
+        :rtype: IUserAction
+        """
+        occurrences = self.find_all(action_template)
+        if len(occurrences):
+            return occurrences[-1]
+        else:
+            return None
 
     def start_date_time(self):
         """

@@ -2,9 +2,9 @@ from collections import defaultdict
 
 from pandas import DataFrame, Series, MultiIndex
 from types import FunctionType
-from typing import List
+from typing import Dict, List
 
-from ux.custom_types import SequenceFilter
+from ux.custom_types import SequenceFilter, SequencesGroupByKey
 from ux.interfaces.sequences.i_sequences import ISequences
 from ux.interfaces.sequences.i_sequences_group_by import ISequencesGroupBy
 from ux.utils.misc import get_method_name
@@ -12,8 +12,11 @@ from ux.utils.misc import get_method_name
 
 class SequencesGroupBy(ISequencesGroupBy):
 
-    def __init__(self, data: dict, names: List[str] = None):
-
+    def __init__(self, data: Dict[SequencesGroupByKey, ISequences], names: List[str]):
+        """
+        :param data: Dictionary mapping keys to Sequences collections
+        :param names: Names for the key groups
+        """
         self._data = data
         if type(names) is str:
             names = [names]
@@ -163,3 +166,15 @@ class SequencesGroupBy(ISequencesGroupBy):
     def __repr__(self):
 
         return 'SequencesGroupBy({})'.format(self._names)
+
+    def __len__(self):
+
+        return len(self._data)
+
+    def __contains__(self, item):
+
+        return item in self._data
+
+    def __iter__(self):
+
+        return self._data.__iter__()
