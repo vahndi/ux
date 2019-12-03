@@ -154,7 +154,7 @@ class Sequences(ISequences):
                 result_key = result_key[0]
             result_sequences = [subgroup[1] for subgroup in subgroups_combo]
             result[result_key] = Sequences.intersect_all(result_sequences)
-            return SequencesGroupBy(result, names=group_by_names)
+        return SequencesGroupBy(result, names=group_by_names)
 
     def map(self, mapper: Union[str, dict, list, ActionGrouper], rtype: type = dict):
         """
