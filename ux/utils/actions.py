@@ -1,5 +1,4 @@
 from types import FunctionType
-from typing import Union
 
 from ux.interfaces.actions.i_action_template import IActionTemplate
 

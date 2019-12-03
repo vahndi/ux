@@ -1,7 +1,7 @@
-from typing import List, Set, Callable, Any
+from typing import List, Set
 
-from ux.interfaces.actions.i_user_action import IUserAction
 from ux.interfaces.actions.i_action_template import IActionTemplate
+from ux.interfaces.actions.i_user_action import IUserAction
 
 
 class IActionSequence(object):
