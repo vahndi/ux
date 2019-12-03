@@ -43,18 +43,19 @@ class Sequences(ISequences):
                 filtered.append(sequence)
         return Sequences(filtered)
 
-    def group_filter(self, filters: SequenceFilterSet):
+    def group_filter(self, filters: SequenceFilterSet, group_name: str = 'filter'):
         """
         Return a new SequencesGroupBy keyed by the filter name with values matching each filter, applied in parallel.
 
         :param filters: Dictionary of filters to apply.
+        :param group_name: Name to identify the filter group.
         :rtype: SequencesGroupBy
         """
         filtered = {
             filter_name: self.filter(filter_condition)
             for filter_name, filter_condition in filters.items()
         }
-        return SequencesGroupBy(data=filtered, names=['filter'])
+        return SequencesGroupBy(data=filtered, names=[group_name])
 
     def chain_filter(self, filters: SequenceFilterSet):
         """

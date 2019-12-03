@@ -1,10 +1,9 @@
-from collections import defaultdict
-
+from collections import defaultdict, OrderedDict
 from pandas import DataFrame, Series, MultiIndex
 from types import FunctionType
 from typing import Dict, List, Union
 
-from ux.custom_types import SequenceFilter, SequencesGroupByKey, ActionGrouper
+from ux.custom_types import SequenceFilter, SequencesGroupByKey, ActionGrouper, SequenceFilterSet
 from ux.interfaces.sequences.i_sequences import ISequences
 from ux.interfaces.sequences.i_sequences_group_by import ISequencesGroupBy
 from ux.utils.misc import get_method_name
@@ -12,15 +11,15 @@ from ux.utils.misc import get_method_name
 
 class SequencesGroupBy(ISequencesGroupBy):
 
-    def __init__(self, data: Dict[SequencesGroupByKey, ISequences], names: List[str]):
+    def __init__(self, data: Dict[SequencesGroupByKey, ISequences], names: Union[str, List[str]]):
         """
         :param data: Dictionary mapping keys to Sequences collections
         :param names: Names for the key groups
         """
-        self._data = data
+        self._data: Dict[SequencesGroupByKey, ISequences] = data
         if type(names) is str:
             names = [names]
-        self._names = names
+        self._names: List[str] = names
 
     def count(self, rtype: type = dict):
 
@@ -128,8 +127,38 @@ class SequencesGroupBy(ISequencesGroupBy):
         }
         return SequencesGroupBy(data=data, names=self.names)
 
-    def items(self):
+    def group_filter(self, filters: SequenceFilterSet, group_name: str = None):
+        """
+        Return a new SequencesGroupBy keyed by the filter name with values matching each filter, applied in parallel.
 
+        :param filters: Dictionary of filters to apply.
+        :param group_name: Name to identify the filter group.
+        :rtype: SequencesGroupBy
+        """
+        names = self._names.copy()
+        if group_name is None:
+            i = 2
+            while 'filter_' + str(i) in names:
+                i += 1
+            group_name = 'filter_' + str(i)
+        if group_name in names:
+            raise ValueError(f'Name "{group_name}" already exists in SequencesGroupBy instance.')
+        else:
+            names.append(group_name)
+        data = {}
+        for data_filter_names, data_sequences in self._data.items():
+            for filter_name, filter_condition in filters.items():
+                if type(data_filter_names) is str:
+                    new_filter_names = (data_filter_names, filter_name)
+                else:
+                    new_filter_names = tuple(list(data_filter_names) + [filter_name])
+                data[new_filter_names] = data_sequences.filter(filter_condition)
+        return SequencesGroupBy(data=data, names=names)
+
+    def items(self):
+        """
+        :rtype: dict_items
+        """
         return self._data.items()
 
     def keys(self):
