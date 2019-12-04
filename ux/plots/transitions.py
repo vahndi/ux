@@ -1,8 +1,13 @@
 from matplotlib.axes import Axes
+from matplotlib.dates import DateFormatter, MinuteLocator, HourLocator, DayLocator, SecondLocator, MonthLocator, \
+    YearLocator
 from matplotlib.patches import Circle, FancyArrowPatch, ConnectionStyle, ArrowStyle
+from numpy.ma import arange
+from pandas import DataFrame
 from seaborn import heatmap
-from typing import Dict
+from typing import Dict, List
 
+from ux.interfaces.sequences.i_action_sequence import IActionSequence
 from ux.plots.helpers import new_axes, point_distance, circle_edge, get_color
 from ux.utils.transitions import create_transition_matrix
 
@@ -99,3 +104,57 @@ def plot_markov_chain(transitions, get_location, get_name=None,
     for state in states:
         center = get_location(state)
         ax.text(*center, s=get_name(state), **text_kws)
+
+
+def plot_sequence_diagram(sequence: IActionSequence, locations: List[str], max_grid_lines: int = 50):
+    """
+    :rtype: Axes
+    """
+    data = sequence.map({
+        'location': lambda act: act.source_id,
+        'action-type': lambda act: act.action_type,
+        'time_stamp': lambda act: act.time_stamp
+    }, DataFrame)
+    data['y'] = [
+        len(locations) - locations.index(location) - 1
+        if location in locations
+        else len(locations)
+        for location in data['location']
+    ]
+    data['label'] = [location if location not in locations else '' for location in data['location']]
+    ax = new_axes()
+    ax.plot_date(x=data['time_stamp'], y=data['y'],
+                 marker='o', linestyle='-')
+    for _, row in data.iterrows():
+        ax.text(x=row['time_stamp'], y=row['y'], s=row['label'],
+                ha='center', va='bottom', rotation=45)
+    formatter = DateFormatter("%H:%M:%S")
+    ax.xaxis.set_major_formatter(formatter)
+    ax.set(
+        yticks=arange(len(locations) + 1),
+        yticklabels=(['other'] + locations)[:: -1]
+    )
+    x_min, x_max = ax.get_xlim()
+    min_spacing = (x_max - x_min) / max_grid_lines
+    locators = [
+        (1 / (24 * 60 * 60 * 12), SecondLocator(interval=1), SecondLocator(interval=1)),  # 5ms
+        (1 / (24 * 60 * 60), SecondLocator(interval=1), SecondLocator(interval=5)),  # 1s
+        (1 / (24 * 60 * 12), SecondLocator(interval=5), SecondLocator(interval=30)),  # 5s
+        (1 / (24 * 60), MinuteLocator(interval=1), MinuteLocator(interval=5)),  # 1m
+        (1 / (24 * 12), MinuteLocator(interval=5), HourLocator(interval=1)),  # 5m
+        (1 / 24, HourLocator(interval=5), HourLocator(interval=6)),  # 1h
+        (1, DayLocator(interval=1), DayLocator(interval=7)),  # 1d
+        (7, DayLocator(interval=7), DayLocator(interval=30)),  # 1w
+        (30, MonthLocator(interval=1), YearLocator()),  # 1M
+    ]
+    minor_locator = locators[-1][1]
+    major_locator = locators[-1][2]
+    for locator in locators[::-1]:
+        if min_spacing < locator[0]:
+            minor_locator = locator[1]
+            major_locator = locator[2]
+    ax.xaxis.set_minor_locator(minor_locator)
+    ax.xaxis.set_major_locator(major_locator)
+    ax.grid(which='minor', lw=0.5)
+    ax.grid(which='major', lw=1)
+    return ax

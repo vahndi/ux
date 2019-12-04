@@ -92,6 +92,12 @@ class ISequences(object):
 
         raise NotImplementedError
 
+    def sort(self, by: str, ascending: bool = True):
+        """
+        :rtype: ISequences
+        """
+        raise NotImplementedError
+
     def __getitem__(self, item):
 
         raise NotImplementedError
@@ -105,5 +111,19 @@ class ISequences(object):
         raise NotImplementedError
 
     def __iter__(self):
+        """
+        :rtype: IActionSequence
+        """
+        raise NotImplementedError
 
+    def __add__(self, other):
+        """
+        :rtype: ISequences
+        """
+        raise NotImplementedError
+
+    def __sub__(self, other):
+        """
+        :rtype: ISequences
+        """
         raise NotImplementedError

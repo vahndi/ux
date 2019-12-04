@@ -26,7 +26,7 @@ def count_actions_where(sequences: List[IActionSequence],
         count = 0
         for sequence in sequences:
             if sequence_condition(sequence):
-                for action in sequence.user_actions:
+                for action in sequence:
                     if action_condition(action):
                         count += 1
         return count

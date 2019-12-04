@@ -1,5 +1,5 @@
 from collections import defaultdict
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
 from types import FunctionType
 from typing import List, Callable, Set, Union
 
@@ -132,13 +132,25 @@ class ActionSequence(IActionSequence):
         """
         :rtype: datetime
         """
-        return self._user_actions[0].time_stamp
+        return self[0].time_stamp
 
     def end_date_time(self):
         """
         :rtype: datetime
         """
-        return self._user_actions[-1].time_stamp
+        return self[-1].time_stamp
+
+    def start_time(self):
+        """
+        :rtype: time
+        """
+        return self[0].time_stamp.time()
+
+    def end_time(self):
+        """
+        :rtype: time
+        """
+        return self[-1].time_stamp.time()
 
     def duration(self):
         """

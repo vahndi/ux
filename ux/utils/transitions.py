@@ -2,6 +2,7 @@ from collections import defaultdict
 from pandas import Series, pivot_table, DataFrame, notnull
 from typing import List
 
+from ux.interfaces.actions.i_user_action import IUserAction
 from ux.interfaces.sequences.i_action_sequence import IActionSequence
 
 
@@ -55,15 +56,23 @@ def create_transition_table(transitions: dict, get_name=None, exclude=None):
     :type exclude: Union[str, List[str]]
     :rtype: DataFrame
     """
-    get_name = get_name if get_name is not None else lambda action: action.source_id
+    def get_source_id(action: IUserAction):
+        return action.source_id
+
+    if get_name is None:
+        first_from = list(transitions.items())[0][0]
+        if isinstance(first_from, IUserAction):
+            get_name = get_source_id
+
     transitions = Series(transitions).reset_index()
     transitions.columns = ['from', 'to', 'count']
     transitions = transitions.loc[
         (transitions['from'].notnull()) &
         (transitions['to'].notnull())
     ]
-    transitions['from'] = transitions['from'].map(get_name)
-    transitions['to'] = transitions['to'].map(get_name)
+    if get_name is not None:
+        transitions['from'] = transitions['from'].map(get_name)
+        transitions['to'] = transitions['to'].map(get_name)
     if exclude is not None:
         if type(exclude) is str:
             exclude = [exclude]

@@ -1,8 +1,8 @@
-from collections import defaultdict, OrderedDict
+from collections import defaultdict, OrderedDict, Counter
 from itertools import chain, product
-from pandas import concat, DataFrame, Series
+from pandas import concat, DataFrame, Series, notnull
 from types import FunctionType
-from typing import Dict, List, Union
+from typing import Dict, List, Union, Tuple
 
 from ux.classes.sequences.sequences_group_by import SequencesGroupBy
 from ux.custom_types import SequenceFilter, SequenceFilterSet, SequenceGrouper, ActionGrouper
@@ -12,6 +12,30 @@ from ux.utils.misc import get_method_name
 
 
 class Sequences(ISequences):
+
+    _lookups = {
+        'date': lambda seq: seq.start_date_time().date(),
+        'start_date': lambda seq: seq.start_date_time().date(),
+        'end_date': lambda seq: seq.end_date_time().date(),
+        'date_time': lambda seq: seq.start_date_time(),
+        'start_date_time': lambda seq: seq.start_date_time(),
+        'end_date_time': lambda seq: seq.end_date_time(),
+        'hour': lambda seq: seq.start_date_time().hour,
+        'start_hour': lambda seq: seq.start_date_time().hour,
+        'end_hour': lambda seq: seq.end_date_time().hour,
+        'day': lambda seq: seq.start_date_time().day,
+        'start_day': lambda seq: seq.start_date_time().day,
+        'end_day': lambda seq: seq.end_date_time().day,
+        'weekday': lambda seq: seq.start_date_time().isoweekday(),
+        'start_weekday': lambda seq: seq.start_date_time().isoweekday(),
+        'end_weekday': lambda seq: seq.end_date_time().isoweekday(),
+        'week': lambda seq: seq.start_date_time().isocalendar()[1],
+        'start_week': lambda seq: seq.start_date_time().isocalendar()[1],
+        'end_week': lambda seq: seq.end_date_time().isocalendar()[1],
+        'month': lambda seq: seq.start_date_time().month,
+        'start_month': lambda seq: seq.start_date_time().month,
+        'end_month': lambda seq: seq.end_date_time().month
+    }
 
     def __init__(self, sequences: List[IActionSequence]):
         """
@@ -96,45 +120,24 @@ class Sequences(ISequences):
                 for group_name, group_sequences in splits.items()
             }
 
-        lookups = {
-            'date': lambda seq: seq.start_date_time().date(),
-            'start_date': lambda seq: seq.start_date_time().date(),
-            'end_date': lambda seq: seq.end_date_time().date(),
-            'hour': lambda seq: seq.start_date_time().hour,
-            'start_hour': lambda seq: seq.start_date_time().hour,
-            'end_hour': lambda seq: seq.end_date_time().hour,
-            'day': lambda seq: seq.start_date_time().day,
-            'start_day': lambda seq: seq.start_date_time().day,
-            'end_day': lambda seq: seq.end_date_time().day,
-            'weekday': lambda seq: seq.start_date_time().isoweekday(),
-            'start_weekday': lambda seq: seq.start_date_time().isoweekday(),
-            'end_weekday': lambda seq: seq.end_date_time().isoweekday(),
-            'week': lambda seq: seq.start_date_time().isocalendar()[1],
-            'start_week': lambda seq: seq.start_date_time().isocalendar()[1],
-            'end_week': lambda seq: seq.end_date_time().isocalendar()[1],
-            'month': lambda seq: seq.start_date_time().month,
-            'start_month': lambda seq: seq.start_date_time().month,
-            'end_month': lambda seq: seq.end_date_time().month
-        }
-
         # build groupers dict mapping name to grouping function
         groupers = OrderedDict()
         if isinstance(by, FunctionType):
             groupers[by.__name__] = by
         elif isinstance(by, str):
-            if by not in lookups.keys():
+            if by not in self._lookups.keys():
                 raise ValueError('Cannot group by "{}"'.format(by))
             else:
-                groupers[by] = lookups[by]
+                groupers[by] = self._lookups[by]
         elif isinstance(by, dict):
             groupers = by
         elif isinstance(by, list):
             for element in by:
                 if isinstance(element, str):
-                    if element not in lookups.keys():
+                    if element not in self._lookups.keys():
                         raise ValueError('Cannot group by "{}"'.format(element))
                     else:
-                        groupers[element] = lookups[element]
+                        groupers[element] = self._lookups[element]
                 elif isinstance(element, FunctionType):
                     method_name = get_method_name(element)
                     groupers[method_name] = element
@@ -297,6 +300,8 @@ class Sequences(ISequences):
                 transitions[(from_action, to_action)] += 1
         if rtype is dict:
             return dict(transitions)
+        elif rtype is Counter:
+            return Counter(transitions)
         elif rtype is Series:
             transitions = Series(transitions).sort_values(ascending=False)
             transitions.name = 'count'
@@ -304,6 +309,76 @@ class Sequences(ISequences):
             return transitions
         else:
             raise TypeError('rtype must be dict or Series')
+
+    def count_location_transitions(self, exclude: Union[str, List[str]] = None):
+        """
+        Count the transitions from each location to each other location in actions in the given sequences.
+
+        :rtype: Counter[Tuple[str, str], int]
+        """
+        transitions = Counter()
+        if exclude is not None:
+            if isinstance(exclude, str):
+                exclude = [exclude]
+        else:
+            exclude = []
+        # count transitions
+        for sequence in self:
+            for action in sequence:
+                source = action.source_id
+                target = action.target_id
+                if notnull(target) and source not in exclude and target not in exclude:
+                    transitions[(source, target)] += 1
+        return transitions
+
+    def most_probable_location_sequence(self, exclude: Union[str, List[str]] = None, start_at: str = None,
+                                        allow_repeats: bool = True):
+        """
+        Find the most probable location sequence.
+
+        :param exclude: Optional list of names to exclude from the sequence.
+        :param start_at: Optional name of start state. Leave as None to use most common state.
+        :param allow_repeats: Whether to stop building the sequence at the point where a previous item is found or to
+                              use a less likely item instead and carry on building the sequence.
+        :rtype: List[str]
+        """
+        transitions = self.count_location_transitions(exclude=exclude)
+        # transitions = create_transition_table(transitions=transitions, get_name=get_name, exclude=exclude)
+        # find most frequent from point
+        if start_at is not None:
+            current_name = start_at
+        else:
+            current_name = transitions.most_common(1)[0][0][0]
+        sequence = [current_name]
+        # iteratively find most frequent transition point from the current point
+        found = True
+        while found:
+            # remove last added location as a possible target
+            if not allow_repeats:
+                transitions = {k: v for k, v in transitions.items() if k[1] != current_name}
+            # find next location
+            froms = [k[0] for k in transitions.keys()]
+            if current_name in froms:
+                current_name = Counter({
+                    k: v for k, v in transitions.items()
+                    if k[0] == current_name
+                }).most_common(1)[0][0][1]
+                if current_name not in sequence:
+                    sequence.append(current_name)
+                else:
+                    found = False
+            else:
+                found = False
+        return sequence
+
+    def sort(self, by: str, ascending: bool = True):
+        """
+        :rtype: ISequences
+        """
+        return Sequences(sequences=sorted(
+            self._sequences, key=self._lookups[by],
+            reverse=not ascending
+        ))
 
     def __getitem__(self, item):
         """
@@ -327,21 +402,27 @@ class Sequences(ISequences):
             raise TypeError('item must be IActionSequence')
 
     def __iter__(self):
-
+        """
+        :rtype: IActionSequence
+        """
         return self._sequences.__iter__()
 
     def __add__(self, other):
-
+        """
+        :rtype: ISequences
+        """
         if type(other) is Sequences:
             other = other.sequences
         return Sequences(
             list(set(self._sequences).union(other))
-        )
+        ).sort('date_time')
 
     def __sub__(self, other):
-
+        """
+        :rtype: ISequences
+        """
         if type(other) is Sequences:
             other = other.sequences
         return Sequences(list(
             set(self._sequences) - set(self._sequences).intersection(other)
-        ))
+        )).sort('date_time')
