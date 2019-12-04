@@ -5,6 +5,7 @@ from types import FunctionType
 from typing import Dict, List, Union, Tuple
 
 from ux.classes.sequences.sequences_group_by import SequencesGroupBy
+from ux.classes.wrappers.map_result import MapResult
 from ux.custom_types import SequenceFilter, SequenceFilterSet, SequenceGrouper, ActionGrouper
 from ux.interfaces.sequences.i_action_sequence import IActionSequence
 from ux.interfaces.sequences.i_sequences import ISequences
@@ -13,7 +14,7 @@ from ux.utils.misc import get_method_name
 
 class Sequences(ISequences):
 
-    _lookups = {
+    _sequence_lookups = {
         'date': lambda seq: seq.start.date(),
         'start_date': lambda seq: seq.start.date(),
         'end_date': lambda seq: seq.end.date(),
@@ -125,19 +126,19 @@ class Sequences(ISequences):
         if isinstance(by, FunctionType):
             groupers[by.__name__] = by
         elif isinstance(by, str):
-            if by not in self._lookups.keys():
+            if by not in self._sequence_lookups.keys():
                 raise ValueError('Cannot group by "{}"'.format(by))
             else:
-                groupers[by] = self._lookups[by]
+                groupers[by] = self._sequence_lookups[by]
         elif isinstance(by, dict):
             groupers = by
         elif isinstance(by, list):
             for element in by:
                 if isinstance(element, str):
-                    if element not in self._lookups.keys():
+                    if element not in self._sequence_lookups.keys():
                         raise ValueError('Cannot group by "{}"'.format(element))
                     else:
-                        groupers[element] = self._lookups[element]
+                        groupers[element] = self._sequence_lookups[element]
                 elif isinstance(element, FunctionType):
                     method_name = get_method_name(element)
                     groupers[method_name] = element
@@ -159,12 +160,12 @@ class Sequences(ISequences):
             result[result_key] = Sequences.intersect_all(result_sequences)
         return SequencesGroupBy(result, names=group_by_names)
 
-    def map(self, mapper: Union[str, dict, list, ActionGrouper], rtype: type = dict):
+    def map(self, mapper: Union[str, dict, list, ActionGrouper]):
         """
         Apply a map function to every Sequence in the Sequences and return the results.
 
         :param mapper: The method or methods to apply to each UserAction
-        :param rtype: Return type of the result: dict or DataFrame
+        :rtype: MapResult
         """
         def map_items(item_mapper: Union[str, FunctionType]):
             if isinstance(item_mapper, str):
@@ -176,8 +177,8 @@ class Sequences(ISequences):
                     else:
                         # properties
                         return [getattr(sequence, item_mapper) for sequence in self]
-                elif item_mapper in self._lookups:
-                    return [self._lookups[item_mapper](sequence) for sequence in self]
+                elif item_mapper in self._sequence_lookups:
+                    return [self._sequence_lookups[item_mapper](sequence) for sequence in self]
                 else:
                     raise ValueError(f'IActionSequence has no property or attribute named {item_mapper}')
             elif isinstance(item_mapper, FunctionType):
@@ -199,19 +200,8 @@ class Sequences(ISequences):
             }
         else:
             raise TypeError('mapper must be dict, str or FunctionType')
-        if rtype is dict:
-            return results
-        elif rtype is DataFrame:
-            return DataFrame(results)
-        elif rtype in (list, Series):
-            if len(results.keys()) != 1:
-                raise ValueError('Can only output a list or Series for a single mapper')
-            if rtype is list:
-                return list(results.values())[0]
-            else:
-                return Series(results)
-        else:
-            raise TypeError('rtype must be dict, list, Series or DataFrame')
+
+        return MapResult(results)
 
     def count(self):
         """
@@ -395,7 +385,7 @@ class Sequences(ISequences):
         :rtype: ISequences
         """
         return Sequences(sequences=sorted(
-            self._sequences, key=self._lookups[by],
+            self._sequences, key=self._sequence_lookups[by],
             reverse=not ascending
         ))
 

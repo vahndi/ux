@@ -1,5 +1,6 @@
 from typing import Dict
 
+from ux.classes.wrappers.map_result import MapResult
 from ux.custom_types import SequenceFilter, SequenceFilterSet
 from ux.interfaces.sequences.i_action_sequence import IActionSequence
 
@@ -88,8 +89,10 @@ class ISequences(object):
         """
         raise NotImplementedError
 
-    def map(self, mapper, rtype: type = dict):
-
+    def map(self, mapper):
+        """
+        :rtype: MapResult
+        """
         raise NotImplementedError
 
     def sort(self, by: str, ascending: bool = True):
