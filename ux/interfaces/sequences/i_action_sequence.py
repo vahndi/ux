@@ -42,33 +42,24 @@ class IActionSequence(object):
         """
         raise NotImplementedError
 
+    @property
     def duration(self):
         """
         :rtype: timedelta
         """
         raise NotImplementedError
 
-    def start_date_time(self):
+    @property
+    def start(self):
         """
         :rtype: datetime
         """
         raise NotImplementedError
 
-    def end_date_time(self):
+    @property
+    def end(self):
         """
         :rtype: datetime
-        """
-        raise NotImplementedError
-
-    def start_time(self):
-        """
-        :rtype: time
-        """
-        raise NotImplementedError
-
-    def end_time(self):
-        """
-        :rtype: time
         """
         raise NotImplementedError
 

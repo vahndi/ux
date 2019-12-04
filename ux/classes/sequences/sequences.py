@@ -14,27 +14,27 @@ from ux.utils.misc import get_method_name
 class Sequences(ISequences):
 
     _lookups = {
-        'date': lambda seq: seq.start_date_time().date(),
-        'start_date': lambda seq: seq.start_date_time().date(),
-        'end_date': lambda seq: seq.end_date_time().date(),
-        'date_time': lambda seq: seq.start_date_time(),
-        'start_date_time': lambda seq: seq.start_date_time(),
-        'end_date_time': lambda seq: seq.end_date_time(),
-        'hour': lambda seq: seq.start_date_time().hour,
-        'start_hour': lambda seq: seq.start_date_time().hour,
-        'end_hour': lambda seq: seq.end_date_time().hour,
-        'day': lambda seq: seq.start_date_time().day,
-        'start_day': lambda seq: seq.start_date_time().day,
-        'end_day': lambda seq: seq.end_date_time().day,
-        'weekday': lambda seq: seq.start_date_time().isoweekday(),
-        'start_weekday': lambda seq: seq.start_date_time().isoweekday(),
-        'end_weekday': lambda seq: seq.end_date_time().isoweekday(),
-        'week': lambda seq: seq.start_date_time().isocalendar()[1],
-        'start_week': lambda seq: seq.start_date_time().isocalendar()[1],
-        'end_week': lambda seq: seq.end_date_time().isocalendar()[1],
-        'month': lambda seq: seq.start_date_time().month,
-        'start_month': lambda seq: seq.start_date_time().month,
-        'end_month': lambda seq: seq.end_date_time().month
+        'date': lambda seq: seq.start.date(),
+        'start_date': lambda seq: seq.start.date(),
+        'end_date': lambda seq: seq.end.date(),
+        'date_time': lambda seq: seq.start,
+        'start': lambda seq: seq.start,
+        'end': lambda seq: seq.end,
+        'hour': lambda seq: seq.start.hour,
+        'start_hour': lambda seq: seq.start.hour,
+        'end_hour': lambda seq: seq.end.hour,
+        'day': lambda seq: seq.start.day,
+        'start_day': lambda seq: seq.start.day,
+        'end_day': lambda seq: seq.end.day,
+        'weekday': lambda seq: seq.start.isoweekday(),
+        'start_weekday': lambda seq: seq.start.isoweekday(),
+        'end_weekday': lambda seq: seq.end.isoweekday(),
+        'week': lambda seq: seq.start.isocalendar()[1],
+        'start_week': lambda seq: seq.start.isocalendar()[1],
+        'end_week': lambda seq: seq.end.isocalendar()[1],
+        'month': lambda seq: seq.start.month,
+        'start_month': lambda seq: seq.start.month,
+        'end_month': lambda seq: seq.end.month
     }
 
     def __init__(self, sequences: List[IActionSequence]):
@@ -43,7 +43,7 @@ class Sequences(ISequences):
 
         :param sequences: List of ActionSequences to use to create the object.
         """
-        self._sequences = sequences
+        self._sequences: List[IActionSequence] = sequences
 
     @property
     def sequences(self):
@@ -62,7 +62,7 @@ class Sequences(ISequences):
         :rtype: ISequences
         """
         filtered = []
-        for sequence in self._sequences:
+        for sequence in self:
             if condition(sequence):
                 filtered.append(sequence)
         return Sequences(filtered)
@@ -113,7 +113,7 @@ class Sequences(ISequences):
             :rtype: Dict[str, Sequences]
             """
             splits = defaultdict(list)
-            for sequence in self._sequences:
+            for sequence in self:
                 splits[method(sequence)].append(sequence)
             return {
                 group_name: Sequences(group_sequences)
@@ -166,15 +166,24 @@ class Sequences(ISequences):
         :param mapper: The method or methods to apply to each UserAction
         :param rtype: Return type of the result: dict or DataFrame
         """
-        def map_items(item_mapper):
+        def map_items(item_mapper: Union[str, FunctionType]):
             if isinstance(item_mapper, str):
+                # properties and methods
                 if hasattr(IActionSequence, item_mapper):
-                    if callable(getattr(self._sequences[0], item_mapper)):
-                        return [getattr(sequence, item_mapper)() for sequence in self._sequences]
+                    if callable(getattr(self[0], item_mapper)):
+                        # methods
+                        return [getattr(sequence, item_mapper)() for sequence in self]
                     else:
-                        return [getattr(sequence, item_mapper) for sequence in self._sequences]
+                        # properties
+                        return [getattr(sequence, item_mapper) for sequence in self]
+                elif item_mapper in self._lookups:
+                    return [self._lookups[item_mapper](sequence) for sequence in self]
+                else:
+                    raise ValueError(f'IActionSequence has no property or attribute named {item_mapper}')
             elif isinstance(item_mapper, FunctionType):
-                return [item_mapper(sequence) for sequence in self._sequences]
+                return [item_mapper(sequence) for sequence in self]
+            else:
+                raise TypeError('item mappers must be FunctionType or str')
 
         if isinstance(mapper, str) or isinstance(mapper, FunctionType):
             results = {get_method_name(mapper): map_items(mapper)}
@@ -183,14 +192,26 @@ class Sequences(ISequences):
                 get_method_name(key): map_items(value)
                 for key, value in mapper.items()
             }
+        elif isinstance(mapper, list):
+            results = {
+                get_method_name(item): map_items(item)
+                for item in mapper
+            }
         else:
-            raise TypeError('mapper must be of type dict, str or function')
+            raise TypeError('mapper must be dict, str or FunctionType')
         if rtype is dict:
             return results
         elif rtype is DataFrame:
             return DataFrame(results)
+        elif rtype in (list, Series):
+            if len(results.keys()) != 1:
+                raise ValueError('Can only output a list or Series for a single mapper')
+            if rtype is list:
+                return list(results.values())[0]
+            else:
+                return Series(results)
         else:
-            raise TypeError('rtype must be dict or DataFrame')
+            raise TypeError('rtype must be dict, list, Series or DataFrame')
 
     def count(self):
         """
@@ -238,9 +259,7 @@ class Sequences(ISequences):
         """
         :rtype: List[timedelta]
         """
-        durations = [
-            sequence.duration() for sequence in self._sequences
-        ]
+        durations = [sequence.duration() for sequence in self]
         if rtype is list:
             return durations
         elif rtype is Series:
@@ -259,7 +278,7 @@ class Sequences(ISequences):
         """
         total = concat([
             sequence.action_template_counts(Series)
-            for sequence in self._sequences
+            for sequence in self
         ], axis=1).sum(axis=1).astype(int)
         if rtype is Series:
             return total
@@ -275,7 +294,7 @@ class Sequences(ISequences):
         :rtype: Dict[IActionTemplate, int]
         """
         counts = Series(chain.from_iterable([
-            list(sequence.action_template_set()) for sequence in self._sequences
+            list(sequence.action_template_set()) for sequence in self
         ])).value_counts()
         if rtype is Series:
             return counts
@@ -293,7 +312,7 @@ class Sequences(ISequences):
         """
         transitions = defaultdict(int)
         # count transitions
-        for sequence in self._sequences:
+        for sequence in self:
             for a in range(len(sequence) - 1):
                 from_action = sequence.user_actions[a].template()
                 to_action = sequence.user_actions[a + 1].template()
@@ -397,7 +416,7 @@ class Sequences(ISequences):
     def __contains__(self, item: IActionSequence):
 
         if isinstance(item, IActionSequence):
-            return item in self._sequences
+            return item in self
         else:
             raise TypeError('item must be IActionSequence')
 

@@ -128,30 +128,21 @@ class ActionSequence(IActionSequence):
         else:
             return None
 
-    def start_date_time(self):
+    @property
+    def start(self):
         """
         :rtype: datetime
         """
         return self[0].time_stamp
 
-    def end_date_time(self):
+    @property
+    def end(self):
         """
         :rtype: datetime
         """
         return self[-1].time_stamp
 
-    def start_time(self):
-        """
-        :rtype: time
-        """
-        return self[0].time_stamp.time()
-
-    def end_time(self):
-        """
-        :rtype: time
-        """
-        return self[-1].time_stamp.time()
-
+    @property
     def duration(self):
         """
         Return the total duration of the ActionSequence from the first Action to the last.
