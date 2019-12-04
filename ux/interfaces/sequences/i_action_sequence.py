@@ -60,7 +60,20 @@ class IActionSequence(object):
         """
         raise NotImplementedError
 
+    def start_time(self):
+        """
+        :rtype: time
+        """
+        raise NotImplementedError
+
+    def end_time(self):
+        """
+        :rtype: time
+        """
+        raise NotImplementedError
+
     def map(self, mapper, rtype: type = dict):
+
         raise NotImplementedError
 
     def unordered_completion_rate(self, task):
