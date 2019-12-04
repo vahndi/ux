@@ -1,5 +1,5 @@
 from collections import defaultdict
-from datetime import datetime, timedelta, time
+from datetime import datetime, timedelta
 from types import FunctionType
 from typing import List, Callable, Set, Union
 
@@ -9,11 +9,12 @@ from ux.calcs.object_calcs.efficiency import lostness
 from ux.calcs.object_calcs.task_success import unordered_task_completion_rate, ordered_task_completion_rate, \
     binary_task_success
 from ux.calcs.object_calcs.utils import sequence_intersects_task
+from ux.classes.wrappers.map_result import MapResult
 from ux.custom_types import ActionGrouper
-from ux.interfaces.sequences.i_action_sequence import IActionSequence
 from ux.interfaces.actions.i_action_template import IActionTemplate
-from ux.interfaces.tasks.i_task import ITask
 from ux.interfaces.actions.i_user_action import IUserAction
+from ux.interfaces.sequences.i_action_sequence import IActionSequence
+from ux.interfaces.tasks.i_task import ITask
 from ux.utils.actions import create_action_template_condition
 from ux.utils.misc import get_method_name
 
@@ -153,22 +154,27 @@ class ActionSequence(IActionSequence):
         end_time = self.user_actions[-1].time_stamp
         return end_time - start_time
 
-    def map(self, mapper: Union[str, dict, ActionGrouper], rtype: type = dict):
+    def map(self, mapper: Union[str, dict, list, ActionGrouper]):
         """
         Apply a map function to every action in the Sequence and return the results.
 
         :param mapper: The method or methods to apply to each UserAction
-        :param rtype: Return type of the result: dict or DataFrame
+        :rtype: MapResult
         """
         def map_items(item_mapper):
             if isinstance(item_mapper, str):
+                # properties and methods
                 if hasattr(IUserAction, item_mapper):
                     if callable(getattr(IUserAction, item_mapper)):
+                        # methods
                         return [getattr(action, item_mapper)() for action in self._user_actions]
                     else:
+                        # properties
                         return [getattr(action, item_mapper) for action in self._user_actions]
             elif isinstance(item_mapper, FunctionType):
                 return [item_mapper(action) for action in self._user_actions]
+            else:
+                raise TypeError('item mappers must be FunctionType or str')
 
         if isinstance(mapper, str) or isinstance(mapper, FunctionType):
             results = {get_method_name(mapper): map_items(mapper)}
@@ -177,14 +183,15 @@ class ActionSequence(IActionSequence):
                 get_method_name(key): map_items(value)
                 for key, value in mapper.items()
             }
+        elif isinstance(mapper, list):
+            results = {
+                get_method_name(item): map_items(item)
+                for item in mapper
+            }
         else:
-            raise TypeError('mapper must be of type list, dict, str or function')
-        if rtype is dict:
-            return results
-        elif rtype is DataFrame:
-            return DataFrame(results)
-        else:
-            raise TypeError('rtype must be dict or DataFrame')
+            raise TypeError('mapper must be dict, str or FunctionType')
+
+        return MapResult(results)
 
     def intersects_task(self, task: ITask):
         """

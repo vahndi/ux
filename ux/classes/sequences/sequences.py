@@ -1,12 +1,12 @@
 from collections import defaultdict, OrderedDict, Counter
 from itertools import chain, product
-from pandas import concat, DataFrame, Series, notnull
+from pandas import concat, Series, notnull
 from types import FunctionType
 from typing import Dict, List, Union, Tuple
 
 from ux.classes.sequences.sequences_group_by import SequencesGroupBy
 from ux.classes.wrappers.map_result import MapResult
-from ux.custom_types import SequenceFilter, SequenceFilterSet, SequenceGrouper, ActionGrouper
+from ux.custom_types import SequenceFilter, SequenceFilterSet, SequenceGrouper
 from ux.interfaces.sequences.i_action_sequence import IActionSequence
 from ux.interfaces.sequences.i_sequences import ISequences
 from ux.utils.misc import get_method_name
@@ -160,7 +160,7 @@ class Sequences(ISequences):
             result[result_key] = Sequences.intersect_all(result_sequences)
         return SequencesGroupBy(result, names=group_by_names)
 
-    def map(self, mapper: Union[str, dict, list, ActionGrouper]):
+    def map(self, mapper: Union[str, dict, list, SequenceGrouper]):
         """
         Apply a map function to every Sequence in the Sequences and return the results.
 

@@ -2,6 +2,7 @@ from typing import List, Set
 
 from ux.interfaces.actions.i_action_template import IActionTemplate
 from ux.interfaces.actions.i_user_action import IUserAction
+from ux.classes.wrappers.map_result import MapResult
 
 
 class IActionSequence(object):
@@ -63,8 +64,10 @@ class IActionSequence(object):
         """
         raise NotImplementedError
 
-    def map(self, mapper, rtype: type = dict):
-
+    def map(self, mapper):
+        """
+        :rtype: MapResult
+        """
         raise NotImplementedError
 
     def unordered_completion_rate(self, task):
