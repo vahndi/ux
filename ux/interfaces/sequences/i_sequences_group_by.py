@@ -1,6 +1,3 @@
-from ux.custom_types import SequenceFilter, SequenceFilterSet
-
-
 class ISequencesGroupBy(object):
 
     def count(self, rtype: type = dict):
@@ -41,7 +38,7 @@ class ISequencesGroupBy(object):
         """
         raise NotImplementedError
 
-    def filter(self, condition: SequenceFilter):
+    def filter(self, condition):
         """
         Return a new Sequences containing only the sequences matching the `condition` in each group.
 
@@ -50,7 +47,7 @@ class ISequencesGroupBy(object):
         """
         raise NotImplementedError
 
-    def group_filter(self, filters: SequenceFilterSet, group_name: str = None):
+    def group_filter(self, filters, group_name=None):
         """
         Return a new SequencesGroupBy keyed by the filter name with values matching each filter, applied in parallel.
 

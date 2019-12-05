@@ -164,7 +164,7 @@ class Sequences(ISequences):
         """
         Apply a map function to every Sequence in the Sequences and return the results.
 
-        :param mapper: The method or methods to apply to each UserAction
+        :param mapper: The method or methods to apply to each ActionSequence
         :rtype: MapResult
         """
         def map_items(item_mapper: Union[str, FunctionType]):
@@ -199,7 +199,7 @@ class Sequences(ISequences):
                 for item in mapper
             }
         else:
-            raise TypeError('mapper must be dict, str or FunctionType')
+            raise TypeError('mapper must be dict, list, str or FunctionType')
 
         return MapResult(results)
 
@@ -245,11 +245,12 @@ class Sequences(ISequences):
             intersect = intersect.intersection(s)
         return intersect
 
+    @property
     def durations(self, rtype: type = list):
         """
         :rtype: List[timedelta]
         """
-        durations = [sequence.duration() for sequence in self]
+        durations = [sequence.duration for sequence in self]
         if rtype is list:
             return durations
         elif rtype is Series:

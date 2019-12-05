@@ -3,7 +3,8 @@ from pandas import DataFrame, Series, MultiIndex
 from types import FunctionType
 from typing import Dict, List, Union
 
-from ux.custom_types import SequenceFilter, SequencesGroupByKey, ActionGrouper, SequenceFilterSet
+from ux.classes.wrappers.map_result import MapResult
+from ux.custom_types import SequenceFilter, SequencesGroupByKey, ActionGrouper, SequenceFilterSet, SequencesGrouper
 from ux.interfaces.sequences.i_sequences import ISequences
 from ux.interfaces.sequences.i_sequences_group_by import ISequencesGroupBy
 from ux.utils.misc import get_method_name
@@ -16,7 +17,7 @@ class SequencesGroupBy(ISequencesGroupBy):
         :param data: Dictionary mapping keys to Sequences collections
         :param names: Names for the key groups
         """
-        self._data: Dict[SequencesGroupByKey, ISequences] = data
+        self._data: Dict[SequencesGroupByKey, ISequences] = OrderedDict(data)
         if type(names) is str:
             names = [names]
         self._names: List[str] = names
@@ -44,42 +45,60 @@ class SequencesGroupBy(ISequencesGroupBy):
                 ).reset_index().rename(columns={0: 'count'})
                 return out_data
 
-    def map(self, mapper: Union[str, dict, list, ActionGrouper]):
+    def map(self, mapper: Union[str, dict, list, SequencesGrouper]):
         """
         Apply a map function to every Sequences in the GroupBy and return the results.
 
-        :param mapper: The method or methods to apply to each UserAction
-        :rtype: dict
+        :param mapper: The method or methods to apply to each Sequences
+        :rtype: MapResult
         """
-        def map_items(item_mapper):
+        def map_items(item_mapper: Union[str, FunctionType]):
             if isinstance(item_mapper, str):
+                # properties and methods
                 if hasattr(ISequences, item_mapper):
                     if callable(getattr(ISequences, item_mapper)):
-                        return {
-                            name: getattr(sequences, item_mapper)()
-                            for name, sequences in self.items()
-                        }
+                        # methods
+                        return [getattr(sequences, item_mapper)() for sequences in self._data.values()]
                     else:
-                        return {
-                            name: getattr(sequences, item_mapper)
-                            for name, sequences in self.items()
-                        }
+                        # properties
+                        return [getattr(sequences, item_mapper) for sequences in self._data.values()]
             elif isinstance(item_mapper, FunctionType):
-                return {
-                    name: item_mapper(sequences)
-                    for name, sequences in self.items()
-                }
+                return [item_mapper(sequences) for sequences in self._data.values()]
+            else:
+                raise TypeError('item mappers must be FunctionType or str')
+
+        group_names = list(self._data.keys())
+
+        def new_group(names, method):
+            if isinstance(names, str):
+                names = [names]
+            return tuple(names + [get_method_name(method)])
 
         if isinstance(mapper, str) or isinstance(mapper, FunctionType):
-            results = {get_method_name(mapper): map_items(mapper)}
+            self._names.append(get_method_name(mapper))
+            keys = [new_group(names, mapper) for names in group_names]
+            values = map_items(mapper)
+            results = OrderedDict([(key, value) for key, value in zip(keys, values)])
         elif isinstance(mapper, dict):
-            results = {
-                get_method_name(key): map_items(value)
-                for key, value in mapper.items()
-            }
+            results = OrderedDict()
+            for map_key, map_func in mapper.items():
+                keys = [new_group(names, map_key) for names in group_names]
+                values = map_items(map_func)
+                results.update(OrderedDict([
+                    (key, value) for key, value in zip(keys, values)
+                ]))
+        elif isinstance(mapper, list):
+            results = OrderedDict()
+            for map_item in mapper:
+                keys = [new_group(names, map_item) for names in group_names]
+                values = map_items(map_item)
+                results.update(OrderedDict([
+                    (key, value) for key, value in zip(keys, values)
+                ]))
         else:
-            raise TypeError('mapper must be of type dict, str or function')
-        return results
+            raise TypeError('mapper must be dict, list, str or FunctionType')
+
+        return MapResult(results)
 
     def agg(self, agg_funcs: dict, rtype: type = dict):
         """

@@ -48,6 +48,10 @@ class MapResult(object):
 
         return self._data.values()
 
+    def __getitem__(self, item):
+
+        return self._data[item]
+
     def __iter__(self):
 
         return self._data.__iter__()

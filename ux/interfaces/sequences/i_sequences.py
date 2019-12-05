@@ -1,8 +1,8 @@
 from typing import Dict
 
 from ux.classes.wrappers.map_result import MapResult
-from ux.custom_types import SequenceFilter, SequenceFilterSet
 from ux.interfaces.sequences.i_action_sequence import IActionSequence
+from ux.interfaces.sequences.i_sequences_group_by import ISequencesGroupBy
 
 
 class ISequences(object):
@@ -16,15 +16,15 @@ class ISequences(object):
         """
         raise NotImplementedError
 
-    def filter(self, condition: SequenceFilter):
+    def filter(self, condition):
         """
         :rtype: ISequences
         """
         raise NotImplementedError
 
-    def group_filter(self, filters: SequenceFilterSet):
+    def group_filter(self, filters):
         """
-        :rtype: SequencesGroupBy
+        :rtype: ISequencesGroupBy
         """
         raise NotImplementedError
 
@@ -60,6 +60,7 @@ class ISequences(object):
         """
         raise NotImplementedError
 
+    @property
     def durations(self):
         """
         :rtype: List[timedelta]
