@@ -56,6 +56,29 @@ class ActionTemplate(IActionTemplate):
         """
         return self._weighting
 
+    def reversed(self, action_type: str = None):
+        """
+        Return a reversed version of the template (switch the source and target).
+
+        :param action_type: Optional action type. Leave as None to use the existing action type.
+        :rtype: IActionTemplate
+        """
+        return ActionTemplate(
+            source_id=self.target_id,
+            target_id=self.source_id,
+            action_type=action_type or self.action_type
+        )
+
+    def to_dict(self):
+        """
+        :rtype: dict
+        """
+        return {
+            'action_type': self._action_type,
+            'source_id': self._source_id,
+            'target_id': self._target_id
+        }
+
     def __eq__(self, other):
         """
         :type other: ActionTemplate
@@ -73,14 +96,6 @@ class ActionTemplate(IActionTemplate):
             ' → ' if self._target_id else '',
             self._target_id if self._target_id else ''
         )
-
-    def to_dict(self):
-
-        return {
-            'action_type': self._action_type,
-            'source_id': self._source_id,
-            'target_id': self._target_id
-        }
 
     def __hash__(self):
 
