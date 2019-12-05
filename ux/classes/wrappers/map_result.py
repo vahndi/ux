@@ -10,6 +10,12 @@ class MapResult(object):
         self._data: dict = data
         self._names = names
 
+        for attribute in self._data.keys():
+            try:
+                setattr(self, attribute, self._data[attribute])
+            except:
+                pass
+
     @property
     def names(self):
         return self._names

@@ -1,5 +1,5 @@
 from collections import defaultdict, OrderedDict
-from pandas import DataFrame, Series, MultiIndex
+from pandas import DataFrame, Series
 from types import FunctionType
 from typing import Dict, List, Union
 
@@ -22,6 +22,12 @@ class SequencesGroupBy(ISequencesGroupBy):
             names = [names]
         self._names: List[str] = names
 
+        for attribute in self._data.keys():
+            try:
+                setattr(self, attribute, self._data[attribute])
+            except:
+                pass
+
     def count(self, rtype: type = dict):
         """
         :rtype: MapResult
@@ -31,22 +37,7 @@ class SequencesGroupBy(ISequencesGroupBy):
             (key, sequences.count())
             for key, sequences in self._data.items()
         ])
-        return MapResult(out_dict)
-        # if rtype is dict:
-        #     return out_dict
-        # elif rtype is Series:
-        #     s = Series(out_dict).sort_index()
-        #     s.index.names = self._names
-        #     return s
-        # elif rtype is DataFrame:
-        #     if type(list(self._data.keys())[0]) is str:
-        #         return Series(out_dict, name='count')
-        #     else:
-        #         out_data = DataFrame(
-        #             data=out_dict.values(),
-        #             index=MultiIndex.from_tuples(out_dict.keys(), names=self._names)
-        #         ).reset_index().rename(columns={0: 'count'})
-        #         return out_data
+        return MapResult(out_dict, names=['count'])
 
     def map(self, mapper: Union[str, dict, list, SequencesGrouper]):
         """
