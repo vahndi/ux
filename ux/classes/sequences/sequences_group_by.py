@@ -4,7 +4,7 @@ from types import FunctionType
 from typing import Dict, List, Union
 
 from ux.classes.wrappers.map_result import MapResult
-from ux.custom_types import SequenceFilter, SequencesGroupByKey, ActionGrouper, SequenceFilterSet, SequencesGrouper
+from ux.custom_types import SequenceFilter, SequencesGroupByKey, SequenceFilterSet, SequencesGrouper
 from ux.interfaces.sequences.i_sequences import ISequences
 from ux.interfaces.sequences.i_sequences_group_by import ISequencesGroupBy
 from ux.utils.misc import get_method_name
@@ -23,27 +23,30 @@ class SequencesGroupBy(ISequencesGroupBy):
         self._names: List[str] = names
 
     def count(self, rtype: type = dict):
-
+        """
+        :rtype: MapResult
+        """
         assert rtype in (dict, Series, DataFrame)
-        out_dict = {
-            key: sequences.count()
+        out_dict = OrderedDict([
+            (key, sequences.count())
             for key, sequences in self._data.items()
-        }
-        if rtype is dict:
-            return out_dict
-        elif rtype is Series:
-            s = Series(out_dict).sort_index()
-            s.index.names = self._names
-            return s
-        elif rtype is DataFrame:
-            if type(list(self._data.keys())[0]) is str:
-                return Series(out_dict, name='count')
-            else:
-                out_data = DataFrame(
-                    data=out_dict.values(),
-                    index=MultiIndex.from_tuples(out_dict.keys(), names=self._names)
-                ).reset_index().rename(columns={0: 'count'})
-                return out_data
+        ])
+        return MapResult(out_dict)
+        # if rtype is dict:
+        #     return out_dict
+        # elif rtype is Series:
+        #     s = Series(out_dict).sort_index()
+        #     s.index.names = self._names
+        #     return s
+        # elif rtype is DataFrame:
+        #     if type(list(self._data.keys())[0]) is str:
+        #         return Series(out_dict, name='count')
+        #     else:
+        #         out_data = DataFrame(
+        #             data=out_dict.values(),
+        #             index=MultiIndex.from_tuples(out_dict.keys(), names=self._names)
+        #         ).reset_index().rename(columns={0: 'count'})
+        #         return out_data
 
     def map(self, mapper: Union[str, dict, list, SequencesGrouper]):
         """

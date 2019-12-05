@@ -1,11 +1,18 @@
-from pandas import DataFrame, Series
+from typing import List
+
+from pandas import DataFrame, Series, MultiIndex, Index
 
 
 class MapResult(object):
 
-    def __init__(self, data: dict):
+    def __init__(self, data: dict, names: List[str] = None):
 
         self._data: dict = data
+        self._names = names
+
+    @property
+    def names(self):
+        return self._names
 
     def to_list(self):
         """
@@ -20,9 +27,22 @@ class MapResult(object):
         :rtype: Series
         """
         if len(self.keys()) != 1:
-            raise ValueError('Can only output a Series for a single-dimensional map result')
-        return Series(data=list(self._data.values())[0],
-                      name=list(self._data.keys())[0])
+            return Series(
+                index=self._pandas_index(),
+                data=list(self.values())
+            )
+        else:
+            return Series(
+                data=list(self._data.values())[0],
+                name=list(self._data.keys())[0]
+            )
+
+    def _pandas_index(self):
+
+        if type(list(self.keys())[0]) is tuple:
+            return MultiIndex.from_tuples(self.keys(), names=self._names)
+        else:
+            return Index(self.keys())
 
     def to_dict(self):
         """
@@ -34,7 +54,10 @@ class MapResult(object):
         """
         :rtype: DataFrame
         """
-        return DataFrame(self._data)
+        if not isinstance(list(self.values())[0], list):
+            return self.to_series().to_frame()
+        else:
+            return DataFrame(self._data)
 
     def items(self):
 
