@@ -187,21 +187,21 @@ class Sequences(ISequences):
                 raise TypeError('item mappers must be FunctionType or str')
 
         if isinstance(mapper, str) or isinstance(mapper, FunctionType):
-            results = {get_method_name(mapper): map_items(mapper)}
+            results = OrderedDict([(get_method_name(mapper), map_items(mapper))])
         elif isinstance(mapper, dict):
-            results = {
-                get_method_name(key): map_items(value)
+            results = OrderedDict([
+                (get_method_name(key), map_items(value))
                 for key, value in mapper.items()
-            }
+            ])
         elif isinstance(mapper, list):
-            results = {
-                get_method_name(item): map_items(item)
+            results = OrderedDict([
+                (get_method_name(item), map_items(item))
                 for item in mapper
-            }
+            ])
         else:
             raise TypeError('mapper must be dict, list, str or FunctionType')
 
-        return MapResult(results)
+        return MapResult(results, data_names=list(results.keys()))
 
     def count(self):
         """

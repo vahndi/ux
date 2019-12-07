@@ -4,7 +4,7 @@ from types import FunctionType
 from typing import Dict, List, Union
 
 from ux.classes.wrappers.map_result import MapResult
-from ux.custom_types import SequenceFilter, SequencesGroupByKey, SequenceFilterSet, SequencesGrouper
+from ux.custom_types import SequenceFilter, SequencesGroupByKey, SequenceFilterSet, SequencesGrouper, SequenceGrouper
 from ux.interfaces.sequences.i_sequences import ISequences
 from ux.interfaces.sequences.i_sequences_group_by import ISequencesGroupBy
 from ux.utils.misc import get_method_name
@@ -37,7 +37,7 @@ class SequencesGroupBy(ISequencesGroupBy):
             (key, sequences.count())
             for key, sequences in self._data.items()
         ])
-        return MapResult(out_dict, names=['count'])
+        return MapResult(out_dict, data_names=['count'], index_names=self.names)
 
     def map(self, mapper: Union[str, dict, list, SequencesGrouper]):
         """
@@ -168,6 +168,31 @@ class SequencesGroupBy(ISequencesGroupBy):
                 data[new_filter_names] = data_sequences.filter(filter_condition)
         return SequencesGroupBy(data=data, names=names)
 
+    def group_by(self, by: Union[SequenceGrouper, Dict[str, SequenceGrouper], str, list]):
+        """
+        Return a new SequencesGroupBy keyed by each value returned by a single grouper,
+        or each combination of groupers for a list of groupers.
+        Each grouper should be a lambda function that returns a picklable value e.g. str.
+
+        :param by: lambda(Sequence) or dict[group_name, lambda(Sequence)] or list[str or lambda(Sequence)].
+        :rtype: SequencesGroupBy
+        """
+        new_results = OrderedDict()
+        for group_key, group_sequences in self.items():
+            if isinstance(group_key, tuple):
+                group_key = list(group_key)
+            else:
+                group_key = [group_key]
+            group_sub_results: ISequencesGroupBy = group_sequences.group_by(by)
+            for group_sub_key, group_sub_values in group_sub_results.items():
+                if isinstance(group_sub_key, tuple):
+                    group_sub_key = list(group_sub_key)
+                else:
+                    group_sub_key = [group_sub_key]
+                new_results[tuple(group_key + group_sub_key)] = group_sub_values
+
+        return SequencesGroupBy(data=new_results, names=self.names + group_sub_results.names)
+
     def items(self):
         """
         :rtype: dict_items
@@ -206,7 +231,7 @@ class SequencesGroupBy(ISequencesGroupBy):
 
     def __repr__(self):
 
-        return 'SequencesGroupBy({})'.format(self._names)
+        return 'SequencesGroupBy({})'.format(self._data.__repr__())
 
     def __len__(self):
 

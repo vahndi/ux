@@ -5,10 +5,11 @@ from pandas import DataFrame, Series, MultiIndex, Index
 
 class MapResult(object):
 
-    def __init__(self, data: dict, names: List[str] = None):
+    def __init__(self, data: dict, index_names: List[str] = None, data_names: List[str] = None):
 
         self._data: dict = data
-        self._names = names
+        self._index_names = index_names
+        self._data_names = data_names
 
         for attribute in self._data.keys():
             try:
@@ -17,8 +18,11 @@ class MapResult(object):
                 pass
 
     @property
-    def names(self):
-        return self._names
+    def index_names(self):
+        return self._index_names
+
+    def data_names(self):
+        return self._data_names
 
     def to_list(self):
         """
@@ -28,6 +32,13 @@ class MapResult(object):
             raise ValueError('Can only output a list for a single-dimensional map result')
         return list(self._data.values())[0]
 
+    def _pandas_index(self):
+
+        if isinstance(list(self.keys())[0], tuple):
+            return MultiIndex.from_tuples(self.keys(), names=self._index_names)
+        else:
+            return Index(self.keys())
+
     def to_series(self):
         """
         :rtype: Series
@@ -35,20 +46,14 @@ class MapResult(object):
         if len(self.keys()) != 1:
             return Series(
                 index=self._pandas_index(),
-                data=list(self.values())
+                data=list(self.values()),
+                name=self._data_names[0]
             )
         else:
             return Series(
                 data=list(self._data.values())[0],
                 name=list(self._data.keys())[0]
             )
-
-    def _pandas_index(self):
-
-        if type(list(self.keys())[0]) is tuple:
-            return MultiIndex.from_tuples(self.keys(), names=self._names)
-        else:
-            return Index(self.keys())
 
     def to_dict(self):
         """
@@ -84,3 +89,7 @@ class MapResult(object):
     def __iter__(self):
 
         return self._data.__iter__()
+
+    def __repr__(self):
+
+        return 'MapResult({})'.format(self._data.__repr__())
