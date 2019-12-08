@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Iterable
 
 from ux.interfaces.actions.i_user_action import IUserAction
 from ux.interfaces.actions.i_action_template import IActionTemplate
@@ -120,19 +119,6 @@ class UserAction(IUserAction):
                 target_id=self._target_id
             )
         return self._action_template
-
-    @staticmethod
-    def templates(user_actions):
-        """
-        Return a list of ActionTemplates corresponding to the given list of Actions.
-
-        :type user_actions: Iterable[UserAction]
-        :rtype: List[ActionTemplate]
-        """
-        return [
-            user_action.template()
-            for user_action in user_actions
-        ]
 
     def __repr__(self):
 

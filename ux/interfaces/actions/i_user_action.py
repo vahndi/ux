@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Iterable
 
 from ux.interfaces.actions.i_action_template import IActionTemplate
 
@@ -65,13 +64,5 @@ class IUserAction(object):
     def template(self):
         """
         :rtype: IActionTemplate
-        """
-        raise NotImplementedError
-
-    @staticmethod
-    def templates(user_actions):
-        """
-        :type user_actions: Iterable[IUserAction]
-        :rtype: Iterable[IActionTemplate]
         """
         raise NotImplementedError

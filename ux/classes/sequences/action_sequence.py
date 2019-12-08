@@ -23,7 +23,6 @@ class ActionSequence(IActionSequence):
     """
     Represents a sequence of UserActions taken by a User.
     """
-
     def __init__(self, user_actions: List[IUserAction] = None, meta: dict = None):
         """
         Create a new ActionSequence.
@@ -153,6 +152,20 @@ class ActionSequence(IActionSequence):
         start_time = self.user_actions[0].time_stamp
         end_time = self.user_actions[-1].time_stamp
         return end_time - start_time
+
+    @property
+    def user_id(self):
+        """
+        :rtype: str
+        """
+        return self[0].user_id
+
+    @property
+    def session_id(self):
+        """
+        :rtype: str
+        """
+        return self[0].session_id
 
     def map(self, mapper: Union[str, dict, list, ActionGrouper]):
         """

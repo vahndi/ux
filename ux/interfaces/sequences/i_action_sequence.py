@@ -64,6 +64,20 @@ class IActionSequence(object):
         """
         raise NotImplementedError
 
+    @property
+    def user_id(self):
+        """
+        :rtype: str
+        """
+        raise NotImplementedError
+
+    @property
+    def session_id(self):
+        """
+        :rtype: str
+        """
+        raise NotImplementedError
+
     def map(self, mapper):
         """
         :rtype: MapResult
