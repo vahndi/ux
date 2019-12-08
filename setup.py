@@ -11,6 +11,7 @@ setup(
     description='A Python package for measuring and analyzing User Experience',
     install_requires=[
         'matplotlib',
+        'numba',
         'numpy',
         'pandas',
         'scipy',
