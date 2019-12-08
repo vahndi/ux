@@ -246,22 +246,13 @@ class Sequences(ISequences):
         return intersect
 
     @property
-    def durations(self, rtype: type = list):
+    def durations(self):
         """
         :rtype: List[timedelta]
         """
-        durations = [sequence.duration for sequence in self]
-        if rtype is list:
-            return durations
-        elif rtype is Series:
-            return Series(
-                data=durations,
-                name='durations'
-            )
-        else:
-            raise TypeError('rtype must be list or Series')
+        return [sequence.duration for sequence in self]
 
-    def action_template_counts(self, rtype: type = dict):
+    def action_template_counts(self):
         """
         Return a total count of all the ActionTemplates in the ActionSequences in the collection.
 
@@ -271,14 +262,9 @@ class Sequences(ISequences):
             sequence.action_template_counts(Series)
             for sequence in self
         ], axis=1).sum(axis=1).astype(int)
-        if rtype is Series:
-            return total
-        elif rtype is dict:
-            return total.to_dict()
-        else:
-            raise TypeError('rtype must be dict or Series')
+        return total.to_dict()
 
-    def action_template_sequence_counts(self, rtype: type = dict):
+    def action_template_sequence_counts(self):
         """
         Return a total count of the number of ActionSequences containing each ActionTemplate in the collection.
 
@@ -287,14 +273,9 @@ class Sequences(ISequences):
         counts = Series(chain.from_iterable([
             list(sequence.action_template_set()) for sequence in self
         ])).value_counts()
-        if rtype is Series:
-            return counts
-        elif rtype is dict:
-            return counts.to_dict()
-        else:
-            raise TypeError('rtype must be dict or Series')
+        return counts.to_dict()
 
-    def action_template_transition_counts(self, rtype: type = dict):
+    def action_template_transition_counts(self):
         """
         Return counts of transitions between pairs of Actions from each Sequence in the collection.
 
@@ -308,17 +289,7 @@ class Sequences(ISequences):
                 from_action = sequence.user_actions[a].template()
                 to_action = sequence.user_actions[a + 1].template()
                 transitions[(from_action, to_action)] += 1
-        if rtype is dict:
-            return dict(transitions)
-        elif rtype is Counter:
-            return Counter(transitions)
-        elif rtype is Series:
-            transitions = Series(transitions).sort_values(ascending=False)
-            transitions.name = 'count'
-            transitions.index.name = ['from', 'to']
-            return transitions
-        else:
-            raise TypeError('rtype must be dict or Series')
+        return dict(transitions)
 
     def count_location_transitions(self, exclude: Union[str, List[str]] = None):
         """

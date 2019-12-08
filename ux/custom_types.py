@@ -6,7 +6,7 @@ from ux.interfaces.sequences.i_sequences import ISequences
 
 
 ActionFilter = Callable[[IUserAction], bool]
-ActionGrouper = Callable[[IUserAction], Any]
+ActionMapper = Callable[[IUserAction], Any]
 SequenceFilter = Callable[[IActionSequence], bool]
 SequenceFilterSet = Dict[str, SequenceFilter]
 SequenceGrouper = Callable[[IActionSequence], Any]

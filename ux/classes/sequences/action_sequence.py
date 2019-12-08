@@ -10,7 +10,7 @@ from ux.calcs.object_calcs.task_success import unordered_task_completion_rate, o
     binary_task_success
 from ux.calcs.object_calcs.utils import sequence_intersects_task
 from ux.classes.wrappers.map_result import MapResult
-from ux.custom_types import ActionGrouper
+from ux.custom_types import ActionMapper
 from ux.interfaces.actions.i_action_template import IActionTemplate
 from ux.interfaces.actions.i_user_action import IUserAction
 from ux.interfaces.sequences.i_action_sequence import IActionSequence
@@ -74,7 +74,7 @@ class ActionSequence(IActionSequence):
         """
         return set(self.action_templates())
 
-    def action_template_counts(self, rtype: type = dict):
+    def action_template_counts(self):
         """
         Return a count of each ActionTemplate representing one or more UserActions in the ActionSequence.
 
@@ -83,12 +83,7 @@ class ActionSequence(IActionSequence):
         counts = defaultdict(int)
         for template in self.action_templates():
             counts[template] += 1
-        if rtype is dict:
-            return dict(counts)
-        elif rtype is Series:
-            return Series(counts).sort_values(ascending=False)
-        else:
-            raise TypeError('rtype must be dict or Series')
+        return dict(counts)
 
     def find_all(self, template: IActionTemplate):
         """
@@ -167,7 +162,7 @@ class ActionSequence(IActionSequence):
         """
         return self[0].session_id
 
-    def map(self, mapper: Union[str, dict, list, ActionGrouper]):
+    def map(self, mapper: Union[str, dict, list, ActionMapper]):
         """
         Apply a map function to every action in the Sequence and return the results.
 
@@ -377,6 +372,18 @@ class ActionSequence(IActionSequence):
         :rtype: Set[str]
         """
         return set([action.action_type for action in self.user_actions])
+
+    def back_click_rates(self):
+        """
+        :rtype: Dict[IActionTemplate, float]
+        """
+        rates = {}
+        template_list = self.action_templates()
+        for template in self.action_template_set():
+            forwards = template_list.count(template)
+            backwards = template_list.count(template.reversed())
+            rates[forwards] = backwards / forwards
+        return rates
 
     def __getitem__(self, item):
         """

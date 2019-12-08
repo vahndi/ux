@@ -28,7 +28,7 @@ class IActionSequence(object):
         """
         raise NotImplementedError
 
-    def action_template_counts(self, rtype: type = dict):
+    def action_template_counts(self):
         """
         Return a count of each ActionTemplate representing one or more UserActions in the ActionSequence.
 
@@ -108,6 +108,12 @@ class IActionSequence(object):
     def action_types(self):
         """
         :rtype: Set[str]
+        """
+        raise NotImplementedError
+
+    def back_click_rates(self):
+        """
+        :rtype: Dict[IActionTemplate, float]
         """
         raise NotImplementedError
 

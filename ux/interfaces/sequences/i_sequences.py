@@ -67,13 +67,13 @@ class ISequences(object):
         """
         raise NotImplementedError
 
-    def action_template_counts(self, rtype: type = dict):
+    def action_template_counts(self):
         """
         :rtype: Dict[IActionTemplate, int]
         """
         raise NotImplementedError
 
-    def action_template_sequence_counts(self, rtype: type = dict):
+    def action_template_sequence_counts(self):
         """
         Return a total count of the number of ActionSequences containing each ActionTemplate in the collection.
 
@@ -81,7 +81,7 @@ class ISequences(object):
         """
         raise NotImplementedError
 
-    def action_template_transition_counts(self, rtype: type = dict):
+    def action_template_transition_counts(self):
         """
         Return counts of transitions between pairs of Actions from each Sequence in the collection.
 

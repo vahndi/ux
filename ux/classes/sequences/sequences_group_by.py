@@ -28,11 +28,10 @@ class SequencesGroupBy(ISequencesGroupBy):
             except:
                 pass
 
-    def count(self, rtype: type = dict):
+    def count(self):
         """
         :rtype: MapResult
         """
-        assert rtype in (dict, Series, DataFrame)
         out_dict = OrderedDict([
             (key, sequences.count())
             for key, sequences in self._data.items()
@@ -94,10 +93,9 @@ class SequencesGroupBy(ISequencesGroupBy):
 
         return MapResult(results)
 
-    def agg(self, agg_funcs: dict, rtype: type = dict):
+    def agg(self, agg_funcs: dict):
         """
         :param agg_funcs: dict mapping attributes to one or more aggregation functions e.g. duration -> np.median
-        :param rtype: Return type of the result: dict or DataFrame
         """
         results = defaultdict(dict)
 
@@ -118,14 +116,7 @@ class SequencesGroupBy(ISequencesGroupBy):
                     else:
                         values = getattr(sequences, agg_key)
                     results[name]['{}({})'.format(agg_name, agg_key)] = agg_func(values)
-        if rtype is dict:
-            return results
-        elif rtype is DataFrame:
-            data = DataFrame(results).T.sort_index()
-            data.index.names = self._names
-            return data
-        else:
-            raise TypeError('rtype must be dict or DataFrame')
+        return results
 
     def filter(self, condition: SequenceFilter):
         """

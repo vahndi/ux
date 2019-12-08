@@ -21,6 +21,7 @@ class MapResult(object):
     def index_names(self):
         return self._index_names
 
+    @property
     def data_names(self):
         return self._data_names
 
@@ -37,7 +38,7 @@ class MapResult(object):
         if isinstance(list(self.keys())[0], tuple):
             return MultiIndex.from_tuples(self.keys(), names=self._index_names)
         else:
-            return Index(self.keys())
+            return Index(self.keys(), name=self._index_names[0])
 
     def to_series(self):
         """
