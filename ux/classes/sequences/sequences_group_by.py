@@ -98,7 +98,6 @@ class SequencesGroupBy(ISequencesGroupBy):
         :param agg_funcs: dict mapping attributes to one or more aggregation functions e.g. duration -> np.median
         """
         results = defaultdict(dict)
-
         # build list of agg_key, agg_func pairs
         agg_pairs = []
         for k, v in agg_funcs.items():

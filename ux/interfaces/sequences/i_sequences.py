@@ -54,6 +54,12 @@ class ISequences(object):
         """
         raise NotImplementedError
 
+    def back_click_rates(self):
+        """
+        :rtype: Dict[IActionTemplate, float]
+        """
+        raise NotImplementedError
+
     def group_by(self, by):
         """
         :rtype: ISequencesGroupBy

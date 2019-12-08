@@ -245,6 +245,20 @@ class Sequences(ISequences):
             intersect = intersect.intersection(s)
         return intersect
 
+    def back_click_rates(self):
+        """
+        :rtype: Dict[IActionTemplate, float]
+        """
+        rates = {}
+        counts = self.action_template_counts()
+        for template, count in counts.items():
+            forwards = count
+            backwards = counts.get(template.reversed(), 0)
+            rate = backwards / forwards
+            if rate <= 1:
+                rates[template] = rate
+        return rates
+
     @property
     def durations(self):
         """
@@ -258,11 +272,11 @@ class Sequences(ISequences):
 
         :rtype: Dict[IActionTemplate, int]
         """
-        total = concat([
-            sequence.action_template_counts(Series)
-            for sequence in self
-        ], axis=1).sum(axis=1).astype(int)
-        return total.to_dict()
+        counts = defaultdict(int)
+        for sequence in self:
+            for template in sequence.action_templates():
+                counts[template] += 1
+        return dict(counts)
 
     def action_template_sequence_counts(self):
         """

@@ -382,7 +382,9 @@ class ActionSequence(IActionSequence):
         for template in self.action_template_set():
             forwards = template_list.count(template)
             backwards = template_list.count(template.reversed())
-            rates[forwards] = backwards / forwards
+            rate = backwards / forwards
+            if rate <= 1:
+                rates[template] = rate
         return rates
 
     def __getitem__(self, item):
