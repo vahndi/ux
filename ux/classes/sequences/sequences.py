@@ -1,6 +1,6 @@
 from collections import defaultdict, OrderedDict, Counter
 from itertools import chain, product
-from pandas import concat, Series, notnull
+from pandas import notnull
 from types import FunctionType
 from typing import Dict, List, Union, Tuple
 
@@ -284,10 +284,10 @@ class Sequences(ISequences):
 
         :rtype: Dict[IActionTemplate, int]
         """
-        counts = Series(chain.from_iterable([
+        counts = Counter(chain.from_iterable(
             list(sequence.action_template_set()) for sequence in self
-        ])).value_counts()
-        return counts.to_dict()
+        ))
+        return dict(counts)
 
     def action_template_transition_counts(self):
         """

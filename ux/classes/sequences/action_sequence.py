@@ -3,8 +3,6 @@ from datetime import datetime, timedelta
 from types import FunctionType
 from typing import List, Callable, Set, Union
 
-from pandas import Series, DataFrame
-
 from ux.calcs.object_calcs.efficiency import lostness
 from ux.calcs.object_calcs.task_success import unordered_task_completion_rate, ordered_task_completion_rate, \
     binary_task_success
