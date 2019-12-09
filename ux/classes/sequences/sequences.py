@@ -350,14 +350,16 @@ class Sequences(ISequences):
         while found:
             # remove last added location as a possible target
             if not allow_repeats:
-                transitions = {k: v for k, v in transitions.items() if k[1] != current_name}
+                transitions = {from_to: count for from_to, count in transitions.items()
+                               if from_to[1] != current_name}
             # find next location
-            froms = [k[0] for k in transitions.keys()]
+            froms = [from_to[0] for from_to in transitions.keys()]
             if current_name in froms:
                 current_name = Counter({
-                    k: v for k, v in transitions.items()
-                    if k[0] == current_name
+                    from_to: count for from_to, count in transitions.items()
+                    if from_to[0] == current_name
                 }).most_common(1)[0][0][1]
+                # add if not already in sequence
                 if current_name not in sequence:
                     sequence.append(current_name)
                 else:
