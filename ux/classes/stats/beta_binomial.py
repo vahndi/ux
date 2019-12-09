@@ -175,7 +175,7 @@ class BetaBinomial(object):
 
     def plot_posterior(self, theta: ndarray = None,
                        n: int = None, m: int = None,
-                       hpd_width: float = 0.94,
+                       hpd_width: float = 0.94, hpd_y: float = None, hpd_ndp: int = 2,
                        label: str = None, color: str = None,
                        ax: Axes = None):
         """
@@ -186,7 +186,9 @@ class BetaBinomial(object):
         :param theta: vector of possible `θ`s
         :param n: number of trials (use instance value if not given)
         :param m: m number of successes (use instance value if not given)
-        :param hpd_width: Width of the Highest Posterior Density region to plot.
+        :param hpd_width: Width of the Highest Posterior Density region to plot (0 to 1). Defaults to 0.94
+        :param hpd_y: Manual override of the y-coordinate for the HPD line. Defaults to posterior max / 10
+        :param hpd_ndp: Number of decimal places to round the label for the upper and lower bounds of the HPD.
         :param label: Optional series label to override the default.
         :param color: Optional color for the series.
         :param ax: Optional matplotlib axes
@@ -199,17 +201,14 @@ class BetaBinomial(object):
         posterior = self.posterior(theta=theta, n=n, m=m)
         # plot distribution
         color = color or 'C0'
-        label = label or 'α={}, β={}, n={}, m={}'.format(
-            self.alpha, self.beta, n, m
-        )
-        ax = posterior.plot(kind='line', label=label,
-                            color=color, ax=ax)
+        label = label or 'α={}, β={}, n={}, m={}'.format(self.alpha, self.beta, n, m)
+        ax = posterior.plot(kind='line', label=label, color=color, ax=ax)
         # plot posterior_hpd
         hpd_low, hpd_high = self.posterior_hpd(percent=hpd_width, n=n, m=m)
-        hpd_y = posterior.max() / 10
+        hpd_y = hpd_y if hpd_y is not None else posterior.max() / 10
         ax.plot((hpd_low, hpd_high), (hpd_y, hpd_y), color='black')
-        ax.text(hpd_low, hpd_y, '{:.2f}'.format(hpd_low), ha='center', va='bottom')
-        ax.text(hpd_high, hpd_y, '{:.2f}'.format(hpd_high), ha='center', va='bottom')
+        ax.text(hpd_low, hpd_y, str(round(hpd_low, hpd_ndp)), ha='center', va='bottom')
+        ax.text(hpd_high, hpd_y, str(round(hpd_high, hpd_ndp)), ha='center', va='bottom')
         ax.text((hpd_low + hpd_high) / 2, posterior.max() * 0.5,
                 '{:.0f}% HPD'.format(hpd_width * 100), ha='center', va='bottom')
         # plot mean
