@@ -96,6 +96,15 @@ class ISequences(object):
         """
         raise NotImplementedError
 
+    def location_transition_counts(self, exclude=None):
+        """
+        Count the transitions from each location to each other location in actions in the given sequences.
+
+        :return: Counter[Tuple[from, to], count]
+        :rtype: Counter[Tuple[str, str], int]
+        """
+        raise NotImplementedError
+
     def map(self, mapper):
         """
         :rtype: MapResult

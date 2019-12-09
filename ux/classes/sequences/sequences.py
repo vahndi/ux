@@ -305,10 +305,11 @@ class Sequences(ISequences):
                 transitions[(from_action, to_action)] += 1
         return dict(transitions)
 
-    def count_location_transitions(self, exclude: Union[str, List[str]] = None):
+    def location_transition_counts(self, exclude: Union[str, List[str]] = None):
         """
         Count the transitions from each location to each other location in actions in the given sequences.
 
+        :return: Counter[Tuple[from, to], count]
         :rtype: Counter[Tuple[str, str], int]
         """
         transitions = Counter()
@@ -337,8 +338,7 @@ class Sequences(ISequences):
                               use a less likely item instead and carry on building the sequence.
         :rtype: List[str]
         """
-        transitions = self.count_location_transitions(exclude=exclude)
-        # transitions = create_transition_table(transitions=transitions, get_name=get_name, exclude=exclude)
+        transitions = self.location_transition_counts(exclude=exclude)
         # find most frequent from point
         if start_at is not None:
             current_name = start_at
