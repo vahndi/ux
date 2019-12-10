@@ -14,17 +14,35 @@ class BetaBinomial(object):
     """
     Class for calculating Bayesian probabilities using the Beta Binomial distribution.
 
-    `α` and `β` are the hyper-parameters of the prior.
-    `n` is the number of trials.
-    `m` is the number of successes over `n` trials.
-    `θ` is the probability of a successful trial.
+    Prior Hyper-parameters
+    ----------------------
+    * `α` and `β` are the hyper-parameters of the prior.
+    * `α > 0`
+    * `β > 0`
+    * Interpretation is α-1 successes and β-1 failures.
 
-    https://en.wikipedia.org/wiki/Beta-binomial_distribution
-    https://en.wikipedia.org/wiki/Conjugate_prior#When_likelihood_function_is_a_discrete_distribution
+    Posterior Hyper-parameters
+    --------------------------
+    * `n` is the number of trials.
+    * `m` is the number of successes over `n` trials.
+
+    Model parameters
+    ----------------
+    * `θ` is the probability of a successful trial.
+    * `0 ≤ θ ≤ 1`
+
+    Support
+    -------
+
+
+    Links
+    -----
+    * https://en.wikipedia.org/wiki/Beta_distribution
+    * https://en.wikipedia.org/wiki/Binomial_distribution
+    * https://en.wikipedia.org/wiki/Beta-binomial_distribution
+    * https://en.wikipedia.org/wiki/Conjugate_prior#When_likelihood_function_is_a_discrete_distribution
     """
-    def __init__(self, alpha: int = 1, beta: int = 1,
-                 n: int = 0, m: int = 0,
-                 theta: ndarray = None):
+    def __init__(self, alpha: int = 1, beta: int = 1, n: int = 0, m: int = 0, theta: ndarray = None):
         """
         Create a new beta-binomial model using the parameters of the prior beta distribution.
 
@@ -40,7 +58,7 @@ class BetaBinomial(object):
         self.n = n
         self.m = m
 
-    def prior(self, theta=None):
+    def prior(self, theta: ndarray = None):
         """
         Return the prior probability of the parameter θ given the priors α, β
 
@@ -127,28 +145,28 @@ class BetaBinomial(object):
         dist = beta_sp(self.alpha + m, self.beta + n - m)
         return dist.mean()
 
-    def plot_prior(self, theta=None, ax: Axes = None):
+    def plot_prior(self, theta=None, color: str = None, ax: Axes = None):
         """
         Plot the prior probability of the parameter θ given the priors α, β
 
         `p(θ|α,β)`
 
         :param theta: vector of possible `θ`s
+        :param color: Optional color for the series.
         :param ax: Optional matplotlib axes
         :rtype: Axes
         """
-        if ax is None:
-            _, ax = plt.subplots()
+        ax = ax or new_axes()
+        theta = theta or self.theta
         prior = self.prior(theta=theta)
-        ax = prior.plot(kind='line',
-                        label='α={}, β={}'.format(self.alpha, self.beta),
-                        color='C0')
+        prior.plot(kind='line', label='α={}, β={}'.format(self.alpha, self.beta),
+                   color=color or 'C0', ax=ax)
         ax.set_xlabel('θ')
         ax.set_ylabel('p(θ|α,β)')
         ax.legend()
         return ax
 
-    def plot_likelihood(self, theta: ndarray = None, n: int = None, m: int = None, ax: Axes = None):
+    def plot_likelihood(self, theta: ndarray = None, n: int = None, m: int = None, color: str = None, ax: Axes = None):
         """
         Return the likelihood of observing the data n, m given the parameters θ
 
@@ -157,17 +175,16 @@ class BetaBinomial(object):
         :param theta: vector of possible `θ`s
         :param n: number of trials (use instance value if not given)
         :param m: number of successes (use instance value if not given)
+        :param color: Optional color for the series.
         :param ax: Optional matplotlib axes
         :rtype: Axes
         """
-        if ax is None:
-            _, ax = plt.subplots()
+        ax = ax or new_axes()
         n = n or self.n
         m = m or self.m
         likelihood = self.likelihood(theta=theta, n=n, m=m)
-        ax = likelihood.plot(kind='line',
-                             label='n={}, m={}'.format(n, m),
-                             color='C0')
+        ax = likelihood.plot(kind='line', label='n={}, m={}'.format(n, m),
+                             color=color or 'C1')
         ax.set_xlabel('θ')
         ax.set_ylabel('p(m|n,θ)')
         ax.legend()
@@ -200,9 +217,8 @@ class BetaBinomial(object):
         m = m or self.m
         posterior = self.posterior(theta=theta, n=n, m=m)
         # plot distribution
-        color = color or 'C0'
         label = label or 'α={}, β={}, n={}, m={}'.format(self.alpha, self.beta, n, m)
-        ax = posterior.plot(kind='line', label=label, color=color, ax=ax)
+        ax = posterior.plot(kind='line', label=label, color=color or 'C2', ax=ax)
         # plot posterior_hpd
         hpd_low, hpd_high = self.posterior_hpd(percent=hpd_width, n=n, m=m)
         hpd_y = hpd_y if hpd_y is not None else posterior.max() / 10
@@ -238,7 +254,6 @@ class BetaBinomial(object):
             def h(a, b, c, d):
                 num = lgamma(a + c) + lgamma(b + d) + lgamma(a + b) + lgamma(c + d)
                 den = lgamma(a) + lgamma(b) + lgamma(c) + lgamma(d) + lgamma(a + b + c + d)
-
                 return exp(num - den)
 
             @jit
