@@ -1,4 +1,3 @@
-import matplotlib.pyplot as plt
 from matplotlib.axes import Axes
 from math import lgamma
 from numba import jit
@@ -183,8 +182,8 @@ class BetaBinomial(object):
         n = n or self.n
         m = m or self.m
         likelihood = self.likelihood(theta=theta, n=n, m=m)
-        ax = likelihood.plot(kind='line', label='n={}, m={}'.format(n, m),
-                             color=color or 'C1')
+        likelihood.plot(kind='line', label='n={}, m={}'.format(n, m),
+                        color=color or 'C1', ax=ax)
         ax.set_xlabel('θ')
         ax.set_ylabel('p(m|n,θ)')
         ax.legend()
@@ -192,7 +191,7 @@ class BetaBinomial(object):
 
     def plot_posterior(self, theta: ndarray = None,
                        n: int = None, m: int = None,
-                       hpd_width: float = 0.94, hpd_y: float = None, hpd_ndp: int = 2,
+                       hpd_width: float = 0.94, hpd_y: float = None, hpd_ndp: int = 2, hpd_color: str = 'k',
                        label: str = None, color: str = None,
                        ax: Axes = None):
         """
@@ -206,6 +205,7 @@ class BetaBinomial(object):
         :param hpd_width: Width of the Highest Posterior Density region to plot (0 to 1). Defaults to 0.94
         :param hpd_y: Manual override of the y-coordinate for the HPD line. Defaults to posterior max / 10
         :param hpd_ndp: Number of decimal places to round the label for the upper and lower bounds of the HPD.
+        :param hpd_color: Color for the HPD line.
         :param label: Optional series label to override the default.
         :param color: Optional color for the series.
         :param ax: Optional matplotlib axes
@@ -222,9 +222,9 @@ class BetaBinomial(object):
         # plot posterior_hpd
         hpd_low, hpd_high = self.posterior_hpd(percent=hpd_width, n=n, m=m)
         hpd_y = hpd_y if hpd_y is not None else posterior.max() / 10
-        ax.plot((hpd_low, hpd_high), (hpd_y, hpd_y), color='black')
-        ax.text(hpd_low, hpd_y, str(round(hpd_low, hpd_ndp)), ha='center', va='bottom')
-        ax.text(hpd_high, hpd_y, str(round(hpd_high, hpd_ndp)), ha='center', va='bottom')
+        ax.plot((hpd_low, hpd_high), (hpd_y, hpd_y), color=hpd_color)
+        ax.text(hpd_low, hpd_y, str(round(hpd_low, hpd_ndp)), ha='right', va='top')
+        ax.text(hpd_high, hpd_y, str(round(hpd_high, hpd_ndp)), ha='left', va='top')
         ax.text((hpd_low + hpd_high) / 2, posterior.max() * 0.5,
                 '{:.0f}% HPD'.format(hpd_width * 100), ha='center', va='bottom')
         # plot mean
