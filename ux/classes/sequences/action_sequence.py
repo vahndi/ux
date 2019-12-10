@@ -1,5 +1,6 @@
 from collections import defaultdict, OrderedDict
 from datetime import datetime, timedelta
+from pandas import notnull
 from types import FunctionType
 from typing import List, Callable, Set, Union
 
@@ -50,6 +51,45 @@ class ActionSequence(IActionSequence):
         :rtype: dict
         """
         return self._meta
+
+    @property
+    def start(self):
+        """
+        :rtype: datetime
+        """
+        return self[0].time_stamp
+
+    @property
+    def end(self):
+        """
+        :rtype: datetime
+        """
+        return self[-1].time_stamp
+
+    @property
+    def duration(self):
+        """
+        Return the total duration of the ActionSequence from the first Action to the last.
+
+        :rtype: timedelta
+        """
+        start_time = self.user_actions[0].time_stamp
+        end_time = self.user_actions[-1].time_stamp
+        return end_time - start_time
+
+    @property
+    def user_id(self):
+        """
+        :rtype: str
+        """
+        return self[0].user_id
+
+    @property
+    def session_id(self):
+        """
+        :rtype: str
+        """
+        return self[0].session_id
 
     def action_templates(self):
         """
@@ -120,45 +160,6 @@ class ActionSequence(IActionSequence):
             return occurrences[-1]
         else:
             return None
-
-    @property
-    def start(self):
-        """
-        :rtype: datetime
-        """
-        return self[0].time_stamp
-
-    @property
-    def end(self):
-        """
-        :rtype: datetime
-        """
-        return self[-1].time_stamp
-
-    @property
-    def duration(self):
-        """
-        Return the total duration of the ActionSequence from the first Action to the last.
-
-        :rtype: timedelta
-        """
-        start_time = self.user_actions[0].time_stamp
-        end_time = self.user_actions[-1].time_stamp
-        return end_time - start_time
-
-    @property
-    def user_id(self):
-        """
-        :rtype: str
-        """
-        return self[0].user_id
-
-    @property
-    def session_id(self):
-        """
-        :rtype: str
-        """
-        return self[0].session_id
 
     def map(self, mapper: Union[str, dict, list, ActionMapper]):
         """
@@ -384,6 +385,37 @@ class ActionSequence(IActionSequence):
             if rate <= 1:
                 rates[template] = rate
         return rates
+
+    def dwell_times(self, overall: bool):
+        """
+        Return the amount of time spent by the user at each location.
+
+        :param overall: Whether to sum the durations of time spend for all actions.
+        :rtype: Dict[str, Union[timedelta, List[timedelta]]]
+        """
+        if overall:
+            dwell_times = defaultdict(timedelta)
+            for a in range(1, len(self)):
+                prev_action = self[a - 1]
+                next_action = self[a]
+                if notnull(prev_action.target_id) and prev_action.target_id != '':
+                    location = prev_action.target_id
+                else:
+                    location = prev_action.source_id
+                dwell_times[location] += next_action.time_stamp - prev_action.time_stamp
+        else:
+            dwell_times = defaultdict(list)
+            for a in range(1, len(self)):
+                prev_action = self[a - 1]
+                next_action = self[a]
+                if notnull(prev_action.target_id) and prev_action.target_id != '':
+                    location = prev_action.target_id
+                else:
+                    location = prev_action.source_id
+                dwell_times[location].append(
+                    next_action.time_stamp - prev_action.time_stamp
+                )
+        return dwell_times
 
     def __getitem__(self, item):
         """

@@ -117,6 +117,15 @@ class IActionSequence(object):
         """
         raise NotImplementedError
 
+    def dwell_times(self, overall: bool):
+        """
+        Return the amount of time spent by the user at each location.
+
+        :param overall: Whether to sum the durations of time spend for all actions.
+        :rtype: Dict[str, Union[timedelta, List[timedelta]]]
+        """
+        raise NotImplementedError
+
     def location_ids(self):
         """
         :rtype: Set[str]

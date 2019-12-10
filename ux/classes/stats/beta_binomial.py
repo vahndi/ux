@@ -30,10 +30,6 @@ class BetaBinomial(object):
     * `θ` is the probability of a successful trial.
     * `0 ≤ θ ≤ 1`
 
-    Support
-    -------
-
-
     Links
     -----
     * https://en.wikipedia.org/wiki/Beta_distribution

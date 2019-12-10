@@ -29,10 +29,7 @@ class GammaExponential(object):
     Model parameters
     ----------------
     * `λ` is the rate of the exponential distribution `P(x) = λ·exp(-λx)`
-
-    Support
-    -------
-
+    * `0 < λ`
 
     Links
     -----
