@@ -1,5 +1,5 @@
 from matplotlib.axes import Axes
-from numpy import linspace, ndarray
+from numpy import linspace, ndarray, tile, tril
 from pandas import Series, Index
 from scipy.stats import gamma
 
@@ -68,7 +68,7 @@ class GammaExponential(object):
             raise ValueError('Either provide α and β or k and θ')
         self.n = n
         self.x_mean = x_mean
-        self.lambda_ = lambda_ or linspace(0, 20, 10001)
+        self.lambda_ = lambda_ if lambda_ is not None else linspace(0, 10, 10001)
 
     def prior(self, lambda_: ndarray = None):
         """
@@ -164,6 +164,91 @@ class GammaExponential(object):
         ax.set_ylabel(y_label)
         ax.legend()
         return ax
+
+    def plot_posterior(self, lambda_: ndarray = None,
+                       n: int = None, x_mean: float = None,
+                       hpd_width: float = 0.94, hpd_y: float = None, ndp: int = 2, hpd_color: str = 'k',
+                       label: str = None, color: str = None,
+                       ax: Axes = None):
+        """
+        Return the posterior probability of the parameters given the data n, m and priors α, β
+
+        `p(λ|n,x̄,α,β)`
+
+        :param lambda_: vector of possible `θ`s
+        :param n: number of observations
+        :param x_mean: average time between observations
+        :param hpd_width: Width of the Highest Posterior Density region to plot (0 to 1). Defaults to 0.94
+        :param hpd_y: Manual override of the y-coordinate for the HPD line. Defaults to posterior max / 10
+        :param ndp: Number of decimal places to round the labels for the upper and lower bounds of the HPD and the mean.
+        :param hpd_color: Color for the HPD line.
+        :param label: Optional series label to override the default.
+        :param color: Optional color for the series.
+        :param ax: Optional matplotlib axes
+        :rtype: Axes
+        """
+        ax = ax or new_axes()
+        lambda_ = lambda_ if lambda_ is not None else self.lambda_
+        n = n or self.n
+        x_mean = x_mean or self.x_mean
+        posterior = self.posterior(lambda_=lambda_, n=n, x_mean=x_mean)
+        # plot distribution
+        if self._parametrization == 'ab':
+            label = label or 'α={}, β={}, n={}, x̄={}'.format(self.alpha, self.beta, n, x_mean)
+        else:
+            label = label or 'k={}, θ={}, n={}, x̄={}'.format(self.alpha, 1 / self.beta, n, x_mean)
+        ax = posterior.plot(kind='line', label=label, color=color or 'C2', ax=ax)
+        # plot posterior_hpd
+        hpd_low, hpd_high = self.posterior_hpd(percent=hpd_width, n=n, x_mean=x_mean)
+        hpd_y = hpd_y if hpd_y is not None else posterior.max() / 10
+        ax.plot((hpd_low, hpd_high), (hpd_y, hpd_y), color=hpd_color)
+        ax.text(hpd_low, hpd_y, str(round(hpd_low, ndp)), ha='right', va='top')
+        ax.text(hpd_high, hpd_y, str(round(hpd_high, ndp)), ha='left', va='top')
+        ax.text((hpd_low + hpd_high) / 2, posterior.max() * 0.5,
+                '{:.0f}% HPD'.format(hpd_width * 100), ha='center', va='bottom')
+        # plot mean
+        mean = self.posterior_mean(n=n, x_mean=x_mean)
+        ax.text(mean, posterior.max() * 0.95, 'mean = {}'.format(str(round(mean, ndp))), ha='center')
+        # labels
+        ax.set_xlabel('λ')
+        if self._parametrization == 'ab':
+            ax.set_ylabel('p(λ|n,x̄,α,β)')
+        else:
+            ax.set_ylabel('p(λ|n,x̄,k,θ)')
+        ax.legend()
+        return ax
+
+    def prob_posterior_greater(self, other, method: str = 'samples', n_samples: int = None):
+        """
+        Return the approximate probability that a random value of the posterior density is greater
+        than that of another distribution.
+        N.B. this method only produces and approximate solution and is slow due to the requirement to
+        calculate the square matrix. Sampling from each distribution is much faster and more accurate.
+        Use a closed form solution wherever possible.
+
+        :type other: BetaBinomial
+        :param method: One of ['exact', 'sample', 'approx']
+        :param n_samples: Only used for 'sample' and 'approx' methods. Defaults to sensible values for each method.
+        :rtype: float
+        """
+        if method == 'samples':
+            n_samples = n_samples or 100001
+            self_samples = gamma(a=self.alpha + self.n, scale=1 / (self.beta + self.n * self.x_mean)).rvs(n_samples)
+            other_samples = gamma(a=other.alpha + other.n, scale=1 / (other.beta + other.n * other.x_mean)).rvs(n_samples)
+            return sum(self_samples > other_samples) / n_samples
+        elif method == 'approx':
+            n_steps = n_samples or 10001
+            # get PDFs
+            pdf_self = self.posterior(lambda_=self.lambda_)
+            pdf_other = other.posterior(lambda_=self.lambda_)
+            # tile each pdf in orthogonal directions and multiply probabilities
+            n_steps = len(self.lambda_)
+            a_self = tile(pdf_self.values, (n_steps, 1)).T
+            a_other = tile(pdf_other.values, (n_steps, 1))
+            a_prod = a_self * a_other
+            # sum p1(θ1) * p2(θ2) in lower triangle (excluding diagonal) i.e. where θ1 > θ2, and normalize
+            p_total = tril(a_prod, k=1).sum() / a_prod.sum()
+            return p_total
 
 
 def plot_wikipedia():
