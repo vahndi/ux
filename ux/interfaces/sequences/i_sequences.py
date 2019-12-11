@@ -105,6 +105,16 @@ class ISequences(object):
         """
         raise NotImplementedError
 
+    def dwell_times(self, sum_by_location: bool, sum_by_sequence: bool):
+        """
+        Return the amount of time spent by the user at each location.
+
+        :param sum_by_location: Whether to sum the durations of time spent at each location or keep as a list.
+        :param sum_by_sequence: Whether to sum the durations of time spent at each location in each sequence or keep as a list.
+        :rtype: Dict[str, Union[timedelta, List[timedelta]]]
+        """
+        raise NotImplementedError
+
     def map(self, mapper):
         """
         :rtype: MapResult

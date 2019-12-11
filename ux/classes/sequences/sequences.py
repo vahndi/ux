@@ -1,8 +1,9 @@
 from collections import defaultdict, OrderedDict, Counter
+from datetime import timedelta
 from itertools import chain, product
 from pandas import notnull
 from types import FunctionType
-from typing import Dict, List, Union, Tuple
+from typing import Dict, Iterator, List, Union, Tuple
 
 from ux.classes.sequences.sequences_group_by import SequencesGroupBy
 from ux.classes.wrappers.map_result import MapResult
@@ -327,6 +328,34 @@ class Sequences(ISequences):
                     transitions[(source, target)] += 1
         return transitions
 
+    def dwell_times(self, sum_by_location: bool, sum_by_sequence: bool):
+        """
+        Return the amount of time spent by the user at each location.
+
+        :param sum_by_location: Whether to sum the durations of time spent at each location or keep as a list.
+        :param sum_by_sequence: Whether to sum the durations of time spent at each location in each sequence or keep as a list.
+        :rtype: Dict[str, Union[timedelta, List[timedelta]]]
+        """
+        if sum_by_sequence:
+            dwell_times = defaultdict(timedelta)
+            for sequence in self:
+                for location, duration in sequence.dwell_times(sum_by_location=True).items():
+                    dwell_times[location] += duration
+        elif not sum_by_location and not sum_by_sequence:
+            dwell_times = defaultdict(list)
+            for sequence in self:
+                for location, durations in sequence.dwell_times(sum_by_location=False).items():
+                    dwell_times[location].extend(durations)
+        elif sum_by_location and not sum_by_sequence:
+            dwell_times = defaultdict(list)
+            for sequence in self:
+                for location, duration in sequence.dwell_times(sum_by_location=True).items():
+                    dwell_times[location].append(duration)
+        else:
+            raise ValueError('Invalid arguments for sum_per_location and / or sum_per_sequence')
+
+        return dwell_times
+
     def most_probable_location_sequence(self, exclude: Union[str, List[str]] = None, start_at: str = None,
                                         allow_repeats: bool = True):
         """
@@ -400,7 +429,7 @@ class Sequences(ISequences):
 
     def __iter__(self):
         """
-        :rtype: IActionSequence
+        :rtype: Iterator[IActionSequence]
         """
         return self._sequences.__iter__()
 

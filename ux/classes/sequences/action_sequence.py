@@ -386,14 +386,14 @@ class ActionSequence(IActionSequence):
                 rates[template] = rate
         return rates
 
-    def dwell_times(self, overall: bool):
+    def dwell_times(self, sum_by_location: bool):
         """
         Return the amount of time spent by the user at each location.
 
-        :param overall: Whether to sum the durations of time spend for all actions.
+        :param sum_by_location: Whether to sum the durations of time spent at each location or keep as a list.
         :rtype: Dict[str, Union[timedelta, List[timedelta]]]
         """
-        if overall:
+        if sum_by_location:
             dwell_times = defaultdict(timedelta)
             for a in range(1, len(self)):
                 prev_action = self[a - 1]
