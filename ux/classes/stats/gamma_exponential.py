@@ -164,7 +164,8 @@ class GammaExponential(object):
 
     def plot_posterior(self, lambda_: ndarray = None,
                        n: int = None, x_mean: float = None,
-                       hpd_width: float = 0.94, hpd_y: float = None, ndp: int = 2, hpd_color: str = 'k',
+                       ndp: int = 2,
+                       hpd_width: float = 0.94, hpd_y: float = None, hpd_color: str = 'k',
                        label: str = None, color: str = None,
                        ax: Axes = None):
         """
@@ -175,9 +176,9 @@ class GammaExponential(object):
         :param lambda_: vector of possible `θ`s
         :param n: number of observations
         :param x_mean: average time between observations
+        :param ndp: Number of decimal places to round the labels for the upper and lower bounds of the HPD and the mean.
         :param hpd_width: Width of the Highest Posterior Density region to plot (0 to 1). Defaults to 0.94
         :param hpd_y: Manual override of the y-coordinate for the HPD line. Defaults to posterior max / 10
-        :param ndp: Number of decimal places to round the labels for the upper and lower bounds of the HPD and the mean.
         :param hpd_color: Color for the HPD line.
         :param label: Optional series label to override the default.
         :param color: Optional color for the series.
