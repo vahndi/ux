@@ -198,7 +198,7 @@ class ActionSequence(IActionSequence):
         else:
             raise TypeError('mapper must be dict, str or FunctionType')
 
-        return MapResult(results, data_names=list(results.keys()))
+        return MapResult(results, value_names=list(results.keys()))
 
     def intersects_task(self, task: ITask):
         """
