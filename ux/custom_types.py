@@ -12,3 +12,4 @@ SequenceFilterSet = Dict[str, SequenceFilter]
 SequenceGrouper = Callable[[IActionSequence], Any]
 SequencesGroupByKey = Union[str, Tuple[str, ...]]
 SequencesGrouper = Callable[[ISequences], Any]
+
