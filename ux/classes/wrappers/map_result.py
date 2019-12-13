@@ -48,19 +48,6 @@ class MapResult(object):
     def data_names(self):
         return self._data_names
 
-    def to_list(self):
-        """
-        :rtype: List[tuple]
-        """
-        return list(self.to_frame().to_records())
-
-    def _pandas_index(self):
-
-        if isinstance(list(self.keys())[0], tuple):
-            return MultiIndex.from_tuples(self.keys(), names=self._index_names)
-        else:
-            return Index(self.keys(), name=self._index_names[0])
-
     def to_series(self):
         """
         :rtype: Series
@@ -102,11 +89,29 @@ class MapResult(object):
         """
         return self._data
 
-    def to_frame(self):
+    def to_frame(self, wide: bool = False):
         """
         :rtype: DataFrame
         """
-        return self.to_series().to_frame().reset_index()
+        if not wide:
+            return self.to_series().to_frame().reset_index()
+        else:
+            try:
+                return DataFrame(self._data)
+            except:
+                return self.to_series().to_frame().reset_index()
+
+    def to_list(self):
+        """
+        :rtype: list
+        """
+        return list(self.to_series().tolist())
+
+    def to_tuples(self):
+        """
+        :rtype: List[tuple]
+        """
+        return list(self.to_frame().to_records())
 
     def items(self):
 
