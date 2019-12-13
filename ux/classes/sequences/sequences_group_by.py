@@ -36,7 +36,7 @@ class SequencesGroupBy(ISequencesGroupBy):
             (key, sequences.count())
             for key, sequences in self._data.items()
         ])
-        return MapResult(out_dict, value_names=['count'], key_names=self.names)
+        return MapResult(out_dict, key_names=self.names, value_names='count')
 
     def map(self, mapper: Union[str, dict, list, SequencesGrouper]):
         """

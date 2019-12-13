@@ -202,7 +202,7 @@ class Sequences(ISequences):
         else:
             raise TypeError('mapper must be dict, list, str or FunctionType')
 
-        return MapResult(results, value_names=list(results.keys()))
+        return MapResult(results)
 
     def count(self):
         """

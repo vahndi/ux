@@ -9,7 +9,7 @@ def _str_or_non_iterable(val):
 
 class MapResult(object):
 
-    def __init__(self, data: dict, key_names: Union[str, List[str]], value_names: Union[str, List[str]]):
+    def __init__(self, data: dict, key_names: Union[str, List[str]]='map', value_names: Union[str, List[str]]='result'):
 
         if isinstance(key_names, str):
             key_names = [key_names]
