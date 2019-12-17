@@ -1,4 +1,4 @@
-from typing import Callable, Dict, Tuple, Union, Any
+from typing import Callable, Dict, Tuple, Union, Any, Iterable
 
 from ux.interfaces.actions.i_user_action import IUserAction
 from ux.interfaces.sequences.i_action_sequence import IActionSequence

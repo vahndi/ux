@@ -36,7 +36,7 @@ class SequencesGroupBy(ISequencesGroupBy):
             (key, sequences.count())
             for key, sequences in self._data.items()
         ])
-        return MapResult(out_dict, data_names=['count'], index_names=self.names)
+        return MapResult(out_dict, key_names=self.names, value_names='count')
 
     def map(self, mapper: Union[str, dict, list, SequencesGrouper]):
         """
@@ -68,7 +68,6 @@ class SequencesGroupBy(ISequencesGroupBy):
             return tuple(names + [get_method_name(method)])
 
         if isinstance(mapper, str) or isinstance(mapper, FunctionType):
-            self._names.append(get_method_name(mapper))
             keys = [new_group(names, mapper) for names in group_names]
             values = map_items(mapper)
             results = OrderedDict([(key, value) for key, value in zip(keys, values)])
@@ -91,7 +90,7 @@ class SequencesGroupBy(ISequencesGroupBy):
         else:
             raise TypeError('mapper must be dict, list, str or FunctionType')
 
-        return MapResult(results)
+        return MapResult(results, key_names=self.names + ['map'])
 
     def agg(self, agg_funcs: dict):
         """

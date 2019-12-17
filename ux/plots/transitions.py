@@ -114,7 +114,7 @@ def plot_sequence_diagram(sequence: IActionSequence, locations: List[str], max_g
         'location': lambda act: act.source_id,
         'action-type': lambda act: act.action_type,
         'time_stamp': lambda act: act.time_stamp
-    }).to_frame()
+    }).to_frame(wide=True)
     data['y'] = [
         len(locations) - locations.index(location) - 1
         if location in locations
