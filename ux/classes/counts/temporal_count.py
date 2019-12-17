@@ -19,6 +19,11 @@ class TemporalCount(dict):
         """
         super(TemporalCount, self).__init__()
         self._name = name
+        # validation checks
+        assert None not in self.keys(), 'Keys cannot be None'
+        for k, v in self.items():
+            if isinstance(v, dict):
+                assert None not in v.keys(), 'Keys of a split count cannot be None'
 
     @staticmethod
     def from_dict(dictionary: dict, name: str):
