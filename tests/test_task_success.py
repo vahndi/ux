@@ -1,3 +1,4 @@
+from datetime import datetime
 import unittest
 from unittest import TestCase
 
@@ -27,7 +28,7 @@ class TestTaskSuccess(TestCase):
                     action_id='action-{}'.format(i),
                     action_type='test-action',
                     source_id='location-{}'.format(a),
-                    time_stamp=None, user_id=None, session_id=None
+                    time_stamp=datetime.now(), user_id='user_1', session_id='session_1'
                 ) for i, a in enumerate([1, 2, 3, 2, 3, 4, 5])
             ]
         )
@@ -37,7 +38,7 @@ class TestTaskSuccess(TestCase):
                     action_id='action-{}'.format(i),
                     action_type='test-action',
                     source_id='location-{}'.format(a),
-                    time_stamp=None, user_id=None, session_id=None
+                    time_stamp=datetime.now(), user_id='user_1', session_id='session_1'
                 ) for i, a in enumerate([1, 2, 3, 2, 5, 4])
             ]
         )
