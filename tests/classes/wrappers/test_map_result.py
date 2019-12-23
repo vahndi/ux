@@ -1,3 +1,4 @@
+from itertools import product
 from unittest import TestCase
 
 from pandas import Series, Index, DataFrame
@@ -68,6 +69,12 @@ class TestMapResult(TestCase):
                         names=['letter_1', 'letter_2']),
             data=[1, 2, 3, 4, 5], name='numbers'
         )
+        self.mr_single_key = [
+            self.mr_single_single, self.mr_single_fixed, self.mr_single_variable
+        ]
+        self.mr_tuple_key = [
+            self.mr_tuple_single, self.mr_tuple_fixed, self.mr_tuple_variable
+        ]
 
     @staticmethod
     def series_equivalent(data_1: Series, data_2: Series):
@@ -107,3 +114,183 @@ class TestMapResult(TestCase):
     def test_to_frame_wide(self):
 
         self.assertTrue(self.frames_equivalent(self.d_data_fixed_wide, self.mr_single_fixed.to_frame(wide=True)))
+
+    def test_add_works(self):
+
+        self.assertEqual(
+            self.mr_single_single + self.mr_single_single,
+            MapResult(
+                data={'a': 2, 'b': 4, 'c': 6},
+                key_names='letters', value_names='numbers'
+            )
+        )
+        self.assertEqual(
+            self.mr_single_fixed + self.mr_single_fixed,
+            MapResult(
+                data={'a': [1, 2, 3, 1, 2, 3], 'b': [4, 5, 6, 4, 5, 6]},
+                key_names='letters', value_names='numbers'
+            )
+        )
+        self.assertEqual(
+            self.mr_single_variable + self.mr_single_variable,
+            MapResult(
+                data={'a': [1, 2, 1, 2], 'b': [3, 4, 5, 3, 4, 5]},
+                key_names='letters', value_names='numbers'
+            )
+        )
+        self.assertEqual(
+            self.mr_tuple_single + self.mr_tuple_single,
+            MapResult(
+                data={('a', 'b'): 2, ('c', 'd'): 4, ('e', 'f'): 6},
+                key_names=['letter_1', 'letter_2'], value_names='numbers'
+            )
+        )
+        self.assertEqual(
+            self.mr_tuple_fixed + self.mr_tuple_fixed,
+            MapResult(
+                data={('a', 'b'): [1, 2, 3, 1, 2, 3], ('c', 'd'): [4, 5, 6, 4, 5, 6]},
+                key_names=['letter_1', 'letter_2'], value_names='numbers'
+            )
+        )
+        self.assertEqual(
+            self.mr_tuple_variable + self.mr_tuple_variable,
+            MapResult(
+                data={('a', 'b'): [1, 2, 1, 2], ('c', 'd'): [3, 4, 5, 3, 4, 5]},
+                key_names=['letter_1', 'letter_2'], value_names='numbers'
+            )
+        )
+        self.assertEqual(
+            self.mr_single_fixed + self.mr_single_variable,
+            MapResult(
+                data={'a': [1, 2, 3, 1, 2], 'b': [4, 5, 6, 3, 4, 5]},
+                key_names=['letters'], value_names='numbers'
+            )
+        )
+        self.assertEqual(
+            self.mr_tuple_fixed + self.mr_tuple_variable,
+            MapResult(
+                data={('a', 'b'): [1, 2, 3, 1, 2], ('c', 'd'): [4, 5, 6, 3, 4, 5]},
+                key_names=['letter_1', 'letter_2'], value_names='numbers'
+            )
+        )
+
+    def test_add_fails(self):
+
+        # mismatching key types
+        for mr_1, mr_2 in product(
+            self.mr_single_key, self.mr_tuple_key
+        ):
+            self.assertRaises(KeyError, lambda: mr_1 + mr_2)
+        # unaddable value types
+        for mr_1, mr_2 in [
+            (self.mr_single_single, self.mr_single_fixed),
+            (self.mr_single_single, self.mr_single_variable),
+            (self.mr_tuple_single, self.mr_tuple_fixed),
+            (self.mr_tuple_single, self.mr_tuple_variable),
+        ]:
+            self.assertRaises(TypeError, lambda: mr_1 + mr_2)
+
+    def test_sub_works(self):
+
+        self.assertEqual(
+            self.mr_single_single - self.mr_single_single,
+            MapResult(
+                data={'a': 0, 'b': 0, 'c': 0},
+                key_names='letters', value_names='numbers'
+            )
+        )
+        self.assertEqual(
+            self.mr_tuple_single - self.mr_tuple_single,
+            MapResult(
+                data={('a', 'b'): 0, ('c', 'd'): 0, ('e', 'f'): 0},
+                key_names=['letter_1', 'letter_2'], value_names='numbers'
+            )
+        )
+
+    def test_sub_fails(self):
+
+        # mismatching key types
+        for mr_1, mr_2 in product(
+            self.mr_single_key, self.mr_tuple_key
+        ):
+            self.assertRaises(KeyError, lambda: mr_1 - mr_2)
+        # unsubtractable value types
+        for mr_1, mr_2 in [
+            (self.mr_single_single, self.mr_single_fixed),
+            (self.mr_single_single, self.mr_single_variable),
+            (self.mr_single_fixed, self.mr_single_variable),
+            (self.mr_tuple_single, self.mr_tuple_fixed),
+            (self.mr_tuple_single, self.mr_tuple_variable),
+            (self.mr_tuple_fixed, self.mr_tuple_variable)
+        ]:
+            self.assertRaises(TypeError, lambda: mr_1 - mr_2)
+
+    def test_mul_works(self):
+
+        self.assertEqual(
+            self.mr_single_single * self.mr_single_single,
+            MapResult(
+                data={'a': 1, 'b': 4, 'c': 9},
+                key_names='letters', value_names='numbers'
+            )
+        )
+        self.assertEqual(
+            self.mr_tuple_single * self.mr_tuple_single,
+            MapResult(
+                data={('a', 'b'): 1, ('c', 'd'): 4, ('e', 'f'): 9},
+                key_names=['letter_1', 'letter_2'], value_names='numbers'
+            )
+        )
+
+    def test_mul_fails(self):
+
+        # mismatching key types
+        for mr_1, mr_2 in product(
+            self.mr_single_key, self.mr_tuple_key
+        ):
+            self.assertRaises(KeyError, lambda: mr_1 * mr_2)
+        # unmultipliable value types
+        for mr_1, mr_2 in [
+            (self.mr_single_single, self.mr_single_fixed),
+            (self.mr_single_single, self.mr_single_variable),
+            (self.mr_single_fixed, self.mr_single_variable),
+            (self.mr_tuple_single, self.mr_tuple_fixed),
+            (self.mr_tuple_single, self.mr_tuple_variable),
+            (self.mr_tuple_fixed, self.mr_tuple_variable)
+        ]:
+            self.assertRaises(TypeError, lambda: mr_1 * mr_2)
+
+    def test_div_works(self):
+
+        self.assertEqual(
+            self.mr_single_single / self.mr_single_single,
+            MapResult(
+                data={'a': 1, 'b': 1, 'c': 1},
+                key_names='letters', value_names='numbers'
+            )
+        )
+        self.assertEqual(
+            self.mr_tuple_single / self.mr_tuple_single,
+            MapResult(
+                data={('a', 'b'): 1, ('c', 'd'): 1, ('e', 'f'): 1},
+                key_names=['letter_1', 'letter_2'], value_names='numbers'
+            )
+        )
+
+    def test_div_fails(self):
+
+        # mismatching key types
+        for mr_1, mr_2 in product(
+            self.mr_single_key, self.mr_tuple_key
+        ):
+            self.assertRaises(KeyError, lambda: mr_1 / mr_2)
+        # indivisible value types
+        for mr_1, mr_2 in [
+            (self.mr_single_single, self.mr_single_fixed),
+            (self.mr_single_single, self.mr_single_variable),
+            (self.mr_single_fixed, self.mr_single_variable),
+            (self.mr_tuple_single, self.mr_tuple_fixed),
+            (self.mr_tuple_single, self.mr_tuple_variable),
+            (self.mr_tuple_fixed, self.mr_tuple_variable)
+        ]:
+            self.assertRaises(TypeError, lambda: mr_1 / mr_2)

@@ -1,3 +1,4 @@
+from collections import OrderedDict
 from pandas import DataFrame, Series, MultiIndex, Index, concat
 from typing import List, Union, Iterable
 
@@ -22,14 +23,14 @@ class MapResult(object):
         if all(_str_or_non_iterable(k) for k in list(data.keys())):
             assert len(key_names) == 1, 'Length of index names must be 1 when keys are not Iterables'
         else:
-            assert len(key_names) == len(list(data.keys())[0]), 'Keys must have same length as index_names'
+            assert len(key_names) == len(list(data.keys())[0]), 'Keys must have same length as key_names'
 
         # check value names
         assert len(value_names) == 1, 'value_names must be length 1'
 
         self._data: dict = data
-        self._index_names = key_names
-        self._data_names = value_names
+        self._key_names = key_names
+        self._value_names = value_names
 
         self._first_key = list(data.keys())[0]
         self._first_value = list(data.values())[0]
@@ -41,58 +42,54 @@ class MapResult(object):
                 pass
 
     @property
-    def index_names(self):
-        return self._index_names
+    def key_names(self) -> List[str]:
+
+        return self._key_names
 
     @property
-    def data_names(self):
-        return self._data_names
+    def value_names(self) -> List[str]:
 
-    def to_series(self):
-        """
-        :rtype: Series
-        """
+        return self._value_names
+
+    def to_series(self) -> Series:
+
         if _str_or_non_iterable(self._first_key):
             if _str_or_non_iterable(self._first_value):
                 # e.g. {'a': 1, 'b': 2, 'c': 3}
-                series = Series(self._data, name=self.data_names[0])
-                series.index.name = self.index_names[0]
+                series = Series(self._data, name=self.value_names[0])
+                series.index.name = self.key_names[0]
             else:
                 # e.g. {'a': [1, 2], 'b': [3, 4, 5]}
                 series = concat([
                     Series(
-                        index=Index([key] * len(values), name=self.index_names[0]),
-                        data=values, name=self.data_names[0]
+                        index=Index([key] * len(values), name=self.key_names[0]),
+                        data=values, name=self.value_names[0]
                     )
                     for key, values in self._data.items()
                 ])
         else:
             if _str_or_non_iterable(self._first_value):
                 # e.g. {('a', 'b'): 1, ('c', 'd'): 2, ('e', 'f'): 3}
-                series = Series(self._data, name=self.data_names[0])
-                series.index.names = self.index_names
+                series = Series(self._data, name=self.value_names[0])
+                series.index.names = self.key_names
             else:
                 # e.g. {('a', 'b'): [1, 2], ('c', 'd'): [3, 4, 5]}
                 series = concat([
                     Series(
-                        index=MultiIndex.from_tuples([key] * len(values), names=self.index_names),
-                        data=values, name=self.data_names[0]
+                        index=MultiIndex.from_tuples([key] * len(values), names=self.key_names),
+                        data=values, name=self.value_names[0]
                     )
                     for key, values in self._data.items()
                 ])
 
         return series
 
-    def to_dict(self):
-        """
-        :rtype: dict
-        """
+    def to_dict(self) -> dict:
+
         return self._data
 
-    def to_frame(self, wide: bool = False):
-        """
-        :rtype: DataFrame
-        """
+    def to_frame(self, wide: bool = False) -> DataFrame:
+
         if not wide:
             return self.to_series().to_frame().reset_index()
         else:
@@ -101,16 +98,12 @@ class MapResult(object):
             except:
                 return self.to_series().to_frame().reset_index()
 
-    def to_list(self):
-        """
-        :rtype: list
-        """
+    def to_list(self) -> list:
+
         return list(self.to_series().tolist())
 
-    def to_tuples(self):
-        """
-        :rtype: List[tuple]
-        """
+    def to_tuples(self) -> List[tuple]:
+
         return list(self.to_frame().to_records())
 
     def items(self):
@@ -136,3 +129,107 @@ class MapResult(object):
     def __repr__(self):
 
         return 'MapResult({})'.format(self._data.__repr__())
+
+    def __eq__(self, other):
+        """
+        :type other: MapResult
+        """
+        return (
+            self.key_names == other.key_names and
+            self.value_names == other.value_names and
+            self._data == other._data
+        )
+
+    def __add__(self, other):
+        """
+        Add the values of this MapResult to the values of the other by key.
+
+        If key does not exist in one of the MapResults, uses the value from the one where it does.
+
+        :type other: MapResult
+        """
+        if self.key_names != other.key_names:
+            raise KeyError('Key names must be identical')
+        if self.value_names != other.value_names:
+            raise ValueError('Value names must be identical')
+        new_data = OrderedDict()
+        for key in self.keys():
+            if key in other.keys():
+                new_data[key] = self[key] + other[key]
+            else:
+                new_data[key] = self[key]
+        for key in other.keys():
+            if key not in self.keys():
+                new_data[key] = other[key]
+        return MapResult(
+            data=new_data, key_names=self.key_names, value_names=self.value_names
+        )
+
+    def __sub__(self, other):
+        """
+        Subtract the values of the other MapResult from the values of this one by key.
+
+        If key does not exist in this MapResult tries to negate the value of the other.
+        If key does not exist in the other MapResult uses the value of this one.
+
+        :type other: MapResult
+        """
+        if self.key_names != other.key_names:
+            raise KeyError('Key names must be identical')
+        if self.value_names != other.value_names:
+            raise ValueError('Value names must be identical')
+        new_data = OrderedDict()
+        for key in self.keys():
+            if key in other.keys():
+                new_data[key] = self[key] - other[key]
+            else:
+                new_data[key] = self[key]
+        for key in other.keys():
+            if key not in self.keys():
+                new_data[key] = -other[key]
+        return MapResult(
+            data=new_data, key_names=self.key_names, value_names=self.value_names
+        )
+
+    def __mul__(self, other):
+        """
+        Multiply the values of this MapResult to the values of the other by key.
+
+        If key does not exist in one of the MapResults, omits the key from the new result.
+
+        :type other: MapResult
+        """
+        if self.key_names != other.key_names:
+            raise KeyError('Key names must be identical')
+        if self.value_names != other.value_names:
+            raise ValueError('Value names must be identical')
+        new_data = OrderedDict()
+        for key in self.keys():
+            if key in other.keys():
+                if not isinstance(self[key], Iterable) and not isinstance(other[key], Iterable):
+                    new_data[key] = self[key] * other[key]
+                else:
+                    raise TypeError('Cannot multiple iterable value by non-iterable value')
+        return MapResult(
+            data=new_data, key_names=self.key_names, value_names=self.value_names
+        )
+
+    def __truediv__(self, other):
+        """
+        Divide the values of this MapResult to the values of the other by key.
+
+        If key does not exist in one of the MapResults, omits the key from the new result.
+
+        :type other: MapResult
+        """
+        if self.key_names != other.key_names:
+            raise KeyError('Key names must be identical')
+        if self.value_names != other.value_names:
+            raise ValueError('Value names must be identical')
+        new_data = OrderedDict()
+        for key in self.keys():
+            if key in other.keys():
+                new_data[key] = self[key] / other[key]
+        return MapResult(
+            data=new_data, key_names=self.key_names, value_names=self.value_names
+        )

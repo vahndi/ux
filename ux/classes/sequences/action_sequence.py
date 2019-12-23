@@ -14,7 +14,6 @@ from ux.interfaces.actions.i_action_template import IActionTemplate
 from ux.interfaces.actions.i_user_action import IUserAction
 from ux.interfaces.sequences.i_action_sequence import IActionSequence
 from ux.interfaces.tasks.i_task import ITask
-from ux.utils.actions import create_action_template_condition
 from ux.utils.misc import get_method_name
 
 
@@ -244,7 +243,7 @@ class ActionSequence(IActionSequence):
         """
         # find matching locations
         match_locs = []
-        condition = create_action_template_condition(split)
+        condition = _create_action_template_condition(split)
         for a, action in enumerate(self.user_actions):
             if condition(action):
                 match_locs.append(a)
@@ -289,8 +288,8 @@ class ActionSequence(IActionSequence):
         :param copy_meta: Whether to copy the `meta` dict into the new Sequence.
         :rtype: IActionSequence
         """
-        start = create_action_template_condition(start)
-        end = create_action_template_condition(end)
+        start = _create_action_template_condition(start)
+        end = _create_action_template_condition(end)
         a_start = None
         a_end = None
         if how == 'first':
@@ -453,3 +452,22 @@ class ActionSequence(IActionSequence):
         :rtype: IUserAction
         """
         return self._user_actions.__iter__()
+
+
+def _create_action_template_condition(value):
+    """
+    :type value: Union[IActionTemplate, FunctionType]
+    :rtype: FunctionType
+    """
+    def action_template_condition(template: IActionTemplate):
+        if template == value:
+            return True
+        else:
+            return False
+
+    if isinstance(value, IActionTemplate):
+        return action_template_condition
+    elif isinstance(value, FunctionType):
+        return value
+    else:
+        raise TypeError('expected IActionTemplate or FunctionType')

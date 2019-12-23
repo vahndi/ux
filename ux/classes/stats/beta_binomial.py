@@ -161,7 +161,8 @@ class BetaBinomial(object):
         ax.legend()
         return ax
 
-    def plot_likelihood(self, theta: ndarray = None, n: int = None, m: int = None, color: str = None, ax: Axes = None):
+    def plot_likelihood(self, theta: ndarray = None, n: int = None, m: int = None,
+                        color: str = None, ax: Axes = None):
         """
         Return the likelihood of observing the data n, m given the parameters θ
 
