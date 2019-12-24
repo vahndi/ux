@@ -3,7 +3,7 @@ from matplotlib.dates import DateFormatter, MinuteLocator, HourLocator, DayLocat
     YearLocator
 from matplotlib.patches import Circle, FancyArrowPatch, ConnectionStyle, ArrowStyle
 from numpy.ma import arange
-from pandas import DataFrame
+from pandas import notnull
 from seaborn import heatmap
 from typing import Dict, List
 
@@ -113,7 +113,7 @@ def plot_sequence_diagram(sequence: IActionSequence, locations: List[str], max_g
     data = sequence.map({
         'location': lambda act: act.source_id,
         'action-type': lambda act: act.action_type,
-        'time_stamp': lambda act: act.time_stamp
+        'time-stamp': lambda act: act.time_stamp
     }).to_frame(wide=True)
     data['y'] = [
         len(locations) - locations.index(location) - 1
@@ -122,12 +122,19 @@ def plot_sequence_diagram(sequence: IActionSequence, locations: List[str], max_g
         for location in data['location']
     ]
     data['label'] = [location if location not in locations else '' for location in data['location']]
+    data['time-stamp_next'] = data['time-stamp'].shift(-1)
+    data['x_action-type'] = data['time-stamp'] + (data['time-stamp'].shift(-1) - data['time-stamp']) / 2
+    data['y_action-type'] = data['y'] + (data['y'].shift(-1) - data['y']) / 2
+    print(data)
     ax = new_axes()
-    ax.plot_date(x=data['time_stamp'], y=data['y'],
+    ax.plot_date(x=data['time-stamp'], y=data['y'],
                  marker='o', linestyle='-')
     for _, row in data.iterrows():
-        ax.text(x=row['time_stamp'], y=row['y'], s=row['label'],
+        ax.text(x=row['time-stamp'], y=row['y'], s=row['label'],
                 ha='center', va='bottom', rotation=45)
+        if notnull(row['y_action-type']):
+            ax.text(x=row['x_action-type'], y=row['y_action-type'], s=row['action-type'],
+                    ha='center', va='center', rotation=0)
     formatter = DateFormatter("%H:%M:%S")
     ax.xaxis.set_major_formatter(formatter)
     ax.set(
