@@ -1,3 +1,4 @@
+from datetime import timedelta
 from matplotlib.axes import Axes
 from matplotlib.dates import DateFormatter, MinuteLocator, HourLocator, DayLocator, SecondLocator, MonthLocator, \
     YearLocator
@@ -110,37 +111,61 @@ def plot_sequence_diagram(sequence: IActionSequence, locations: List[str], max_g
     """
     :rtype: Axes
     """
+    # calculate plot coordinates and labels
     data = sequence.map({
-        'location': lambda act: act.source_id,
+        'source': lambda act: act.source_id,
+        'target': lambda act: act.target_id,
         'action-type': lambda act: act.action_type,
         'time-stamp': lambda act: act.time_stamp
     }).to_frame(wide=True)
-    data['y'] = [
-        len(locations) - locations.index(location) - 1
-        if location in locations
+    data['y_source'] = [
+        len(locations) - locations.index(source) - 1
+        if source in locations
         else len(locations)
-        for location in data['location']
+        for source in data['source']
     ]
-    data['label'] = [location if location not in locations else '' for location in data['location']]
+    data['y_target'] = [
+        len(locations) - locations.index(target) - 1 if target in locations
+        else None if target is None
+        else len(locations)
+        for target in data['target']
+    ]
+    data['source-label'] = [source if source not in locations else '' for source in data['source']]
     data['time-stamp_next'] = data['time-stamp'].shift(-1)
-    data['x_action-type'] = data['time-stamp'] + (data['time-stamp'].shift(-1) - data['time-stamp']) / 2
-    data['y_action-type'] = data['y'] + (data['y'].shift(-1) - data['y']) / 2
-    print(data)
+    # plot sequence
     ax = new_axes()
-    ax.plot_date(x=data['time-stamp'], y=data['y'],
-                 marker='o', linestyle='-')
+    t_min, t_max = data['time-stamp'].min(), data['time-stamp'].max()
+    arrow_width = (t_max - t_min).total_seconds() / (200 * 24 * 60 * 60)
+    #  labels
     for _, row in data.iterrows():
-        ax.text(x=row['time-stamp'], y=row['y'], s=row['label'],
+        # action arrows
+        if row['y_target'] is not None:
+            x = row['time-stamp']
+            y = row['y_source']
+            dy = row['y_target'] - row['y_source']
+            print(x, y, dy)
+            ax.arrow(x=x, y=y, dx=0, dy=dy,
+                     width=arrow_width,
+                     head_length=0.1, length_includes_head=True,
+                     fc='#888888', ec='#444444',
+                     zorder=-1)
+        # source labels
+        ax.text(x=row['time-stamp'], y=row['y_source'], s=row['source-label'],
                 ha='center', va='bottom', rotation=45)
-        if notnull(row['y_action-type']):
-            ax.text(x=row['x_action-type'], y=row['y_action-type'], s=row['action-type'],
-                    ha='center', va='center', rotation=0)
+        # action labels
+        y_text = (row['y_source'] + row['y_target']) / 2 if notnull(row['y_target']) else row['y_source']
+        ax.text(x=row['time-stamp'] + timedelta(days=arrow_width), y=y_text, s=row['action-type'],
+                ha='left', va='center', rotation=90)
+        # actions
+        ax.scatter(x, y, marker='D', color='k', zorder=1)
+    #  format axes
     formatter = DateFormatter("%H:%M:%S")
     ax.xaxis.set_major_formatter(formatter)
     ax.set(
         yticks=arange(len(locations) + 1),
         yticklabels=(['other'] + locations)[:: -1]
     )
+    ax.set_xlim(t_min - (t_max - t_min) / 10, t_max + (t_max - t_min) / 10)
     x_min, x_max = ax.get_xlim()
     min_spacing = (x_max - x_min) / max_grid_lines
     locators = [

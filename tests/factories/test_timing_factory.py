@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from unittest import TestCase
 
 from ux.utils.factories.constants import SRCS_TGTS__ONE_SHOT__ABCDE
-from ux.utils.factories.timing_factory import constant, constant_per_action_type
+from ux.utils.factories.timing_factory import TimingFactory
 
 
 class TestTimingFactory(TestCase):
@@ -13,8 +13,8 @@ class TestTimingFactory(TestCase):
 
     def test_constant(self):
 
-        action_dts = constant(
-            sources_targets=SRCS_TGTS__ONE_SHOT__ABCDE,
+        action_dts = TimingFactory.constant(
+            sources=SRCS_TGTS__ONE_SHOT__ABCDE,
             start=self.y2k,
             dwell=timedelta(seconds=1)
         )
@@ -47,7 +47,7 @@ class TestTimingFactory(TestCase):
             'forward': timedelta(seconds=1),
             'back': timedelta(seconds=2)
         }
-        action_dts = constant_per_action_type(
+        action_dts = TimingFactory.constant_per_action_type(
             action_types=action_types,
             start=self.y2k,
             dwell_times=dwell_times
