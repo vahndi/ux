@@ -273,8 +273,8 @@ class BetaBinomial(object):
 
         elif method == 'samples':
             n_samples = n_samples or 100001
-            self_samples = beta_sp(self.alpha + self.m, self.beta + self.n - self.m).rvs(n_samples)
-            other_samples = beta_sp(other.alpha + other.m, other.beta + other.n - other.m).rvs(n_samples)
+            self_samples: ndarray = beta_sp(self.alpha + self.m, self.beta + self.n - self.m).rvs(n_samples)
+            other_samples: ndarray = beta_sp(other.alpha + other.m, other.beta + other.n - other.m).rvs(n_samples)
             return sum(self_samples > other_samples) / n_samples
         elif method == 'approx':
             n_steps = n_samples or 10001

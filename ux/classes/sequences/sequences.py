@@ -7,7 +7,7 @@ from typing import Dict, Iterator, List, Union, Tuple
 
 from ux.classes.sequences.sequences_group_by import SequencesGroupBy
 from ux.classes.wrappers.map_result import MapResult
-from ux.custom_types import SequenceFilter, SequenceFilterSet, SequenceGrouper
+from ux.custom_types import SequenceFilter, SequenceFilterSet, SequenceGrouper, SequenceCounter
 from ux.interfaces.sequences.i_action_sequence import IActionSequence
 from ux.interfaces.sequences.i_sequences import ISequences
 from ux.utils.misc import get_method_name
@@ -56,13 +56,14 @@ class Sequences(ISequences):
         """
         return self._sequences
 
-    def filter(self, condition: SequenceFilter):
+    def filter(self, condition: SequenceFilter) -> ISequences:
         """
         Return a new Sequences containing only the sequences matching the `condition`.
 
         :param condition: lambda(sequence) that returns True to include a sequence.
-        :rtype: ISequences
         """
+        if condition in (None, True):
+            return self
         filtered = []
         for sequence in self:
             if condition(sequence):
@@ -204,28 +205,40 @@ class Sequences(ISequences):
 
         return MapResult(results)
 
-    def count(self):
+    def count(self, condition: SequenceFilter = None) -> int:
         """
         Return the number of ActionSequences in the collection.
-
-        :rtype: int
         """
-        return len(self._sequences)
+        if condition is None:
+            return len(self)
+        return self.filter(condition).count()
 
-    def copy(self):
+    def counter(self, get_value: SequenceCounter) -> Counter:
+        """
+        Return a dict of counts of each value returned by get_value(action) for each action.
+
+        :param get_value: method that returns a str or list of strs when called on an action.
+        """
+        counts = Counter()
+        for sequence in self:
+            sequence_result = get_value(sequence)
+            if isinstance(sequence_result, list):
+                counts += Counter(sequence_result)
+            elif isinstance(sequence_result, str):
+                counts[sequence_result] += 1
+        return counts
+
+    def copy(self) -> ISequences:
         """
         Return a new collection referencing this collection's ActionSequences.
-
-        :rtype: ISequences
         """
         return Sequences(self._sequences)
 
-    def intersection(self, other):
+    def intersection(self, other) -> ISequences:
         """
         Return a new collection representing the ActionSequences in both collections.
 
         :type other: Union[Sequences, List[IActionSequence]]
-        :rtype: ISequences
         """
         if type(other) is Sequences:
             other = other.sequences
@@ -427,10 +440,8 @@ class Sequences(ISequences):
         else:
             raise TypeError('item must be IActionSequence')
 
-    def __iter__(self):
-        """
-        :rtype: Iterator[IActionSequence]
-        """
+    def __iter__(self) -> Iterator[IActionSequence]:
+
         return self._sequences.__iter__()
 
     def __add__(self, other):

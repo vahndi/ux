@@ -1,5 +1,4 @@
 from collections import defaultdict, OrderedDict
-from pandas import DataFrame, Series
 from types import FunctionType
 from typing import Dict, List, Union
 

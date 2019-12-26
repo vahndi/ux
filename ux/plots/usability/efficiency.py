@@ -6,6 +6,7 @@ from ux.calcs.basic_calcs.stats import normal_confidence_interval
 from ux.plots.helpers import new_axes
 
 
+# noinspection PyArgumentList
 def plot_task_completion_efficiency(success_task_per_minute: dict, confidence: float = 0.95, ax: Axes = None):
     """
     Plot the number of completed tasks per unit time for each scenario e.g. prototypes, designs.

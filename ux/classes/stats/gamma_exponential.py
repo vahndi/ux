@@ -231,8 +231,8 @@ class GammaExponential(object):
         """
         if method == 'samples':
             n_samples = n_samples or 100001
-            self_samples = gamma(a=self.alpha + self.n, scale=1 / (self.beta + self.n * self.x_mean)).rvs(n_samples)
-            other_samples = gamma(a=other.alpha + other.n, scale=1 / (other.beta + other.n * other.x_mean)).rvs(n_samples)
+            self_samples: ndarray = gamma(a=self.alpha + self.n, scale=1 / (self.beta + self.n * self.x_mean)).rvs(n_samples)
+            other_samples: ndarray = gamma(a=other.alpha + other.n, scale=1 / (other.beta + other.n * other.x_mean)).rvs(n_samples)
             return sum(self_samples > other_samples) / n_samples
         elif method == 'approx':
             n_steps = n_samples or 10001

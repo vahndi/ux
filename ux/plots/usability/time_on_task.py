@@ -19,6 +19,7 @@ def plot_task_completion_times(task_times: dict, confidence: float = 0.95, ax: A
         task_name: mean(times)
         for task_name, times in task_times.items()
     })
+    # noinspection PyArgumentList
     errors = array([
         exponential_confidence_interval(task_times[task_name], confidence=confidence)
         for task_name in means.index

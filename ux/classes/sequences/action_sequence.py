@@ -1,15 +1,16 @@
-from collections import defaultdict, OrderedDict
+from collections import defaultdict, OrderedDict, Counter
 from datetime import datetime, timedelta
-from pandas import notnull
 from types import FunctionType
-from typing import List, Callable, Set, Union
+from typing import List, Callable, Set, Union, Iterator
+
+from pandas import notnull
 
 from ux.calcs.object_calcs.efficiency import lostness
 from ux.calcs.object_calcs.task_success import unordered_task_completion_rate, ordered_task_completion_rate, \
     binary_task_success
 from ux.calcs.object_calcs.utils import sequence_intersects_task
 from ux.classes.wrappers.map_result import MapResult
-from ux.custom_types import ActionMapper
+from ux.custom_types import ActionMapper, ActionFilter, ActionCounter
 from ux.interfaces.actions.i_action_template import IActionTemplate
 from ux.interfaces.actions.i_user_action import IUserAction
 from ux.interfaces.sequences.i_action_sequence import IActionSequence
@@ -122,6 +123,57 @@ class ActionSequence(IActionSequence):
             counts[template] += 1
         return dict(counts)
 
+    def filter(self, condition: Union[ActionFilter, IActionTemplate], copy_meta: bool = False):
+        """
+        :rtype: IActionSequence
+        """
+        if condition in (None, True):
+            return self
+        if isinstance(condition, IActionTemplate):
+            actions = self.find_all(condition)
+        elif isinstance(condition, FunctionType):
+            actions = [a for a in self if condition(a)]
+        else:
+            raise TypeError('filter condition must be ActionFilter or IActionTemplate')
+        return ActionSequence(
+            user_actions=actions,
+            meta=self.meta if copy_meta else {}
+        )
+
+    def count(self, condition: Union[ActionFilter, IActionTemplate] = None) -> int:
+        """
+        Return a count of the UserActions where the given condition is True
+        """
+        if condition in (None, True):
+            return len(self)
+        action_count = 0
+        if isinstance(condition, IActionTemplate):
+            return len(self.find_all(condition))
+        elif isinstance(condition, FunctionType):
+            for action in self._user_actions:
+                if condition(action):
+                    action_count += 1
+            return action_count
+        else:
+            raise TypeError('count condition must be ActionFilter or IActionTemplate')
+
+    def counter(self, get_value: ActionCounter) -> Counter:
+        """
+        Return a dict of counts of each value returned by get_value(action) for each action.
+
+        :param get_value: method that returns a str or list of strs when called on an action.
+        """
+        counts = Counter()
+        for action in self:
+            action_result = get_value(action)
+            if isinstance(action_result, list):
+                counts += Counter(action_result)
+            elif isinstance(action_result, str):
+                counts[action_result] += 1
+            else:
+                raise TypeError('get_value must return str or list of str')
+        return counts
+
     def find_all(self, template: IActionTemplate):
         """
         Return a list of all the actions matching the given action template.
@@ -173,10 +225,10 @@ class ActionSequence(IActionSequence):
                 if hasattr(IUserAction, item_mapper):
                     if callable(getattr(IUserAction, item_mapper)):
                         # methods
-                        return [getattr(action, item_mapper)() for action in self._user_actions]
+                        return [getattr(action, item_mapper)() for action in self]
                     else:
                         # properties
-                        return [getattr(action, item_mapper) for action in self._user_actions]
+                        return [getattr(action, item_mapper) for action in self]
             elif isinstance(item_mapper, FunctionType):
                 return [item_mapper(action) for action in self._user_actions]
             else:
@@ -416,10 +468,8 @@ class ActionSequence(IActionSequence):
                 )
         return dwell_times
 
-    def __getitem__(self, item):
-        """
-        :rtype: IUserAction
-        """
+    def __getitem__(self, item) -> IUserAction:
+
         return self._user_actions[item]
 
     def __repr__(self):
@@ -430,16 +480,12 @@ class ActionSequence(IActionSequence):
             len(self._user_actions)
         )
 
-    def __len__(self):
-        """
-        :rtype: int
-        """
+    def __len__(self) -> int:
+
         return len(self._user_actions)
 
-    def __contains__(self, item):
-        """
-        :rtype: bool
-        """
+    def __contains__(self, item) -> bool:
+
         if isinstance(item, IUserAction):
             return item in self._user_actions
         elif isinstance(item, IActionTemplate):
@@ -447,10 +493,8 @@ class ActionSequence(IActionSequence):
         else:
             raise TypeError('item must be IUserAction or IActionTemplate')
 
-    def __iter__(self):
-        """
-        :rtype: IUserAction
-        """
+    def __iter__(self) -> Iterator[IUserAction]:
+
         return self._user_actions.__iter__()
 
 

@@ -1,4 +1,5 @@
-from typing import Dict
+from collections import Counter
+from typing import Dict, Iterator
 
 from ux.classes.wrappers.map_result import MapResult
 from ux.interfaces.sequences.i_action_sequence import IActionSequence
@@ -22,15 +23,21 @@ class ISequences(object):
         """
         raise NotImplementedError
 
-    def group_filter(self, filters):
+    def group_filter(self, filters, group_name: str = 'filter'):
         """
         :rtype: ISequencesGroupBy
         """
         raise NotImplementedError
 
-    def count(self):
+    def count(self, condition=None) -> int:
+
+        raise NotImplementedError
+
+    def counter(self, get_value) -> Counter:
         """
-        :rtype: int
+        Return a dict of counts of each value returned by get_value(action) for each action.
+
+        :param get_value: method that returns a str or list of strs when called on an action.
         """
         raise NotImplementedError
 
@@ -139,10 +146,8 @@ class ISequences(object):
 
         raise NotImplementedError
 
-    def __iter__(self):
-        """
-        :rtype: IActionSequence
-        """
+    def __iter__(self) -> Iterator[IActionSequence]:
+
         raise NotImplementedError
 
     def __add__(self, other):

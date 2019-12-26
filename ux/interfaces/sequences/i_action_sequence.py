@@ -1,8 +1,9 @@
-from typing import List, Set
+from collections import Counter
+from typing import List, Set, Iterator
 
+from ux.classes.wrappers.map_result import MapResult
 from ux.interfaces.actions.i_action_template import IActionTemplate
 from ux.interfaces.actions.i_user_action import IUserAction
-from ux.classes.wrappers.map_result import MapResult
 
 
 class IActionSequence(object):
@@ -117,6 +118,26 @@ class IActionSequence(object):
         """
         raise NotImplementedError
 
+    def filter(self, condition, copy_meta: bool = False):
+        """
+        :rtype: IActionSequence
+        """
+        raise NotImplementedError
+
+    def count(self, condition) -> int:
+        """
+        Return a count of the UserActions where the given condition is True
+        """
+        raise NotImplementedError
+
+    def counter(self, get_value) -> Counter:
+        """
+        Return a dict of counts for each value returned by get_value(action) for each action.
+
+        :param get_value: method that returns a str or list of strs when called on an action.
+        """
+        raise NotImplementedError
+
     def dwell_times(self, sum_by_location: bool):
         """
         Return the amount of time spent by the user at each location.
@@ -168,26 +189,18 @@ class IActionSequence(object):
         """
         raise NotImplementedError
 
-    def __getitem__(self, item):
-        """
-        :rtype: IUserAction
-        """
+    def __getitem__(self, item) -> IUserAction:
+
         raise NotImplementedError
 
-    def __len__(self):
-        """
-        :rtype: int
-        """
+    def __len__(self) -> int:
+
         raise NotImplementedError
 
-    def __contains__(self, item):
-        """
-        :rtype: bool
-        """
+    def __contains__(self, item) -> bool:
+
         raise NotImplementedError
 
-    def __iter__(self):
-        """
-        :rtype: IUserAction
-        """
+    def __iter__(self) -> Iterator[IUserAction]:
+
         raise NotImplementedError

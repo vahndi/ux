@@ -138,10 +138,10 @@ def plot_sequence_diagram(sequence: IActionSequence, locations: List[str], max_g
     arrow_width = (t_max - t_min).total_seconds() / (200 * 24 * 60 * 60)
     #  labels
     for _, row in data.iterrows():
+        x = row['time-stamp']
+        y = row['y_source']
         # action arrows
         if row['y_target'] is not None:
-            x = row['time-stamp']
-            y = row['y_source']
             dy = row['y_target'] - row['y_source']
             print(x, y, dy)
             ax.arrow(x=x, y=y, dx=0, dy=dy,
