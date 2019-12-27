@@ -63,6 +63,8 @@ class SequencesGroupBy(ISequencesGroupBy):
         def new_group(names, method) -> Tuple[str, ...]:
             if isinstance(names, str):
                 names = [names]
+            elif isinstance(names, tuple):
+                names = list(names)
             return tuple(names + [get_method_name(method)])
 
         if isinstance(mapper, str) or isinstance(mapper, FunctionType):
@@ -90,12 +92,12 @@ class SequencesGroupBy(ISequencesGroupBy):
 
         return MapResult(results, key_names=self.names + ['map'])
 
-    def agg(self, agg_funcs: Dict[str, Union[FunctionType, List[FunctionType]]]) -> Dict[Dict[str, Number]]:
+    def agg(self, agg_funcs: Dict[str, Union[FunctionType, List[FunctionType]]]) -> MapResult:
         """
         :param agg_funcs: dict mapping attributes to one or more aggregation functions e.g. 'duration': np.median
         :return: Dict[Dict['{{func_name}}({{attr_name}})', agg_result]
         """
-        results = defaultdict(dict)
+        results = OrderedDict()
         # build list of agg_key, agg_func pairs
         agg_pairs: List[Tuple] = []
         for k, v in agg_funcs.items():
@@ -108,14 +110,17 @@ class SequencesGroupBy(ISequencesGroupBy):
                 raise TypeError('agg_funcs values must be FunctionType or List[FunctionType]')
         for agg_key, agg_func in agg_pairs:
             agg_name = get_method_name(agg_func)
-            for name, sequences in self.items():
+            for group_key, sequences in self.items():
+                if type(group_key) is str:
+                    group_key = (group_key,)
                 if hasattr(ISequences, agg_key):
                     if callable(getattr(ISequences, agg_key)):
                         values = getattr(sequences, agg_key)()
                     else:
                         values = getattr(sequences, agg_key)
-                    results[name]['{}({})'.format(agg_name, agg_key)] = agg_func(values)
-        return results
+                    new_keys = tuple(list(group_key) + [agg_key, agg_name])
+                    results[new_keys] = agg_func(values)
+        return MapResult(data=results, key_names=self.names + ['attribute', 'agg_method'], value_names='agg_result')
 
     def filter(self, condition: SequenceFilter) -> ISequencesGroupBy:
         """

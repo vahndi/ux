@@ -3,7 +3,8 @@ from datetime import timedelta, datetime
 from itertools import chain, product
 from pandas import notnull
 from types import FunctionType
-from typing import Dict, Iterator, List, Union, Optional, overload
+from typing import Dict, Iterator, List, Optional, overload, Union
+from typing import Counter as CounterType
 
 from ux.classes.sequences.sequences_group_by import SequencesGroupBy
 from ux.classes.wrappers.map_result import MapResult
@@ -208,7 +209,7 @@ class Sequences(ISequences):
             return len(self)
         return len(self.filter(condition))
 
-    def counter(self, get_value: SequenceCounter) -> Counter:
+    def counter(self, get_value: SequenceCounter) -> CounterType[str]:
         """
         Return a dict of counts of each value returned by get_value(action) for each action.
 
@@ -334,7 +335,7 @@ class Sequences(ISequences):
                 transitions[(from_action, to_action)] += 1
         return dict(transitions)
 
-    def location_transition_counts(self, exclude: Union[str, List[str]] = None) -> Counter[StrPair, int]:
+    def location_transition_counts(self, exclude: Union[str, List[str]] = None) -> CounterType[StrPair]:
         """
         Count the transitions from each location to each other location in actions in the given sequences.
 

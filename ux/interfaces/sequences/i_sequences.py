@@ -1,6 +1,5 @@
-from collections import Counter
 from datetime import timedelta, datetime
-from typing import Dict, Iterator, List, Union
+from typing import Dict, Iterator, List, Union, Tuple, Counter
 
 from ux.classes.wrappers.map_result import MapResult
 from ux.custom_types.builtin_types import StrPair
@@ -101,7 +100,7 @@ class ISequences(object):
         """
         raise NotImplementedError
 
-    def action_template_transition_counts(self) -> Dict[tuple[IActionTemplate, IActionTemplate], int]:
+    def action_template_transition_counts(self) -> Dict[Tuple[IActionTemplate, IActionTemplate], int]:
         """
         Return counts of transitions between pairs of Actions from each Sequence in the collection.
 
@@ -109,7 +108,7 @@ class ISequences(object):
         """
         raise NotImplementedError
 
-    def location_transition_counts(self, exclude=None) -> Counter[StrPair, int]:
+    def location_transition_counts(self, exclude=None) -> Counter[StrPair]:
         """
         Count the transitions from each location to each other location in actions in the given sequences.
 

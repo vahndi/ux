@@ -31,7 +31,7 @@ class ISequencesGroupBy(object):
 
         raise NotImplementedError
 
-    def agg(self, agg_funcs) -> Dict[Dict[str, Number]]:
+    def agg(self, agg_funcs) -> MapResult:
         """
         :param agg_funcs: dict mapping attributes to one or more aggregation functions e.g. duration -> np.median
         """
