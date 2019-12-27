@@ -1,3 +1,5 @@
+from typing import Optional
+
 from ux.interfaces.actions.i_action_template import IActionTemplate
 
 
@@ -5,7 +7,7 @@ class ActionTemplate(IActionTemplate):
     """
     Represents a Template for a single Action that could be taken by a User.
     """
-    def __init__(self, action_type: str, source_id: str, target_id: str = None,
+    def __init__(self, action_type: str, source_id: str, target_id: Optional[str] = None,
                  weighting: float = 1):
         """
         Create a new ActionTemplate.
@@ -15,10 +17,10 @@ class ActionTemplate(IActionTemplate):
         :param target_id: Optional id of the Location where the Action would go to (used in matching).
         :param weighting: Optional weighting value to use in various calculations.
         """
-        self._action_type = action_type
-        self._source_id = source_id
-        self._target_id = target_id
-        self._weighting = weighting
+        self._action_type: str = action_type
+        self._source_id: str = source_id
+        self._target_id: Optional[str] = target_id
+        self._weighting: float = weighting
 
     @property
     def action_type(self) -> str:
@@ -35,7 +37,7 @@ class ActionTemplate(IActionTemplate):
         return self._source_id
 
     @property
-    def target_id(self) -> str:
+    def target_id(self) -> Optional[str]:
         """
         Return the id of the Location where the Action would go to.
         """

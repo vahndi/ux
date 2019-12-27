@@ -17,9 +17,9 @@ class SuccessRate(object):
         :param confidence_interval: The confidence interval of the results.
         :param name: The name for the SuccessRate.
         """
-        self.mean = mean
-        self.confidence_interval = confidence_interval
-        self.name = name or ''
+        self.mean: float = mean
+        self.confidence_interval: ConfidenceInterval = confidence_interval
+        self.name: str = name or ''
 
     def __str__(self):
 

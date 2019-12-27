@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from ux.interfaces.actions.i_user_action import IUserAction
 from ux.interfaces.actions.i_action_template import IActionTemplate
@@ -24,15 +25,15 @@ class UserAction(IUserAction):
         :param target_id: Optional id of the location the Action navigated to.
         :param meta: Optional additional data to store with the UserAction.
         """
-        self._action_type = action_type
-        self._source_id = source_id
-        self._target_id = target_id
-        self._action_id = action_id
-        self._time_stamp = time_stamp
-        self._user_id = user_id
-        self._session_id = session_id
-        self._meta = meta
-        self._action_template = None
+        self._action_type: str = action_type
+        self._source_id: str = source_id
+        self._target_id: str = target_id
+        self._action_id: str = action_id
+        self._time_stamp: datetime = time_stamp
+        self._user_id: str = user_id
+        self._session_id: str = session_id
+        self._meta: dict = meta
+        self._action_template: Optional[IActionTemplate] = None
 
     @property
     def action_type(self) -> str:

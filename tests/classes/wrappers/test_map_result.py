@@ -1,4 +1,5 @@
 from itertools import product
+from typing import List
 from unittest import TestCase
 
 from pandas import Series, Index, DataFrame
@@ -10,69 +11,69 @@ class TestMapResult(TestCase):
 
     def setUp(self) -> None:
 
-        self.mr_single_single = MapResult(
+        self.mr_single_single: MapResult = MapResult(
             data={'a': 1, 'b': 2, 'c': 3},
             key_names='letters',
             value_names='numbers'
         )
-        self.s_single_single = Series(
+        self.s_single_single: Series = Series(
             index=Index(data=['a', 'b', 'c'], name='letters'),
             data=[1, 2, 3], name='numbers'
         )
-        self.mr_single_fixed = MapResult(
+        self.mr_single_fixed: MapResult = MapResult(
             data={'a': [1, 2, 3], 'b': [4, 5, 6]},
             key_names='letters',
             value_names='numbers'
         )
-        self.s_single_fixed = Series(
+        self.s_single_fixed: Series = Series(
             index=Index(data=['a', 'a', 'a', 'b', 'b', 'b'], name='letters'),
             data=[1, 2, 3, 4, 5, 6], name='numbers'
         )
-        self.d_data_fixed_wide = DataFrame(
+        self.d_data_fixed_wide: DataFrame = DataFrame(
             data={'a': [1, 2, 3], 'b': [4, 5, 6]}
         )
-        self.mr_single_variable = MapResult(
+        self.mr_single_variable: MapResult = MapResult(
             data={'a': [1, 2], 'b': [3, 4, 5]},
             key_names='letters',
             value_names='numbers'
         )
-        self.s_single_variable = Series(
+        self.s_single_variable: Series = Series(
             index=Index(data=['a', 'a', 'b', 'b', 'b'], name='letters'),
             data=[1, 2, 3, 4, 5], name='numbers'
         )
-        self.mr_tuple_single = MapResult(
+        self.mr_tuple_single: MapResult = MapResult(
             data={('a', 'b'): 1, ('c', 'd'): 2, ('e', 'f'): 3},
             key_names=['letter_1', 'letter_2'],
             value_names='numbers'
         )
-        self.s_tuple_single = Series(
+        self.s_tuple_single: Series = Series(
             index=Index(data=[('a', 'b'), ('c', 'd'), ('e', 'f')], names=['letter_1', 'letter_2']),
             data=[1, 2, 3], name='numbers'
         )
-        self.mr_tuple_fixed = MapResult(
+        self.mr_tuple_fixed: MapResult = MapResult(
             data={('a', 'b'): [1, 2, 3], ('c', 'd'): [4, 5, 6]},
             key_names=['letter_1', 'letter_2'],
             value_names='numbers'
         )
-        self.s_tuple_fixed = Series(
+        self.s_tuple_fixed: Series = Series(
             index=Index(data=[('a', 'b'), ('a', 'b'), ('a', 'b'), ('c', 'd'), ('c', 'd'), ('c', 'd')],
                         names=['letter_1', 'letter_2']),
             data=[1, 2, 3, 4, 5, 6], name='numbers'
         )
-        self.mr_tuple_variable = MapResult(
+        self.mr_tuple_variable: MapResult = MapResult(
             data={('a', 'b'): [1, 2], ('c', 'd'): [3, 4, 5]},
             key_names=['letter_1', 'letter_2'],
             value_names='numbers'
         )
-        self.s_tuple_variable = Series(
+        self.s_tuple_variable: Series = Series(
             index=Index(data=[('a', 'b'), ('a', 'b'), ('c', 'd'), ('c', 'd'), ('c', 'd')],
                         names=['letter_1', 'letter_2']),
             data=[1, 2, 3, 4, 5], name='numbers'
         )
-        self.mr_single_key = [
+        self.mr_single_key: List[MapResult] = [
             self.mr_single_single, self.mr_single_fixed, self.mr_single_variable
         ]
-        self.mr_tuple_key = [
+        self.mr_tuple_key: List[MapResult] = [
             self.mr_tuple_single, self.mr_tuple_fixed, self.mr_tuple_variable
         ]
 

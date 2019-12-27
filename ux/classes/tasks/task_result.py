@@ -1,22 +1,22 @@
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 
 from ux.calcs.basic_calcs.task_success import binary_task_success_rate
-from ux.custom_types.builtin_types import FloatPair
+from ux.custom_types.builtin_types import FloatPair, Number
 
 
 class TaskResult(object):
     """
     Represents the Result of a Task.
     """
-    def __init__(self, value, meta: dict = None):
+    def __init__(self, value: Number, meta: Optional[dict] = None):
         """
         Create a new Task Result.
 
         :param value: The numeric value of the result.
         :param meta: Additional metadata about the TaskResult.
         """
-        self.value = value
-        self._meta = meta
+        self.value: Number = value
+        self._meta: Optional[dict] = meta
 
     @staticmethod
     def binary_task_success_rate(results,

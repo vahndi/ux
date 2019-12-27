@@ -1,4 +1,4 @@
-from typing import Callable, Dict
+from typing import Callable, Dict, Optional
 
 from ux.custom_types.action_types import ActionFilter
 from ux.custom_types.sequence_types import SequenceFilter
@@ -9,10 +9,10 @@ from ux.interfaces.sequences.i_action_sequence import IActionSequence
 class CountConfig(object):
 
     def __init__(self, name: str,
-                 sequence_condition: SequenceFilter = None,
-                 sequence_split_by: Callable[[IActionSequence], Dict[str, int]] = None,
-                 action_condition: ActionFilter = None,
-                 action_split_by: Callable[[IUserAction], Dict[str, int]] = None):
+                 sequence_condition: Optional[SequenceFilter] = None,
+                 sequence_split_by: Optional[Callable[[IActionSequence], Dict[str, int]]] = None,
+                 action_condition: Optional[ActionFilter] = None,
+                 action_split_by: Optional[Callable[[IUserAction], Dict[str, int]]] = None):
         """
         Configuration class for batch calculation of count metrics.
 
@@ -28,11 +28,11 @@ class CountConfig(object):
         """
         if action_condition is not None:
             assert sequence_condition is not None
-        self.name = name
-        self.sequence_condition = sequence_condition
-        self.sequence_split_by = sequence_split_by
-        self.action_condition = action_condition
-        self.action_split_by = action_split_by
+        self.name: str = name
+        self.sequence_condition: Optional[SequenceFilter] = sequence_condition
+        self.sequence_split_by: Optional[Callable[[IActionSequence], Dict[str, int]]] = sequence_split_by
+        self.action_condition: Optional[ActionFilter] = action_condition
+        self.action_split_by: Optional[Callable[[IUserAction], Dict[str, int]]] = action_split_by
 
     def __repr__(self):
 

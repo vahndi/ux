@@ -1,7 +1,7 @@
 from collections import defaultdict, OrderedDict, Counter
 from datetime import datetime, timedelta
 from types import FunctionType
-from typing import List, Callable, Set, Union, Iterator, Dict
+from typing import List, Callable, Set, Union, Iterator, Dict, Optional
 
 from pandas import notnull
 
@@ -22,17 +22,17 @@ class ActionSequence(IActionSequence):
     """
     Represents a sequence of UserActions taken by a User.
     """
-    def __init__(self, user_actions: List[IUserAction] = None, meta: dict = None):
+    def __init__(self, user_actions: Optional[List[IUserAction]] = None, meta: Optional[dict] = None):
         """
         Create a new ActionSequence.
 
         :param user_actions: List of Actions to use to construct the ActionSequence.
         :param meta: Optional additional data to store with the ActionSequence.
         """
-        self._user_actions = user_actions or []
-        self._meta = meta
-        self._action_templates = None
-        self._location_ids = None
+        self._user_actions: List[IUserAction] = user_actions or []
+        self._meta: Optional[dict] = meta
+        self._action_templates: Optional[List[IActionTemplate]] = None
+        self._location_ids: Optional[List[str]] = None
 
     @property
     def user_actions(self) -> List[IUserAction]:

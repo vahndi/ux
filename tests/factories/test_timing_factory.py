@@ -9,7 +9,7 @@ class TestTimingFactory(TestCase):
 
     def setUp(self) -> None:
 
-        self.y2k = datetime(2000, 1, 1, 0, 0, 0)
+        self.y2k: datetime = datetime(2000, 1, 1, 0, 0, 0)
 
     def test_constant(self):
 

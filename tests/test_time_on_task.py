@@ -13,7 +13,7 @@ class TestTimeOnTask(TestCase):
 
     def setUp(self):
 
-        self.test_task = Task(
+        self.test_task: Task = Task(
             name='TestTask',
             action_templates=[
                 ActionTemplate(action_type='action', source_id='location-1'),
@@ -22,7 +22,7 @@ class TestTimeOnTask(TestCase):
             ]
         )
         y2k = datetime(2000, 1, 1)
-        self.test_actions = ActionSequence(
+        self.test_actions: ActionSequence = ActionSequence(
             user_actions=[
                 UserAction(action_id='1', action_type='action', source_id='location-A',
                            time_stamp=y2k, user_id='user_1', session_id='session_1'),

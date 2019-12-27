@@ -18,7 +18,7 @@ class TemporalCount(dict):
         :param name: The name of the metric or measure being counted
         """
         super(TemporalCount, self).__init__()
-        self._name = name
+        self._name: str = name
         # validation checks
         assert None not in self.keys(), 'Keys cannot be None'
         for k, v in self.items():

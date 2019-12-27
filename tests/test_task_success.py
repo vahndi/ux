@@ -13,7 +13,7 @@ class TestTaskSuccess(TestCase):
 
     def setUp(self):
 
-        self.test_task = Task(
+        self.test_task: Task = Task(
             name='OrderedTask',
             action_templates=[
                 ActionTemplate(
@@ -22,7 +22,7 @@ class TestTaskSuccess(TestCase):
                 ) for a in range(5)
             ]
         )
-        self.ordered_test_sequence = ActionSequence(
+        self.ordered_test_sequence: ActionSequence = ActionSequence(
             user_actions=[
                 UserAction(
                     action_id='action-{}'.format(i),
@@ -32,7 +32,7 @@ class TestTaskSuccess(TestCase):
                 ) for i, a in enumerate([1, 2, 3, 2, 3, 4, 5])
             ]
         )
-        self.unordered_test_sequence = ActionSequence(
+        self.unordered_test_sequence: ActionSequence = ActionSequence(
             user_actions=[
                 UserAction(
                     action_id='action-{}'.format(i),

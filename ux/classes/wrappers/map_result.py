@@ -29,8 +29,8 @@ class MapResult(object):
         assert len(value_names) == 1, 'value_names must be length 1'
 
         self._data: dict = data
-        self._key_names = key_names
-        self._value_names = value_names
+        self._key_names: List[str] = key_names
+        self._value_names: List[str] = value_names
 
         self._first_key = list(data.keys())[0]
         self._first_value = list(data.values())[0]

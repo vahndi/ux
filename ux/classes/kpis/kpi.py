@@ -1,10 +1,13 @@
+from typing import Optional, Dict
+
 from numpy import inf
 
 
 class KPI(object):
 
     def __init__(self, name: str, numerator: int, denominator: int,
-                 numer_config: dict = None, denom_config: dict = None):
+                 numer_config: Optional[Dict[str, str]] = None,
+                 denom_config: Optional[Dict[str, str]] = None):
         """
         Defines a KPI metric, typically expressed as a percentage of users who did something.
 
@@ -13,20 +16,20 @@ class KPI(object):
         :param numer_config: Optional dict[split_name, filter_name] of config params used to calculate the numerator.
         :param denom_config: Optional dict[split_name, filter_name] of config params used to calculate the denominator.
         """
-        self.name = name
-        self.numerator = numerator
-        self.denominator = denominator
-        self.numer_config = numer_config
-        self.denom_config = denom_config
+        self.name: str = name
+        self.numerator: int = numerator
+        self.denominator: int = denominator
+        self.numer_config: Optional[Dict[str, str]] = numer_config
+        self.denom_config: Optional[Dict[str, str]] = denom_config
 
     @property
-    def proportion(self):
+    def proportion(self) -> float:
         if self.denominator == 0:
             return inf
         return self.numerator / self.denominator
 
     @property
-    def percentage(self):
+    def percentage(self) -> float:
         if self.denominator == 0:
             return inf
         return 100 * self.numerator / self.denominator

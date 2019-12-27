@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from ux.custom_types.sequence_types import SequenceFilter, SequenceFilterSet
 
@@ -6,8 +6,8 @@ from ux.custom_types.sequence_types import SequenceFilter, SequenceFilterSet
 class KPIConfig(object):
 
     def __init__(self, name: str, condition: SequenceFilter,
-                 numerator_sets: List[str] = None, denominator_sets: List[str] = None,
-                 filter_sets: Dict[str, SequenceFilterSet] = None):
+                 numerator_sets: Optional[List[str]] = None, denominator_sets: Optional[List[str]] = None,
+                 filter_sets: Optional[Dict[str, SequenceFilterSet]] = None):
         """
         Configuration for calculating a collection of KPI metrics which use the same filter condition in the numerator
         but will be carried out for different subsequences depending on numerator and denominator filters.
@@ -20,8 +20,8 @@ class KPIConfig(object):
         :param filter_sets: Optional definitions of the numerator and denominator SequenceFilterSets
                             in format dict[FilterSetName, dict[FilterName, SequenceFilter]]
         """
-        self.name = name
-        self.condition = condition
-        self.numerator_sets = numerator_sets or []
-        self.denominator_sets = denominator_sets or []
-        self.filter_sets = filter_sets or []
+        self.name: str = name
+        self.condition: SequenceFilter = condition
+        self.numerator_sets: List[str] = numerator_sets or []
+        self.denominator_sets: List[str] = denominator_sets or []
+        self.filter_sets: Dict[str, SequenceFilterSet] = filter_sets or []

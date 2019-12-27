@@ -194,7 +194,7 @@ class SequencesGroupBy(ISequencesGroupBy):
         return self._names
     
     @names.setter
-    def names(self, names):
+    def names(self, names: List[str]):
 
         self._names = names
 

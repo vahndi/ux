@@ -21,8 +21,8 @@ class Task(ITask):
         :param name: The name of the new Task.
         :param action_templates: A list of ActionTemplates that compose the Task.
         """
-        self._name = name
-        self._action_templates = action_templates or []
+        self._name: str = name
+        self._action_templates: List[IActionTemplate] = action_templates or []
 
     @property
     def name(self) -> str:

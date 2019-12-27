@@ -10,9 +10,9 @@ class ConfidenceInterval(object):
         :param upper: Upper bound.
         :param significance: Significance level (0 - 1).
         """
-        self.lower = lower
-        self.upper = upper
-        self.significance = significance
+        self.lower: float = lower
+        self.upper: float = upper
+        self.significance: float = significance
 
     @property
     def percentage(self) -> float:

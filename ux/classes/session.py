@@ -17,10 +17,10 @@ class Session(ISession):
         :param start_time: The start date-time of the Session.
         :param end_time: The end date-time of the Session.
         """
-        self._session_id = session_id
-        self._user_id = user_id or None
-        self._start_time = start_time
-        self._end_time = end_time
+        self._session_id: str = session_id
+        self._user_id: str = user_id or None
+        self._start_time: datetime = start_time
+        self._end_time: datetime = end_time
 
     @property
     def session_id(self) -> str:

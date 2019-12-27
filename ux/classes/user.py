@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from ux.interfaces.i_user import IUser
 
@@ -7,16 +7,16 @@ class User(IUser):
     """
     Represents a User.
     """
-    def __init__(self, user_id: str, session_ids: list = None, action_ids: list = None):
+    def __init__(self, user_id: str, session_ids: Optional[List[str]] = None, action_ids: Optional[List[str]] = None):
         """
         Create a new User.
         :param user_id: The User's id.
         :param session_ids: A list of id's of Sessions that the User took Actions in.
         :param action_ids: A list of the id's of Actions that the User took.
         """
-        self._user_id = user_id
-        self._session_ids = session_ids or []
-        self._action_ids = action_ids or []
+        self._user_id: str = user_id
+        self._session_ids: List[str] = session_ids or []
+        self._action_ids: List[str] = action_ids or []
 
     @property
     def user_id(self) -> str:

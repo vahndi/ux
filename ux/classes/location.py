@@ -11,7 +11,7 @@ class Location(ILocation):
 
         :param location_id: The id of the Location.
         """
-        self._location_id = location_id
+        self._location_id: str = location_id
 
     @property
     def location_id(self) -> str:
