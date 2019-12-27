@@ -53,7 +53,7 @@ def count_sequences_where(sequences: ISequences, condition: SequenceFilter, spli
 
 
 def temporal_counts_by_config(sequences: List[IActionSequence], configs: List[CountConfig],
-                              temporal_split):
+                              temporal_split) -> Dict[str, TemporalCount]:
     """
     Count metrics using the settings in a list of CountConfigs.
 
@@ -61,7 +61,6 @@ def temporal_counts_by_config(sequences: List[IActionSequence], configs: List[Co
     :param configs: List of CountConfigs defining the metrics to count.
     :param temporal_split: lambda function returning OrderedDict[date, List[IActionSequence]]
     :type temporal_split: Callable[[List[IActionSequence]], List[IActionSequence]]
-    :rtype: Dict[str, TemporalCount]
     :return Dict[config.name, TemporalCount for config]
     """
     total_counts = dict()

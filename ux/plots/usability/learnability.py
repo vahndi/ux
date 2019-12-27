@@ -5,13 +5,12 @@ from pandas import Series
 from ux.plots.helpers import new_axes
 
 
-def plot_task_learnability(task_times: dict, ax: Axes = None):
+def plot_task_learnability(task_times: dict, ax: Axes = None) -> Axes:
     """
     Plot the change in time on task over a number of trials,
 
     :param task_times: Dictionary of {trial name => list of task times}
     :param ax: Optional matplotlib axes to plot on.
-    :rtype: Axes
     """
     means = Series({
         trial_name: mean(times)

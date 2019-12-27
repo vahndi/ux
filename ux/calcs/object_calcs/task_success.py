@@ -4,14 +4,13 @@ from ux.interfaces.sequences.i_action_sequence import IActionSequence
 from ux.interfaces.tasks.i_task import ITask
 
 
-def unordered_task_completion_rate(task: ITask, action_sequence: IActionSequence):
+def unordered_task_completion_rate(task: ITask, action_sequence: IActionSequence) -> float:
     """
     Calculate the Task completion from a Sequence of User Actions.
     Does not require the Actions to be completed in order.
 
     :param task: The Task to measure completion rate for.
     :param action_sequence: The Sequence of user actions.
-    :rtype: float
     """
     # calculate sum of task unique action template weights
     task_templates = task.action_templates
@@ -28,14 +27,13 @@ def unordered_task_completion_rate(task: ITask, action_sequence: IActionSequence
     return overlap_weight / task_weight
 
 
-def ordered_task_completion_rate(task: ITask, action_sequence: IActionSequence):
+def ordered_task_completion_rate(task: ITask, action_sequence: IActionSequence) -> float:
     """
     Calculate the Task completion from a sequence of User Actions.
     Requires that the Actions are completed in the order specified in the Task.
 
     :param task: The Task to measure completion rate for.
     :param action_sequence: The Sequence of User Actions
-    :rtype: float
     """
     # calculate sum of task action template weights
     task_templates = task.action_templates
@@ -61,7 +59,7 @@ def ordered_task_completion_rate(task: ITask, action_sequence: IActionSequence):
 
 
 def binary_task_success(task: ITask, action_sequence: IActionSequence,
-                        success_func: Callable[[ITask, IActionSequence], bool]):
+                        success_func: Callable[[ITask, IActionSequence], bool]) -> bool:
     """
     Calculate the binary task success for each sequence.
 
@@ -69,6 +67,5 @@ def binary_task_success(task: ITask, action_sequence: IActionSequence,
     :param action_sequence: ActionSequence to assess success of.
     :param success_func: Callable to use to assess success.
     :return: List of False for fail or True for pass
-    :rtype: bool
     """
     return success_func(task, action_sequence)

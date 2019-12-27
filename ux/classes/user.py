@@ -19,29 +19,23 @@ class User(IUser):
         self._action_ids = action_ids or []
 
     @property
-    def user_id(self):
+    def user_id(self) -> str:
         """
         Return the User's id
-
-        :rtype: str
         """
         return self._user_id
 
     @property
-    def action_ids(self):
+    def action_ids(self) -> List[str]:
         """
         Return the list of id's of the Actions the User took.
-
-        :rtype: List[str]
         """
         return self._action_ids
 
     @property
-    def session_ids(self):
+    def session_ids(self) -> List[str]:
         """
         Return the list of id's of the Sessions the User took Actions in.
-
-        :rtype: List[str]
         """
         return self._session_ids
 
@@ -61,6 +55,6 @@ class User(IUser):
         """
         self._session_ids.append(session_id)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
 
         return 'User({})'.format(self._user_id)

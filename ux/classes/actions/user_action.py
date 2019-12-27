@@ -35,82 +35,64 @@ class UserAction(IUserAction):
         self._action_template = None
 
     @property
-    def action_type(self):
+    def action_type(self) -> str:
         """
         Return the type of Action taken.
-
-        :rtype: str
         """
         return self._action_type
 
     @property
-    def source_id(self):
+    def source_id(self) -> str:
         """
         Return the id of the location where the User took the Action.
-
-        :rtype: str
         """
         return self._source_id
 
     @property
-    def target_id(self):
+    def target_id(self) -> str:
         """
         Return the id of the location where the Action took the User to.
-
-        :rtype: str
         """
         return self._target_id
 
     @property
-    def action_id(self):
+    def action_id(self) -> str:
         """
         Return the id of the Action taken.
-
-        :rtype: str
         """
         return self._action_id
 
     @property
-    def time_stamp(self):
+    def time_stamp(self) -> datetime:
         """
         Return the date-time the Action was taken.
-
-        :rtype: datetime
         """
         return self._time_stamp
 
     @property
-    def user_id(self):
+    def user_id(self) -> str:
         """
         Return the id of the User who took the Action.
-
-        :rtype: str
         """
         return self._user_id
 
     @property
-    def session_id(self):
+    def session_id(self) -> str:
         """
         Return the id of the Session in which the User took the Action.
-
-        :rtype: str
         """
         return self._session_id
 
     @property
-    def meta(self):
+    def meta(self) -> dict:
         """
         Return any additional data stored with the UserAction.
-
-        :rtype: dict
         """
         return self._meta
 
-    def template(self):
+    def template(self) -> IActionTemplate:
         """
         Return an ActionTemplate that corresponds to the Action.
-
-        :rtype: IActionTemplate
         """
         if self._action_template is None:
             self._action_template = ActionTemplate(
@@ -120,7 +102,7 @@ class UserAction(IUserAction):
             )
         return self._action_template
 
-    def __repr__(self):
+    def __repr__(self) -> str:
 
         return 'UserAction({}: {}{}{})'.format(
             self._action_type, self._source_id,

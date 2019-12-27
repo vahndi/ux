@@ -6,13 +6,12 @@ from ux.calcs.basic_calcs.task_success import binary_task_success_rate
 from ux.plots.helpers import new_axes
 
 
-def plot_percentage_task_errors(condition_result: dict, ax: Axes = None):
+def plot_percentage_task_errors(condition_result: dict, ax: Axes = None) -> Axes:
     """
     Plot the percentage of errors on completing a task, for one or more scenarios e.g. conditions.
 
     :param condition_result: Dictionary {condition_name => condition results list (0 = no errors & 1 = error)}.
     :param ax: Optional matplotlib axes.
-    :rtype: Axes
     """
     # calculate error rate
     error_rates = {

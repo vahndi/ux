@@ -6,14 +6,13 @@ from ux.calcs.basic_calcs.stats import exponential_confidence_interval
 from ux.plots.helpers import new_axes
 
 
-def plot_task_completion_times(task_times: dict, confidence: float = 0.95, ax: Axes = None):
+def plot_task_completion_times(task_times: dict, confidence: float = 0.95, ax: Axes = None) -> Axes:
     """
     Plot the average time taken and confidence interval for each task.
 
     :param task_times: Dictionary of {task name => list of task times}
     :param confidence: The confidence interval to use for error bars (0 - 1)
     :param ax: Optional matplotlib axes to plot on.
-    :rtype: Axes
     """
     means = Series({
         task_name: mean(times)
@@ -32,14 +31,13 @@ def plot_task_completion_times(task_times: dict, confidence: float = 0.95, ax: A
     return ax
 
 
-def plot_task_completion_under_threshold(participant_times: dict, threshold: int = 60, ax: Axes = None):
+def plot_task_completion_under_threshold(participant_times: dict, threshold: int = 60, ax: Axes = None) -> Axes:
     """
     Plot the percentage of participants who completed each task within the time threshold.
 
     :param participant_times: Dictionary mapping  {task name => {participant => time on task}}
     :param threshold: Time threshold to use to measure task completion success.
     :param ax: Optional matplotlib axes to plot on.
-    :rtype: Axes
     """
     df = DataFrame.from_dict(participant_times)
     df_below_threshold = df.le(threshold).mean()

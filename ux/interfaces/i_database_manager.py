@@ -1,84 +1,70 @@
 from typing import List
 
+from ux.interfaces.actions.i_user_action import IUserAction
+from ux.interfaces.i_location import ILocation
+from ux.interfaces.i_session import ISession
+from ux.interfaces.i_user import IUser
+from ux.interfaces.sequences.i_action_sequence import IActionSequence
+
 
 class IDatabaseManager(object):
     """
     An interface or abstract base class that should be implemented for each new backend.
     """
-    def session(self, session_id: str):
+    def session(self, session_id: str) -> ISession:
         """
         Return the Session with the given id.
-
-        :rtype: ISession
         """
         raise NotImplementedError
 
-    def sessions(self):
+    def sessions(self) -> List[ISession]:
         """
         Return all the Sessions in the database.
-
-        :rtype: List[ISession]
         """
         raise NotImplementedError
 
-    def user(self, user_id: str):
-        """
-        :rtype: IUser
-        """
+    def user(self, user_id: str) -> IUser:
+
         raise NotImplementedError
 
-    def users(self):
+    def users(self) -> List[IUser]:
         """
         Return all the Users in the database.
-
-        :rtype: List[IUser]
         """
         raise NotImplementedError
 
-    def user_action(self, action_id: str):
+    def user_action(self, action_id: str) -> IUserAction:
         """
         Return the UserAction with the given id.
-
-        :rtype: IUserAction
         """
         raise NotImplementedError
 
-    def user_actions(self, user_id: str):
+    def user_actions(self, user_id: str) -> List[IUserAction]:
         """
         Return all the Actions taken by the User with the given id in the database.
-
-        :rtype: List[IUserAction]
         """
         raise NotImplementedError
 
-    def location(self, location_id: str):
+    def location(self, location_id: str) -> ILocation:
         """
         Return the Location with the given id.
-
-        :rtype: ILocation
         """
         raise NotImplementedError
 
-    def locations(self):
+    def locations(self) -> List[ILocation]:
         """
         Return all the Locations in the database.
-
-        :rtype: List[ILocation]
         """
         raise NotImplementedError
 
-    def action_types(self):
+    def action_types(self) -> List[str]:
         """
         Return all the Action Types embedded in UserActions.
-
-        :rtype: List[str]
         """
         raise NotImplementedError
 
-    def get_session_sequence(self, session_id):
+    def get_session_sequence(self, session_id) -> IActionSequence:
         """
         Return an ActionSequence constructed from all UserActions in the Session with the given id.
-
-        :rtype: IActionSequence
         """
         raise NotImplementedError

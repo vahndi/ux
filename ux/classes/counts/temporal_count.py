@@ -49,10 +49,8 @@ class TemporalCount(dict):
         return self
 
     @property
-    def is_split(self):
-        """
-        :rtype: bool
-        """
+    def is_split(self) -> bool:
+
         values = list(self.values())
         if not values:
             return None
@@ -60,18 +58,14 @@ class TemporalCount(dict):
             return type(values[0]) is dict
 
     @property
-    def frequency(self):
-        """
-        :rtype: timedelta
-        """
+    def frequency(self) -> timedelta:
+
         date_times = self.to_frame().index
         return date_times[1] - date_times[0]
 
     @property
-    def freq_str(self):
-        """
-        :rtype:
-        """
+    def freq_str(self) -> str:
+
         td = self.frequency
         if td.seconds == 3600:
             return 'hourly'
@@ -101,14 +95,12 @@ class TemporalCount(dict):
         else:
             return lambda d: d
 
-    def to_series(self):
+    def to_series(self) -> Series:
         """
         Return the Series representation of the count data.
 
         If the count is split, return counts indexed by datetime and count variable.
         If the count is not split return counts indexed by datetime.
-
-        :rtype: Series
         """
         if self.is_split:
             data = DataFrame(self).T
@@ -123,15 +115,13 @@ class TemporalCount(dict):
             data.index.name = 'date_time'
             return data.replace(nan, 0)
 
-    def to_frame(self):
+    def to_frame(self) -> DataFrame:
         """
         Return the DataFrame representation of the count data.
 
         If the count is split then each split key will be represented by a 2-level column.
         If the count is not split then there will be one column, named after the TemporalCount.
         In either case the Index will be the datetime of the count.
-
-        :rtype: DataFrame
         """
         if self.is_split:
             data = DataFrame(self).T
@@ -153,7 +143,7 @@ class TemporalCount(dict):
             return self.to_series()
 
     def plot(self, plot_type: str = 'bar', stacked: bool = True, top: int = None,
-             ax: Axes = None, axis_kws: dict = None):
+             ax: Axes = None, axis_kws: dict = None) -> Axes:
         """
         Plot the count.
 
@@ -162,7 +152,6 @@ class TemporalCount(dict):
         :param top: Number of results to show in heatmaps. Leave as None to show all.
         :param ax: Optional matplotlib axes to plot on
         :param axis_kws: Optional dict of values to call ax.set() with
-        :rtype: Axes
         """
         assert(plot_type in ('bar', 'heatmap'))
         ax = ax or new_axes()
@@ -198,7 +187,7 @@ class TemporalCount(dict):
 
     @staticmethod
     def plot_comparison(temporal_counts, stacked: bool = False,
-                        ax: Axes = None, axis_kws: dict = None):
+                        ax: Axes = None, axis_kws: dict = None) -> Axes:
         """
         Plot a comparison of several counts.
 

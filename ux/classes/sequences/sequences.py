@@ -1,15 +1,19 @@
 from collections import defaultdict, OrderedDict, Counter
-from datetime import timedelta
+from datetime import timedelta, datetime
 from itertools import chain, product
 from pandas import notnull
 from types import FunctionType
-from typing import Dict, Iterator, List, Union, Tuple
+from typing import Dict, Iterator, List, Union
 
 from ux.classes.sequences.sequences_group_by import SequencesGroupBy
 from ux.classes.wrappers.map_result import MapResult
-from ux.custom_types import SequenceFilter, SequenceFilterSet, SequenceGrouper, SequenceCounter
+from ux.custom_types.action_types import ActionTemplatePair
+from ux.custom_types.builtin_types import StrPair
+from ux.custom_types.sequence_types import SequenceCounter, SequenceFilter, SequenceFilterSet, SequenceGrouper
+from ux.interfaces.actions.i_action_template import IActionTemplate
 from ux.interfaces.sequences.i_action_sequence import IActionSequence
 from ux.interfaces.sequences.i_sequences import ISequences
+from ux.interfaces.sequences.i_sequences_group_by import ISequencesGroupBy
 from ux.utils.misc import get_method_name
 
 
@@ -48,11 +52,9 @@ class Sequences(ISequences):
         self._sequences: List[IActionSequence] = sequences
 
     @property
-    def sequences(self):
+    def sequences(self) -> List[IActionSequence]:
         """
         Return a list of the individual Sequences in the collection.
-
-        :rtype: List[IActionSequence]
         """
         return self._sequences
 
@@ -70,13 +72,12 @@ class Sequences(ISequences):
                 filtered.append(sequence)
         return Sequences(filtered)
 
-    def group_filter(self, filters: SequenceFilterSet, group_name: str = 'filter'):
+    def group_filter(self, filters: SequenceFilterSet, group_name: str = 'filter') -> ISequencesGroupBy:
         """
         Return a new SequencesGroupBy keyed by the filter name with values matching each filter, applied in parallel.
 
         :param filters: Dictionary of filters to apply.
         :param group_name: Name to identify the filter group.
-        :rtype: SequencesGroupBy
         """
         filtered = {
             filter_name: self.filter(filter_condition)
@@ -84,12 +85,11 @@ class Sequences(ISequences):
         }
         return SequencesGroupBy(data=filtered, names=[group_name])
 
-    def chain_filter(self, filters: SequenceFilterSet):
+    def chain_filter(self, filters: SequenceFilterSet) -> ISequencesGroupBy:
         """
         Return a new SequencesGroupBy keyed by the dict key with values matching each filter, applied in series.
 
         :param filters: Dictionary of filters to apply. Use OrderedDict for Python < 3.7 to preserve key order.
-        :rtype: SequencesGroupBy
         """
         filtered = OrderedDict()
         sequences = self._sequences
@@ -102,19 +102,15 @@ class Sequences(ISequences):
             sequences = filtered_sequences
         return SequencesGroupBy(data=filtered, names=['filter'])
 
-    def group_by(self, by: Union[SequenceGrouper, Dict[str, SequenceGrouper], str, list]):
+    def group_by(self, by: Union[SequenceGrouper, Dict[str, SequenceGrouper], str, list]) -> ISequencesGroupBy:
         """
         Return a SequencesGroupBy keyed by each value returned by a single grouper,
         or each combination of groupers for a list of groupers.
         Each grouper should be a lambda function that returns a picklable value e.g. str.
 
         :param by: lambda(Sequence) or dict[group_name, lambda(Sequence)] or list[str or lambda(Sequence)].
-        :rtype: SequencesGroupBy
         """
-        def apply_group_by(method: SequenceGrouper):
-            """
-            :rtype: Dict[str, Sequences]
-            """
+        def apply_group_by(method: SequenceGrouper) -> Dict[str, ISequences]:
             splits = defaultdict(list)
             for sequence in self:
                 splits[method(sequence)].append(sequence)
@@ -162,12 +158,11 @@ class Sequences(ISequences):
             result[result_key] = Sequences.intersect_all(result_sequences)
         return SequencesGroupBy(result, names=group_by_names)
 
-    def map(self, mapper: Union[str, dict, list, SequenceGrouper]):
+    def map(self, mapper: Union[str, dict, list, SequenceGrouper]) -> MapResult:
         """
         Apply a map function to every Sequence in the Sequences and return the results.
 
         :param mapper: The method or methods to apply to each ActionSequence
-        :rtype: MapResult
         """
         def map_items(item_mapper: Union[str, FunctionType]):
             if isinstance(item_mapper, str):
@@ -217,6 +212,9 @@ class Sequences(ISequences):
         """
         Return a dict of counts of each value returned by get_value(action) for each action.
 
+        If get_value returns a list then 1 will be added to the counter value for each element key of the list.
+        If get_value returns a non-list then the returned item will be used as a key and it's value increased by 1.
+
         :param get_value: method that returns a str or list of strs when called on an action.
         """
         counts = Counter()
@@ -247,22 +245,19 @@ class Sequences(ISequences):
         )
 
     @staticmethod
-    def intersect_all(sequences):
+    def intersect_all(sequences) -> ISequences:
         """
         Return a new collection representing the ActionSequences in every collection.
 
         :type sequences: List[ISequences]
-        :rtype: ISequences
         """
         intersect = sequences[0].copy()
         for s in sequences[1:]:
             intersect = intersect.intersection(s)
         return intersect
 
-    def back_click_rates(self):
-        """
-        :rtype: Dict[IActionTemplate, float]
-        """
+    def back_click_rates(self) -> Dict[IActionTemplate, float]:
+
         rates = {}
         counts = self.action_template_counts()
         for template, count in counts.items():
@@ -273,18 +268,41 @@ class Sequences(ISequences):
                 rates[template] = rate
         return rates
 
+    # region sequence property lists
+
     @property
-    def durations(self):
-        """
-        :rtype: List[timedelta]
-        """
+    def metas(self) -> List[dict]:
+
+        return [sequence.meta for sequence in self]
+
+    @property
+    def starts(self) -> List[datetime]:
+
+        return [sequence.start for sequence in self]
+
+    @property
+    def ends(self) -> List[datetime]:
+
+        return [sequence.end for sequence in self]
+
+    @property
+    def durations(self) -> List[timedelta]:
+
         return [sequence.duration for sequence in self]
 
-    def action_template_counts(self):
+    @property
+    def user_ids(self) -> List[str]:
+        return [sequence.user_id for sequence in self.sequences]
+
+    @property
+    def session_ids(self) -> List[str]:
+        return [sequence.session_id for sequence in self.sequences]
+
+    # end region
+
+    def action_template_counts(self) -> Dict[IActionTemplate, int]:
         """
         Return a total count of all the ActionTemplates in the ActionSequences in the collection.
-
-        :rtype: Dict[IActionTemplate, int]
         """
         counts = defaultdict(int)
         for sequence in self:
@@ -292,39 +310,35 @@ class Sequences(ISequences):
                 counts[template] += 1
         return dict(counts)
 
-    def action_template_sequence_counts(self):
+    def action_template_sequence_counts(self) -> Dict[IActionTemplate, int]:
         """
         Return a total count of the number of ActionSequences containing each ActionTemplate in the collection.
-
-        :rtype: Dict[IActionTemplate, int]
         """
         counts = Counter(chain.from_iterable(
             list(sequence.action_template_set()) for sequence in self
         ))
         return dict(counts)
 
-    def action_template_transition_counts(self):
+    def action_template_transition_counts(self) -> Dict[ActionTemplatePair, int]:
         """
         Return counts of transitions between pairs of Actions from each Sequence in the collection.
 
         :return: Dictionary of {(from, to) => count}
-        :rtype: Dict[tuple[IActionTemplate, IActionTemplate], int]
         """
         transitions = defaultdict(int)
         # count transitions
         for sequence in self:
             for a in range(len(sequence) - 1):
-                from_action = sequence.user_actions[a].template()
-                to_action = sequence.user_actions[a + 1].template()
+                from_action = sequence[a].template()
+                to_action = sequence[a + 1].template()
                 transitions[(from_action, to_action)] += 1
         return dict(transitions)
 
-    def location_transition_counts(self, exclude: Union[str, List[str]] = None):
+    def location_transition_counts(self, exclude: Union[str, List[str]] = None) -> Counter[StrPair, int]:
         """
         Count the transitions from each location to each other location in actions in the given sequences.
 
         :return: Counter[Tuple[from, to], count]
-        :rtype: Counter[Tuple[str, str], int]
         """
         transitions = Counter()
         if exclude is not None:
@@ -341,13 +355,13 @@ class Sequences(ISequences):
                     transitions[(source, target)] += 1
         return transitions
 
-    def dwell_times(self, sum_by_location: bool, sum_by_sequence: bool):
+    def dwell_times(self, sum_by_location: bool, sum_by_sequence: bool) -> Dict[str, Union[timedelta, List[timedelta]]]:
         """
         Return the amount of time spent by the user at each location.
 
         :param sum_by_location: Whether to sum the durations of time spent at each location or keep as a list.
-        :param sum_by_sequence: Whether to sum the durations of time spent at each location in each sequence or keep as a list.
-        :rtype: Dict[str, Union[timedelta, List[timedelta]]]
+        :param sum_by_sequence: Whether to sum the durations of time spent at each location in each sequence
+                                or keep as a list.
         """
         if sum_by_sequence:
             dwell_times = defaultdict(timedelta)
@@ -370,7 +384,7 @@ class Sequences(ISequences):
         return dwell_times
 
     def most_probable_location_sequence(self, exclude: Union[str, List[str]] = None, start_at: str = None,
-                                        allow_repeats: bool = True):
+                                        allow_repeats: bool = True) -> List[str]:
         """
         Find the most probable location sequence.
 
@@ -378,7 +392,6 @@ class Sequences(ISequences):
         :param start_at: Optional name of start state. Leave as None to use most common state.
         :param allow_repeats: Whether to stop building the sequence at the point where a previous item is found or to
                               use a less likely item instead and carry on building the sequence.
-        :rtype: List[str]
         """
         transitions = self.location_transition_counts(exclude=exclude)
         # find most frequent from point
@@ -410,30 +423,26 @@ class Sequences(ISequences):
                 found = False
         return sequence
 
-    def sort(self, by: str, ascending: bool = True):
-        """
-        :rtype: ISequences
-        """
+    def sort(self, by: str, ascending: bool = True) -> ISequences:
+
         return Sequences(sequences=sorted(
             self._sequences, key=self._sequence_lookups[by],
             reverse=not ascending
         ))
 
-    def __getitem__(self, item):
-        """
-        :rtype: IActionSequence
-        """
+    def __getitem__(self, item) -> IActionSequence:
+
         return self._sequences[item]
 
-    def __repr__(self):
+    def __repr__(self) -> str:
 
         return 'Sequences({})'.format(len(self._sequences))
 
-    def __len__(self):
+    def __len__(self) -> int:
 
         return len(self._sequences)
 
-    def __contains__(self, item: IActionSequence):
+    def __contains__(self, item: IActionSequence) -> bool:
 
         if isinstance(item, IActionSequence):
             return item in self
@@ -444,21 +453,17 @@ class Sequences(ISequences):
 
         return self._sequences.__iter__()
 
-    def __add__(self, other):
-        """
-        :rtype: ISequences
-        """
-        if type(other) is Sequences:
+    def __add__(self, other: ISequences) -> ISequences:
+
+        if isinstance(other, ISequences):
             other = other.sequences
         return Sequences(
             list(set(self._sequences).union(other))
         ).sort('date_time')
 
-    def __sub__(self, other):
-        """
-        :rtype: ISequences
-        """
-        if type(other) is Sequences:
+    def __sub__(self, other: ISequences) -> ISequences:
+
+        if isinstance(other, ISequences):
             other = other.sequences
         return Sequences(list(
             set(self._sequences) - set(self._sequences).intersection(other)

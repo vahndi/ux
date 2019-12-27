@@ -1,10 +1,12 @@
-from typing import List, Iterator, Tuple
+from typing import List, Iterator
+
+from ux.custom_types.builtin_types import StrPair
 
 
 class SourceTargetFactory(object):
 
     @staticmethod
-    def one_shot(locations: List[str]) -> List[Tuple[str, str]]:
+    def one_shot(locations: List[str]) -> List[StrPair]:
         """
         Generate a sequence of sources and targets that visits each location in turn.
 
@@ -16,11 +18,10 @@ class SourceTargetFactory(object):
         ]
 
     @staticmethod
-    def forward_back(locations: List[str], forwards: int, backwards: int) -> Iterator[Tuple[str, str]]:
+    def forward_back(locations: List[str], forwards: int, backwards: int) -> Iterator[StrPair]:
         """
         Generate a sequence of sources and targets that goes forwards and backwards through the locations.
 
-        :rtype: Iterator[Tuple[str, str]]
         :return: Iterator[Tuple[source, target]]
         """
         assert forwards > backwards, 'forwards must be greater than backwards'

@@ -23,41 +23,33 @@ class Session(ISession):
         self._end_time = end_time
 
     @property
-    def session_id(self):
+    def session_id(self) -> str:
         """
         Return the id of the Session.
-
-        :rtype: str
         """
         return self._session_id
 
     @property
-    def user_id(self):
+    def user_id(self) -> str:
         """
         Return the id of the Session's User.
-
-        :rtype: str
         """
         return self._user_id
 
     @property
-    def start_time(self):
+    def start_time(self) -> datetime:
         """
         Return the start date-time of the Session
-
-        :rtype: datetime
         """
         return self._start_time
 
     @property
-    def end_time(self):
+    def end_time(self) -> datetime:
         """
         Return the end date-time of the Session
-
-        :rtype: datetime
         """
         return self._end_time
 
-    def __repr__(self):
+    def __repr__(self) -> str:
 
         return 'Session({})'.format(self._session_id)

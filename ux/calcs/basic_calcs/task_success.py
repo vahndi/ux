@@ -1,11 +1,13 @@
-from typing import Iterable
+from typing import Iterable, Tuple
 
 from pandas import Series
 from statsmodels.stats.proportion import proportion_confint
 
+from ux.custom_types.builtin_types import FloatPair
+
 
 def binary_task_success_rate(results: Iterable[int],
-                             alpha: float = 0.05, method: str = 'normal'):
+                             alpha: float = 0.05, method: str = 'normal') -> Tuple[float, FloatPair]:
     """
     Calculate the binary task success rate from a list of pass or fail task results for a given user.
 
@@ -14,7 +16,6 @@ def binary_task_success_rate(results: Iterable[int],
     :param results: list of pass (1/True) / fail (0/False) results
     :param alpha: significance level
     :param method: method to use for confidence interval
-    :rtype: SuccessRate
     """
     s: Series = Series(results).astype(int)
     mean = s.mean()

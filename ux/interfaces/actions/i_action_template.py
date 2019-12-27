@@ -1,38 +1,30 @@
 class IActionTemplate(object):
 
     @property
-    def action_type(self):
+    def action_type(self) -> str:
         """
         Return the type of the ActionTemplate.
-
-        :rtype: str
         """
         raise NotImplementedError
 
     @property
-    def source_id(self):
+    def source_id(self) -> str:
         """
         Return the id of the Location where the Action would be taken.
-
-        :rtype: str
         """
         raise NotImplementedError
 
     @property
-    def target_id(self):
+    def target_id(self) -> str:
         """
         Return the id of the Location where the Action would go to.
-
-        :rtype: str
         """
         raise NotImplementedError
 
     @property
-    def weighting(self):
+    def weighting(self) -> float:
         """
         Return the weighting for the Action for various calculations.
-
-        :rtype: float
         """
         raise NotImplementedError
 
@@ -45,8 +37,6 @@ class IActionTemplate(object):
         """
         raise NotImplementedError
 
-    def to_dict(self):
-        """
-        :rtype: dict
-        """
+    def to_dict(self) -> dict:
+
         raise NotImplementedError

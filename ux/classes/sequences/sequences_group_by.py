@@ -1,6 +1,6 @@
 from collections import defaultdict, OrderedDict
 from types import FunctionType
-from typing import Dict, List, Union
+from typing import Dict, List, Union, ItemsView, KeysView, ValuesView, Iterator
 
 from ux.classes.wrappers.map_result import MapResult
 from ux.custom_types import SequenceFilter, SequencesGroupByKey, SequenceFilterSet, SequencesGrouper, SequenceGrouper
@@ -27,22 +27,19 @@ class SequencesGroupBy(ISequencesGroupBy):
             except:
                 pass
 
-    def count(self):
-        """
-        :rtype: MapResult
-        """
+    def count(self) -> MapResult:
+
         out_dict = OrderedDict([
             (key, sequences.count())
             for key, sequences in self._data.items()
         ])
         return MapResult(out_dict, key_names=self.names, value_names='count')
 
-    def map(self, mapper: Union[str, dict, list, SequencesGrouper]):
+    def map(self, mapper: Union[str, dict, list, SequencesGrouper]) -> MapResult:
         """
         Apply a map function to every Sequences in the GroupBy and return the results.
 
         :param mapper: The method or methods to apply to each Sequences
-        :rtype: MapResult
         """
         def map_items(item_mapper: Union[str, FunctionType]):
             if isinstance(item_mapper, str):
@@ -115,12 +112,11 @@ class SequencesGroupBy(ISequencesGroupBy):
                     results[name]['{}({})'.format(agg_name, agg_key)] = agg_func(values)
         return results
 
-    def filter(self, condition: SequenceFilter):
+    def filter(self, condition: SequenceFilter) -> ISequencesGroupBy:
         """
         Return a new Sequences containing only the sequences matching the `condition` in each group.
 
         :param condition: lambda(sequence) that returns True to include a sequence.
-        :rtype: ISequencesGroupBy
         """
         data = {
             key: value.filter(condition)
@@ -128,13 +124,12 @@ class SequencesGroupBy(ISequencesGroupBy):
         }
         return SequencesGroupBy(data=data, names=self.names)
 
-    def group_filter(self, filters: SequenceFilterSet, group_name: str = None):
+    def group_filter(self, filters: SequenceFilterSet, group_name: str = None) -> ISequencesGroupBy:
         """
         Return a new SequencesGroupBy keyed by the filter name with values matching each filter, applied in parallel.
 
         :param filters: Dictionary of filters to apply.
         :param group_name: Name to identify the filter group.
-        :rtype: SequencesGroupBy
         """
         names = self._names.copy()
         if group_name is None:
@@ -156,14 +151,13 @@ class SequencesGroupBy(ISequencesGroupBy):
                 data[new_filter_names] = data_sequences.filter(filter_condition)
         return SequencesGroupBy(data=data, names=names)
 
-    def group_by(self, by: Union[SequenceGrouper, Dict[str, SequenceGrouper], str, list]):
+    def group_by(self, by: Union[SequenceGrouper, Dict[str, SequenceGrouper], str, list]) -> ISequencesGroupBy:
         """
         Return a new SequencesGroupBy keyed by each value returned by a single grouper,
         or each combination of groupers for a list of groupers.
         Each grouper should be a lambda function that returns a picklable value e.g. str.
 
         :param by: lambda(Sequence) or dict[group_name, lambda(Sequence)] or list[str or lambda(Sequence)].
-        :rtype: SequencesGroupBy
         """
         new_results = OrderedDict()
         for group_key, group_sequences in self.items():
@@ -181,29 +175,21 @@ class SequencesGroupBy(ISequencesGroupBy):
 
         return SequencesGroupBy(data=new_results, names=self.names + group_sub_results.names)
 
-    def items(self):
-        """
-        :rtype: dict_items
-        """
+    def items(self) -> ItemsView:
+
         return self._data.items()
 
-    def keys(self):
-        """
-        :rtype: dict_keys
-        """
+    def keys(self) -> KeysView:
+
         return self._data.keys()
 
-    def values(self):
-        """
-        :rtype: dict_values
-        """
+    def values(self) -> ValuesView:
+
         return self._data.values()
 
     @property
-    def names(self):
-        """
-        :rtype: List[str]
-        """
+    def names(self) -> List[str]:
+
         return self._names
     
     @names.setter
@@ -211,24 +197,22 @@ class SequencesGroupBy(ISequencesGroupBy):
 
         self._names = names
 
-    def __getitem__(self, item):
-        """
-        :rtype: ISequences
-        """
+    def __getitem__(self, item) -> ISequences:
+
         return self._data[item]
 
-    def __repr__(self):
+    def __repr__(self) -> str:
 
         return 'SequencesGroupBy({})'.format(self._data.__repr__())
 
-    def __len__(self):
+    def __len__(self) -> int:
 
         return len(self._data)
 
-    def __contains__(self, item):
+    def __contains__(self, item) -> bool:
 
         return item in self._data
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Dict[SequencesGroupByKey, ISequences]]:
 
         return self._data.__iter__()

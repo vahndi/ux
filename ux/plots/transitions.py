@@ -15,7 +15,7 @@ from ux.utils.transitions import create_transition_matrix
 
 def plot_transition_matrix(transitions, get_name=None,
                            order_by='from', exclude=None,
-                           ax: Axes = None, heatmap_kws: dict = None):
+                           ax: Axes = None, heatmap_kws: dict = None) -> Axes:
     """
     Plot a state transition matrix from the given transition counts or probabilities.
 
@@ -29,7 +29,6 @@ def plot_transition_matrix(transitions, get_name=None,
     :type exclude: Union[str, List[str]]
     :param heatmap_kws: Keyword args and values for seaborn's heatmap function.
     :param ax: Optional matplotlib axes to plot on.
-    :rtype: Axes
     """
     matrix = create_transition_matrix(transitions=transitions, get_name=get_name,
                                       order_by=order_by, exclude=exclude)
@@ -47,7 +46,7 @@ def plot_transition_matrix(transitions, get_name=None,
 def plot_markov_chain(transitions, get_location, get_name=None,
                       state_color=None, transition_color=None, arc_scale: float = 0.1,
                       text_kws: dict = None, circle_kws: dict = None, arrowstyle_kws: dict = None,
-                      ax: Axes = None):
+                      ax: Axes = None) -> Axes:
     """
     Plot a diagram of the Markov Chain corresponding to the given transitions between states.
 
@@ -66,7 +65,6 @@ def plot_markov_chain(transitions, get_location, get_name=None,
     :param circle_kws: args to pass to `matplotlib.patches.Circle` for the states
     :param arrowstyle_kws: args to pass to `matplotlib.patches.FancyArrowPatch(arrowstyle)` for the transitions
     :param ax: Optional matplotlib axes to plot on.
-    :rtype: Axes
     """
     ax = ax or new_axes()
     circle_kws = circle_kws or {'radius': 0.35}
@@ -107,10 +105,8 @@ def plot_markov_chain(transitions, get_location, get_name=None,
         ax.text(*center, s=get_name(state), **text_kws)
 
 
-def plot_sequence_diagram(sequence: IActionSequence, locations: List[str], max_grid_lines: int = 50):
-    """
-    :rtype: Axes
-    """
+def plot_sequence_diagram(sequence: IActionSequence, locations: List[str], max_grid_lines: int = 50) -> Axes:
+
     # calculate plot coordinates and labels
     data = sequence.map({
         'source': lambda act: act.source_id,

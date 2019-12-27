@@ -2,10 +2,8 @@ from types import FunctionType
 from typing import Union
 
 
-def get_method_name(method: Union[str, FunctionType]):
-    """
-    :rtype: str
-    """
+def get_method_name(method: Union[str, FunctionType]) -> str:
+
     if isinstance(method, str):
         return method
     elif isinstance(method, FunctionType):

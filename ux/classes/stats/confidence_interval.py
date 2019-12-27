@@ -15,16 +15,16 @@ class ConfidenceInterval(object):
         self.significance = significance
 
     @property
-    def percentage(self):
-        """
-        :rtype: float
-        """
+    def percentage(self) -> float:
+
         return 100 * (1 - self.significance)
 
     @property
     def width(self):
+
         return self.upper - self.lower
 
     @property
     def range(self):
+
         return self.lower, self.upper

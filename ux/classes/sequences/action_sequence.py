@@ -1,7 +1,7 @@
 from collections import defaultdict, OrderedDict, Counter
 from datetime import datetime, timedelta
 from types import FunctionType
-from typing import List, Callable, Set, Union, Iterator
+from typing import List, Callable, Set, Union, Iterator, Dict
 
 from pandas import notnull
 
@@ -10,7 +10,7 @@ from ux.calcs.object_calcs.task_success import unordered_task_completion_rate, o
     binary_task_success
 from ux.calcs.object_calcs.utils import sequence_intersects_task
 from ux.classes.wrappers.map_result import MapResult
-from ux.custom_types import ActionMapper, ActionFilter, ActionCounter
+from ux.custom_types.action_types import ActionMapper, ActionFilter, ActionCounter
 from ux.interfaces.actions.i_action_template import IActionTemplate
 from ux.interfaces.actions.i_user_action import IUserAction
 from ux.interfaces.sequences.i_action_sequence import IActionSequence
@@ -35,67 +35,51 @@ class ActionSequence(IActionSequence):
         self._location_ids = None
 
     @property
-    def user_actions(self):
+    def user_actions(self) -> List[IUserAction]:
         """
         Return the list of UserActions in the ActionSequence.
-
-        :rtype: List[IUserAction]
         """
         return self._user_actions
 
     @property
-    def meta(self):
+    def meta(self) -> dict:
         """
         Return the dictionary of meta information added at construction time.
-
-        :rtype: dict
         """
         return self._meta
 
     @property
-    def start(self):
-        """
-        :rtype: datetime
-        """
+    def start(self) -> datetime:
+
         return self[0].time_stamp
 
     @property
-    def end(self):
-        """
-        :rtype: datetime
-        """
+    def end(self) -> datetime:
+
         return self[-1].time_stamp
 
     @property
-    def duration(self):
+    def duration(self) -> timedelta:
         """
         Return the total duration of the ActionSequence from the first Action to the last.
-
-        :rtype: timedelta
         """
-        start_time = self.user_actions[0].time_stamp
-        end_time = self.user_actions[-1].time_stamp
+        start_time = self[0].time_stamp
+        end_time = self[-1].time_stamp
         return end_time - start_time
 
     @property
-    def user_id(self):
-        """
-        :rtype: str
-        """
+    def user_id(self) -> str:
+
         return self[0].user_id
 
     @property
-    def session_id(self):
-        """
-        :rtype: str
-        """
+    def session_id(self) -> str:
+
         return self[0].session_id
 
-    def action_templates(self):
+    def action_templates(self) -> List[IActionTemplate]:
         """
         Return a list of ActionTemplates derived from each of the UserActions taken.
-
-        :rtype: List[IActionTemplate]
         """
         if self._action_templates is None:
             self._action_templates = [
@@ -104,29 +88,23 @@ class ActionSequence(IActionSequence):
             ]
         return self._action_templates
 
-    def action_template_set(self):
+    def action_template_set(self) -> Set[IActionTemplate]:
         """
         Return a set of ActionTemplates representing the UserActions in the ActionSequence.
-
-        :rtype: Set[IActionTemplate]
         """
         return set(self.action_templates())
 
-    def action_template_counts(self):
+    def action_template_counts(self) -> Dict[IActionTemplate, int]:
         """
         Return a count of each ActionTemplate representing one or more UserActions in the ActionSequence.
-
-        :rtype: Dict[IActionTemplate, int]
         """
         counts = defaultdict(int)
         for template in self.action_templates():
             counts[template] += 1
         return dict(counts)
 
-    def filter(self, condition: Union[ActionFilter, IActionTemplate], copy_meta: bool = False):
-        """
-        :rtype: IActionSequence
-        """
+    def filter(self, condition: Union[ActionFilter, IActionTemplate], copy_meta: bool = False) -> IActionSequence:
+
         if condition in (None, True):
             return self
         if isinstance(condition, IActionTemplate):
@@ -161,6 +139,9 @@ class ActionSequence(IActionSequence):
         """
         Return a dict of counts of each value returned by get_value(action) for each action.
 
+        If get_value returns a list then 1 will be added to the counter value for each element key of the list.
+        If get_value returns a non-list then the returned item will be used as a key and it's value increased by 1.
+
         :param get_value: method that returns a str or list of strs when called on an action.
         """
         counts = Counter()
@@ -174,24 +155,18 @@ class ActionSequence(IActionSequence):
                 raise TypeError('get_value must return str or list of str')
         return counts
 
-    def find_all(self, template: IActionTemplate):
+    def find_all(self, template: IActionTemplate) -> List[IUserAction]:
         """
         Return a list of all the actions matching the given action template.
         Returns an empty list if the template is not matched.
 
         :param template: The ActionTemplate to match against.
-        :type template: IActionTemplate
-        :rtype: list[IUserAction]
         """
-        return [action for action in self.user_actions
-                if action.template() == template]
+        return [action for action in self if action.template() == template]
 
-    def find_first(self, template: IActionTemplate):
+    def find_first(self, template: IActionTemplate) -> IUserAction:
         """
         Return the first action matching the given action template. Returns None if the template is not matched.
-
-        :type template: IActionTemplate
-        :rtype: IUserAction
         """
         occurrences = self.find_all(template)
         if len(occurrences):
@@ -199,12 +174,9 @@ class ActionSequence(IActionSequence):
         else:
             return None
 
-    def find_last(self, template: IActionTemplate):
+    def find_last(self, template: IActionTemplate) -> IUserAction:
         """
         Return the first action matching the given action template. Returns None if the template is not matched.
-
-        :type template: IActionTemplate
-        :rtype: IUserAction
         """
         occurrences = self.find_all(template)
         if len(occurrences):
@@ -212,12 +184,11 @@ class ActionSequence(IActionSequence):
         else:
             return None
 
-    def map(self, mapper: Union[str, dict, list, ActionMapper]):
+    def map(self, mapper: Union[str, dict, list, ActionMapper]) -> MapResult:
         """
         Apply a map function to every action in the Sequence and return the results.
 
         :param mapper: The method or methods to apply to each UserAction
-        :rtype: MapResult
         """
         def map_items(item_mapper):
             if isinstance(item_mapper, str):
@@ -251,39 +222,36 @@ class ActionSequence(IActionSequence):
 
         return MapResult(results)
 
-    def intersects_task(self, task: ITask):
+    def intersects_task(self, task: ITask) -> bool:
         """
         Return True if the given Task has ActionTemplates that are equivalent to any Actions in the Sequence.
 
         :param task: Task to cross-reference Action Templates against.
-        :rtype: bool
         """
         return sequence_intersects_task(action_sequence=self, task=task)
 
     def binary_task_success(self, task: ITask,
-                            success_func: Callable[[ITask, IActionSequence], bool]):
+                            success_func: Callable[[ITask, IActionSequence], bool]) -> bool:
         """
         Return True if success_func is met.
 
         :param task: The Task to assess success against.
         :param success_func: Callable to use to assess success.
-        :rtype: bool
         """
         return binary_task_success(
             task=task, action_sequence=self,
             success_func=success_func
         )
 
-    def lostness(self, task: ITask):
+    def lostness(self, task: ITask) -> float:
         """
         Return the lostness with respect to the given Task.
 
         :param task: The Task to calculate lostness against.
-        :rtype: float
         """
         return lostness(task=task, action_sequence=self)
 
-    def split(self, split, how: str = 'at', copy_meta: bool = False):
+    def split(self, split, how: str = 'at', copy_meta: bool = False) -> List[IActionSequence]:
         """
         Split into a list of new ActionSequences after each `UserAction` where `condition` is met.
 
@@ -291,12 +259,11 @@ class ActionSequence(IActionSequence):
         :type split: Union[ActionFilter, IActionTemplate]
         :param how: How to split the Sequence. One of `['before', 'after', 'at']`
         :param copy_meta: Whether to copy the `meta` dict into the new Sequences.
-        :rtype: List[IActionSequence]
         """
         # find matching locations
         match_locs = []
         condition = _create_action_template_condition(split)
-        for a, action in enumerate(self.user_actions):
+        for a, action in enumerate(self):
             if condition(action):
                 match_locs.append(a)
         # split at right locations depending on the value of `how`
@@ -325,11 +292,11 @@ class ActionSequence(IActionSequence):
             raise ValueError("'how' must be set to one of ['before', 'after', 'at']")
 
         return [ActionSequence(
-            user_actions=self.user_actions[start: end],
+            user_actions=self[start: end],
             meta=self._meta if copy_meta else None
         ) for start, end in zip(seq_starts, seq_ends)]
 
-    def crop(self, start, end, how: str, copy_meta: bool = False):
+    def crop(self, start, end, how: str, copy_meta: bool = False) -> IActionSequence:
         """
         Crop the sequence to start and end ActionTemplates or conditions.
         Returns None if both conditions are not found in order.
@@ -338,7 +305,6 @@ class ActionSequence(IActionSequence):
         :param end: The end of the subsequence to crop to.
         :param how: 'first' or 'last'
         :param copy_meta: Whether to copy the `meta` dict into the new Sequence.
-        :rtype: IActionSequence
         """
         start = _create_action_template_condition(start)
         end = _create_action_template_condition(end)
@@ -374,29 +340,25 @@ class ActionSequence(IActionSequence):
                 meta=self._meta if copy_meta else None
             )
 
-    def unordered_completion_rate(self, task: ITask):
+    def unordered_completion_rate(self, task: ITask) -> float:
         """
         Calculate the unordered completion rate of the given Task from the Actions in the Sequence.
 
         :param task: The Task to cross-reference UserActions against.
-        :rtype: float
         """
         return unordered_task_completion_rate(task, self)
 
-    def ordered_completion_rate(self, task: ITask):
+    def ordered_completion_rate(self, task: ITask) -> float:
         """
         Calculate the ordered completion rate of the given Task from the Actions in the Sequence.
 
         :param task: The Task to cross-reference UserActions against.
-        :rtype: float
         """
         return ordered_task_completion_rate(task, self)
 
-    def location_ids(self):
+    def location_ids(self) -> Set[str]:
         """
         Return a set of the ids of the unique locations visited in the sequence.
-
-        :rtype: Set[str]
         """
         if self._location_ids is None:
             location_ids = set()
@@ -407,26 +369,20 @@ class ActionSequence(IActionSequence):
             self._location_ids = location_ids
         return self._location_ids
 
-    def contains_location_id(self, location_id: str):
+    def contains_location_id(self, location_id: str) -> bool:
         """
         Determine whether the location was visited in the sequence.
-
-        :rtype: bool
         """
         return location_id in self.location_ids()
 
-    def action_types(self):
+    def action_types(self) -> Set[str]:
         """
         Return a set of the unique action types carried out in the sequence.
+        """
+        return set([action.action_type for action in self])
 
-        :rtype: Set[str]
-        """
-        return set([action.action_type for action in self.user_actions])
+    def back_click_rates(self) -> Dict[IActionTemplate, float]:
 
-    def back_click_rates(self):
-        """
-        :rtype: Dict[IActionTemplate, float]
-        """
         rates = {}
         template_list = self.action_templates()
         for template in self.action_template_set():
@@ -437,12 +393,11 @@ class ActionSequence(IActionSequence):
                 rates[template] = rate
         return rates
 
-    def dwell_times(self, sum_by_location: bool):
+    def dwell_times(self, sum_by_location: bool) -> Dict[str, Union[timedelta, List[timedelta]]]:
         """
         Return the amount of time spent by the user at each location.
 
         :param sum_by_location: Whether to sum the durations of time spent at each location or keep as a list.
-        :rtype: Dict[str, Union[timedelta, List[timedelta]]]
         """
         if sum_by_location:
             dwell_times = defaultdict(timedelta)
@@ -472,10 +427,8 @@ class ActionSequence(IActionSequence):
 
         return self._user_actions[item]
 
-    def __repr__(self):
-        """
-        :rtype: str
-        """
+    def __repr__(self) -> str:
+
         return 'ActionSequence([{}])'.format(
             len(self._user_actions)
         )
@@ -498,11 +451,8 @@ class ActionSequence(IActionSequence):
         return self._user_actions.__iter__()
 
 
-def _create_action_template_condition(value):
-    """
-    :type value: Union[IActionTemplate, FunctionType]
-    :rtype: FunctionType
-    """
+def _create_action_template_condition(value: Union[IActionTemplate, FunctionType]) -> FunctionType:
+
     def action_template_condition(template: IActionTemplate):
         if template == value:
             return True

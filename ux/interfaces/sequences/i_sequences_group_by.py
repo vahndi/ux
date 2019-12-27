@@ -1,3 +1,6 @@
+from typing import KeysView, ValuesView, List
+
+
 class ISequencesGroupBy(object):
 
     def count(self):
@@ -8,23 +11,17 @@ class ISequencesGroupBy(object):
 
         raise NotImplementedError
 
-    def keys(self):
-        """
-        :rtype: dict_keys
-        """
+    def keys(self) -> KeysView:
+
         raise NotImplementedError
 
-    def values(self):
-        """
-        :rtype: dict_values
-        """
+    def values(self) -> ValuesView:
+
         raise NotImplementedError
 
     @property
-    def names(self):
-        """
-        :rtype: List[str]
-        """
+    def names(self) -> List[str]:
+
         raise NotImplementedError
 
     def map(self, mapper):
@@ -52,7 +49,7 @@ class ISequencesGroupBy(object):
 
         :param filters: Dictionary of filters to apply.
         :param group_name: Name to identify the filter group.
-        :rtype: SequencesGroupBy
+        :rtype: ISequencesGroupBy
         """
         raise NotImplementedError
 

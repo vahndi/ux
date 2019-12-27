@@ -1,29 +1,24 @@
+from datetime import datetime
+
+
 class ISession(object):
 
     @property
-    def session_id(self):
-        """
-        :rtype: str
-        """
+    def session_id(self) -> str:
+
         raise NotImplementedError
 
     @property
-    def user_id(self):
-        """
-        :rtype: str
-        """
+    def user_id(self) -> str:
+
         raise NotImplementedError
 
     @property
-    def start_time(self):
-        """
-        :rtype: datetime
-        """
+    def start_time(self) -> datetime:
+
         raise NotImplementedError
 
     @property
-    def end_time(self):
-        """
-        :rtype: datetime
-        """
+    def end_time(self) -> datetime:
+
         raise NotImplementedError

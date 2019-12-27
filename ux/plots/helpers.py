@@ -6,13 +6,12 @@ from matplotlib.axis import Axis
 from matplotlib.axes import Axes
 from typing import List, Union
 
+from ux.custom_types.builtin_types import FloatPair
 from ux.interfaces.i_location import ILocation
 
 
-def new_axes(width: int = 16, height: int = 9):
-    """
-    :rtype: Axes
-    """
+def new_axes(width: int = 16, height: int = 9) -> Axes:
+
     _, ax = plt.subplots(figsize=(width, height))
     return ax
 
@@ -30,11 +29,9 @@ def set_axis_tick_label_rotation(ax: Axis, rotation: int):
         plt.setp(ax.get_minorticklabels(), rotation=rotation)
 
 
-def get_hist_index(bin_values: List[int]):
+def get_hist_index(bin_values: List[int]) -> List[str]:
     """
     Return index labels for histogram bin values.
-
-    :rtype:  List[str]
     """
     return [
         '{}%-{}%'.format(bin_values[b], bin_values[b + 1])
@@ -42,11 +39,9 @@ def get_hist_index(bin_values: List[int]):
     ]
 
 
-def point_distance(point_1: tuple, point_2: tuple):
+def point_distance(point_1: tuple, point_2: tuple) -> float:
     """
     Calculate the distance from point_1 to point_2.
-
-    :rtype: float
     """
     return (
         (point_1[0] - point_2[0]) ** 2 +
@@ -54,11 +49,9 @@ def point_distance(point_1: tuple, point_2: tuple):
     ) ** 0.5
 
 
-def circle_edge(point_1: tuple, point_2: tuple, radius: float, rotation_angle: float = 0.0):
+def circle_edge(point_1: tuple, point_2: tuple, radius: float, rotation_angle: float = 0.0) -> FloatPair:
     """
     Calculate the closest point on the edge of a circle centered at point_1 with radius to point_2.
-
-    :rtype: tuple
     """
     distance = point_distance(point_1, point_2)
     edge_point = (
@@ -76,14 +69,13 @@ def circle_edge(point_1: tuple, point_2: tuple, radius: float, rotation_angle: f
     return edge_point
 
 
-def get_color(color: Union[None, str, FunctionType], state: ILocation, default: str):
+def get_color(color: Union[None, str, FunctionType], state: ILocation, default: str) -> str:
     """
     Return a matplotlib color string depending on the type of `color`
 
     :param color: `string` to pass through, `None` to use default or `callable` to use a function.
     :param state: The location to use if `color` is a `callable`.
     :param default: Default color value if `None` was passed.
-    :rtype: str
     """
     if color is None:
         return default

@@ -31,10 +31,8 @@ class KPI(object):
             return inf
         return 100 * self.numerator / self.denominator
 
-    def to_dict(self):
-        """
-        :rtype: Dict 
-        """
+    def to_dict(self) -> dict:
+
         out_dict = {
             'name': self.name,
             'numerator': self.numerator,

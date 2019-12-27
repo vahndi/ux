@@ -1,42 +1,42 @@
 from collections import defaultdict
 from pandas import Series, pivot_table, DataFrame, notnull
-from typing import List
+from typing import List, Dict
 
+from ux.custom_types.action_types import ActionTemplatePair
+from ux.custom_types.builtin_types import StrPair
 from ux.interfaces.actions.i_user_action import IUserAction
 from ux.interfaces.sequences.i_action_sequence import IActionSequence
 
 
-def count_action_transitions(action_sequences):
+def count_action_transitions(action_sequences) -> Dict[ActionTemplatePair, int]:
     """
     Count the transitions from each action to each other action in the given sequences.
 
     :param action_sequences: List of IActionSequence to count transitions in.
     :type action_sequences: List[IActionSequence]
     :return: Dictionary of {(from, to) => count}
-    :rtype: dict[tuple[IActionTemplate, IActionTemplate], int]
     """
     transitions = defaultdict(int)
     # count transitions
     for sequence in action_sequences:
         for a in range(len(sequence) - 1):
-            from_action = sequence.user_actions[a].template()
-            to_action = sequence.user_actions[a + 1].template()
+            from_action = sequence[a].template()
+            to_action = sequence[a + 1].template()
             transitions[(from_action, to_action)] += 1
     return transitions
 
 
-def count_location_transitions(action_sequences):
+def count_location_transitions(action_sequences) -> Dict[StrPair, int]:
     """
     Count the transitions from each location to each other location in actions in the given sequences.
 
     :param action_sequences: List of IActionSequence to count transitions in.
     :type action_sequences: List[IActionSequence]
-    :rtype: dict[tuple[str, str], int]
     """
     transitions = defaultdict(int)
     # count transitions
     for sequence in action_sequences:
-        for action in sequence.user_actions:
+        for action in sequence:
             source = action.source_id
             target = action.target_id
             if notnull(source) and notnull(target):
@@ -44,7 +44,7 @@ def count_location_transitions(action_sequences):
     return transitions
 
 
-def create_transition_table(transitions: dict, get_name=None, exclude=None):
+def create_transition_table(transitions: dict, get_name=None, exclude=None) -> DataFrame:
     """
     Create a DataFrame of transitions with columns ['from', 'to', 'count']
 
@@ -54,7 +54,6 @@ def create_transition_table(transitions: dict, get_name=None, exclude=None):
     :type get_name: Callable[[IUserAction], str]
     :param exclude: Optional list of names to exclude from the table.
     :type exclude: Union[str, List[str]]
-    :rtype: DataFrame
     """
     def get_source_id(action: IUserAction):
         return action.source_id
@@ -84,7 +83,7 @@ def create_transition_table(transitions: dict, get_name=None, exclude=None):
 
 
 def create_transition_matrix(transitions: dict, get_name=None,
-                             order_by='from', exclude=None):
+                             order_by='from', exclude=None) -> DataFrame:
     """
     Create a transition matrix from a dictionary of transition counts.
 
@@ -96,7 +95,6 @@ def create_transition_matrix(transitions: dict, get_name=None,
     :type order_by: Union[str, List[str]]
     :param exclude: Optional list of labels to exclude from the plots.
     :type exclude: Union[str, List[str]]
-    :rtype: DataFrame
     """
     transitions = create_transition_table(transitions=transitions, get_name=get_name, exclude=exclude)
     if type(order_by) is str:
@@ -112,7 +110,7 @@ def create_transition_matrix(transitions: dict, get_name=None,
     return matrix
 
 
-def find_most_probable_sequence(transitions, get_name=None, exclude=None, start_at: str = None):
+def find_most_probable_sequence(transitions, get_name=None, exclude=None, start_at: str = None) -> List[str]:
     """
     Find the most probable transition sequence.
 
@@ -123,7 +121,6 @@ def find_most_probable_sequence(transitions, get_name=None, exclude=None, start_
     :param exclude: Optional list of names to exclude from the sequence.
     :type exclude: Union[str, List[str]]
     :param start_at: Optional name of start state. Leave as None to use most common state.
-    :rtype: List[str]
     """
     transitions = create_transition_table(transitions=transitions, get_name=get_name, exclude=exclude)
     # find most frequent from point

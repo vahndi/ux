@@ -1,6 +1,7 @@
-from typing import Iterable
+from typing import Iterable, List
 
 from ux.classes.stats.confidence_interval import ConfidenceInterval
+from ux.custom_types.builtin_types import FloatPair
 
 
 class SuccessRate(object):
@@ -27,23 +28,20 @@ class SuccessRate(object):
         )
 
     @staticmethod
-    def means(success_rates):
+    def means(success_rates) -> List[float]:
         """
         Return a list of the mean value of each SuccessRate.
 
         :type success_rates: Iterable[SuccessRate]
-        :rtype: list
         """
         return [
             success_rate.mean for success_rate in success_rates
         ]
 
     @property
-    def errors(self):
+    def errors(self) -> FloatPair:
         """
         Return the lower and upper error of the confidence interval bounds from the mean.
-
-        :rtype: Tuple[float, float]
         """
         return (
             self.mean - self.confidence_interval.lower,

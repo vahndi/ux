@@ -1,8 +1,6 @@
 class ILocation(object):
 
     @property
-    def location_id(self):
-        """
-        :rtype: str
-        """
+    def location_id(self) -> str:
+
         raise NotImplementedError

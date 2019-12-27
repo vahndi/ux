@@ -1,11 +1,13 @@
 from collections import defaultdict
 from datetime import datetime
+from typing import Dict, List
 
 from ux.interfaces.sequences.i_action_sequence import IActionSequence
 from ux.interfaces.i_database_manager import IDatabaseManager
 
 
-def find_location_history(manager: IDatabaseManager, start: datetime = None, end: datetime = None):
+def find_location_history(manager: IDatabaseManager,
+                          start: datetime = None, end: datetime = None) -> Dict[str, List[datetime]]:
     """
     Find the history of each Location's appearance in the Database.
 
@@ -13,7 +15,6 @@ def find_location_history(manager: IDatabaseManager, start: datetime = None, end
     :param start: Optional start date-time to exclude older sessions.
     :param end: Optional end date-time to exclude newer sessions.
     :return: Dictionary mapping location ids to lists of session start times.
-    :rtype: dict
     """
     history = defaultdict(list)
     for session in manager.sessions():
@@ -26,7 +27,8 @@ def find_location_history(manager: IDatabaseManager, start: datetime = None, end
     return dict(history)
 
 
-def find_action_type_history(manager: IDatabaseManager, start: datetime = None, end: datetime = None):
+def find_action_type_history(manager: IDatabaseManager,
+                             start: datetime = None, end: datetime = None) -> Dict[str, List[datetime]]:
     """
     Find the history of each Action Type's appearance in the Database.
 
@@ -34,7 +36,6 @@ def find_action_type_history(manager: IDatabaseManager, start: datetime = None, 
     :param start: Optional start date-time to exclude older sessions.
     :param end: Optional end date-time to exclude newer sessions.
     :return: Dictionary mapping location ids to lists of session start times.
-    :rtype: dict
     """
     history = defaultdict(list)
     for session in manager.sessions():

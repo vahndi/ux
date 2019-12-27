@@ -6,63 +6,45 @@ from ux.interfaces.actions.i_action_template import IActionTemplate
 class IUserAction(object):
 
     @property
-    def action_type(self):
-        """
-        :rtype: str
-        """
+    def action_type(self) -> str:
+
         raise NotImplementedError
 
     @property
-    def source_id(self):
-        """
-        :rtype: str
-        """
+    def source_id(self) -> str:
+
         raise NotImplementedError
 
     @property
-    def target_id(self):
-        """
-        :rtype: str
-        """
+    def target_id(self) -> str:
+
         raise NotImplementedError
 
     @property
-    def action_id(self):
-        """
-        :rtype: str
-        """
+    def action_id(self) -> str:
+
         raise NotImplementedError
 
     @property
-    def time_stamp(self):
-        """
-        :rtype: datetime
-        """
+    def time_stamp(self) -> datetime:
+
         raise NotImplementedError
 
     @property
-    def user_id(self):
-        """
-        :rtype: str
-        """
+    def user_id(self) -> str:
+
         raise NotImplementedError
 
     @property
-    def session_id(self):
-        """
-        :rtype: str
-        """
+    def session_id(self) -> str:
+
         raise NotImplementedError
 
     @property
-    def meta(self):
-        """
-        :rtype: dict
-        """
+    def meta(self) -> dict:
+
         raise NotImplementedError
 
-    def template(self):
-        """
-        :rtype: IActionTemplate
-        """
+    def template(self) -> IActionTemplate:
+
         raise NotImplementedError

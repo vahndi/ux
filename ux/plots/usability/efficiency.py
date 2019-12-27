@@ -7,14 +7,13 @@ from ux.plots.helpers import new_axes
 
 
 # noinspection PyArgumentList
-def plot_task_completion_efficiency(success_task_per_minute: dict, confidence: float = 0.95, ax: Axes = None):
+def plot_task_completion_efficiency(success_task_per_minute: dict, confidence: float = 0.95, ax: Axes = None) -> Axes:
     """
     Plot the number of completed tasks per unit time for each scenario e.g. prototypes, designs.
 
     :param success_task_per_minute: Dictionary of {scenario name => list of number of successful tasks per minute}
     :param confidence: The confidence interval to use for error bars (0 - 1)
     :param ax: Optional matplotlib axes to plot on.
-    :rtype: Axes
     """
     means = Series({
         prototype_name: mean(num_success)

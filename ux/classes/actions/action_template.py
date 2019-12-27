@@ -21,47 +21,38 @@ class ActionTemplate(IActionTemplate):
         self._weighting = weighting
 
     @property
-    def action_type(self):
+    def action_type(self) -> str:
         """
         Return the type of the ActionTemplate.
-
-        :rtype: str
         """
         return self._action_type
 
     @property
-    def source_id(self):
+    def source_id(self) -> str:
         """
         Return the id of the Location where the Action would be taken.
-
-        :rtype: str
         """
         return self._source_id
 
     @property
-    def target_id(self):
+    def target_id(self) -> str:
         """
         Return the id of the Location where the Action would go to.
-
-        :rtype: str
         """
         return self._target_id
 
     @property
-    def weighting(self):
+    def weighting(self) -> float:
         """
         Return the weighting for the Action for various calculations.
-
-        :rtype: float
         """
         return self._weighting
 
-    def reversed(self, action_type: str = None):
+    def reversed(self, action_type: str = None) -> IActionTemplate:
         """
         Return a reversed version of the template (switch the source and target).
 
         :param action_type: Optional action type. Leave as None to use the existing action type.
-        :rtype: IActionTemplate
         """
         return ActionTemplate(
             source_id=self.target_id,
@@ -69,17 +60,15 @@ class ActionTemplate(IActionTemplate):
             action_type=action_type or self.action_type
         )
 
-    def to_dict(self):
-        """
-        :rtype: dict
-        """
+    def to_dict(self) -> dict:
+
         return {
             'action_type': self._action_type,
             'source_id': self._source_id,
             'target_id': self._target_id
         }
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         """
         :type other: ActionTemplate
         """
@@ -89,7 +78,7 @@ class ActionTemplate(IActionTemplate):
             (self._target_id == other._target_id or '*' in (self._target_id, other._target_id))
         )
 
-    def __repr__(self):
+    def __repr__(self) -> str:
 
         return 'ActionTemplate({}: {}{}{})'.format(
             self._action_type, self._source_id,

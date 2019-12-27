@@ -14,11 +14,9 @@ class Location(ILocation):
         self._location_id = location_id
 
     @property
-    def location_id(self):
+    def location_id(self) -> str:
         """
         Return the id of the Location.
-
-        :rtype: str
         """
         return self._location_id
 

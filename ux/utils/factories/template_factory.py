@@ -1,7 +1,7 @@
 from pandas import DataFrame, notnull
 
 
-def add_meta(template: dict, key: str, value: str):
+def add_meta(template: dict, key: str, value: str) -> dict:
 
     if 'meta' not in template.keys():
         template['meta'] = {}
@@ -9,14 +9,13 @@ def add_meta(template: dict, key: str, value: str):
     return template
 
 
-def generate_generic_template(specifics: dict, placeholders: dict, meta: dict = None):
+def generate_generic_template(specifics: dict, placeholders: dict, meta: dict = None) -> dict:
     """
     Generate an example template from a dictionary of keys and values.
 
     :param specifics: Keys and values specific to this template.
     :param placeholders: Keys and values for all templates.
     :param meta: Additional values for meta, other than those already in `specifics`.
-    :rtype: dict
     """
     template = placeholders.copy()
     for key, value in specifics.items():
@@ -35,11 +34,9 @@ def generate_generic_template(specifics: dict, placeholders: dict, meta: dict = 
 
 
 def generate_checkbox_check_template(specifics: dict, placeholders: dict,
-                                     **kwargs):
+                                     **kwargs) -> dict:
     """
     Generate a template for the check event of a checkbox.
-
-    :rtype: dict
     """
     template = generate_generic_template(
         specifics=specifics, placeholders=placeholders,
@@ -50,11 +47,9 @@ def generate_checkbox_check_template(specifics: dict, placeholders: dict,
 
 
 def generate_checkbox_uncheck_template(specifics: dict, placeholders: dict,
-                                       **kwargs):
+                                       **kwargs) -> dict:
     """
     Generate a template for the uncheck event of a checkbox.
-
-    :rtype: dict
     """
     template = generate_generic_template(
         specifics=specifics, placeholders=placeholders,
@@ -65,11 +60,9 @@ def generate_checkbox_uncheck_template(specifics: dict, placeholders: dict,
 
 
 def generate_dropdown_select_template(specifics: dict, placeholders: dict,
-                                      **kwargs):
+                                      **kwargs) -> dict:
     """
     Generate a template for the select event of a dropdown.
-
-    :rtype: dict
     """
     template = generate_generic_template(
         specifics=specifics, placeholders=placeholders,
@@ -80,11 +73,9 @@ def generate_dropdown_select_template(specifics: dict, placeholders: dict,
 
 
 def generate_link_click_template(specifics: dict, placeholders: dict,
-                                 **kwargs):
+                                 **kwargs) -> dict:
     """
     Generate a template for the click event of a link.
-
-    :rtype: dict
     """
     template = generate_generic_template(
         specifics=specifics, placeholders=placeholders
@@ -94,11 +85,9 @@ def generate_link_click_template(specifics: dict, placeholders: dict,
 
 
 def generate_nav_button_click_template(specifics: dict, placeholders: dict,
-                                       **kwargs):
+                                       **kwargs) -> dict:
     """
     Generate a template for the click event of a navigation button.
-
-    :rtype: dict
     """
     template = generate_generic_template(
         specifics=specifics, placeholders=placeholders
@@ -108,11 +97,9 @@ def generate_nav_button_click_template(specifics: dict, placeholders: dict,
 
 
 def generate_page_load_template(specifics: dict, placeholders: dict,
-                                **kwargs):
+                                **kwargs) -> dict:
     """
     Generate a template for the page load event of a page.
-
-    :rtype: dict
     """
     template = generate_generic_template(
         specifics=specifics, placeholders=placeholders
@@ -122,11 +109,9 @@ def generate_page_load_template(specifics: dict, placeholders: dict,
 
 
 def generate_radio_buttons_check_template(specifics: dict, placeholders: dict,
-                                          **kwargs):
+                                          **kwargs) -> dict:
     """
     Generate a template for the check event of a radio button.
-
-    :rtype: dict
     """
     template = generate_generic_template(
         specifics=specifics, placeholders=placeholders
@@ -137,11 +122,9 @@ def generate_radio_buttons_check_template(specifics: dict, placeholders: dict,
 
 def generate_submit_button_submit_template(specifics: dict, placeholders: dict,
                                            data: DataFrame, element_attrs: dict,
-                                           **kwargs):
+                                           **kwargs) -> dict:
     """
     Generate a template for the submit event of a submit button.
-
-    :rtype: dict
     """
     template = generate_generic_template(
         specifics=specifics, placeholders=placeholders
@@ -167,11 +150,9 @@ def generate_submit_button_submit_template(specifics: dict, placeholders: dict,
 
 
 def generate_textbox_keystroke_template(specifics: dict, placeholders: dict,
-                                        **kwargs):
+                                        **kwargs) -> dict:
     """
     Generate a template for the keystroke event of a textbox.
-
-    :rtype: dict
     """
     template = generate_generic_template(
         specifics=specifics, placeholders=placeholders,

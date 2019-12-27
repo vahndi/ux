@@ -7,7 +7,7 @@ from ux.utils.versioning import find_location_history, find_action_type_history
 
 
 def plot_history(manager: IDatabaseManager, start: datetime = None, end: datetime = None, ax: Axes = None,
-                 history_type: str = 'location'):
+                 history_type: str = 'location') -> Axes:
     """
     Plot the history of each Location's appearance in the set of logs in Manager.
 
@@ -15,7 +15,6 @@ def plot_history(manager: IDatabaseManager, start: datetime = None, end: datetim
     :param start: Optional start date-time to exclude older sessions.
     :param end: Optional end date-time to exclude newer sessions.
     :param ax: Optional matplotlib axes to plot on.
-    :rtype: Axes
     """
     ax = ax or new_axes()
     if history_type == 'location':

@@ -8,13 +8,12 @@ from ux.calcs.basic_calcs.task_success import binary_task_success_rate
 from ux.plots.helpers import new_axes, get_hist_index
 
 
-def plot_task_success_rates(task_results: dict, ax: Axes = None):
+def plot_task_success_rates(task_results: dict, ax: Axes = None) -> Axes:
     """
     Plot a bar plot of success rates on several tasks.
 
     :param task_results: Dictionary {task_name => task results list}.
     :param ax: Optional matplotlib axes.
-    :rtype: Axes
     """
     # calculate plot data
     # TODO: debug confidence interval to match the book
@@ -47,7 +46,7 @@ def plot_task_success_rates(task_results: dict, ax: Axes = None):
 def plot_task_success_frequencies(
         success_rates, bins: Union[list, range] = None,
         ax: Axes = None
-):
+) -> Axes:
     """
     Plot frequencies of success rates for one or many scenarios.
 
@@ -55,7 +54,6 @@ def plot_task_success_frequencies(
     :type success_rates: Union[List[float], Dict[str, List[float]]]
     :param bins: Bins for the histogram calculation.
     :param ax: Optional matplotlib axes.
-    :rtype: Axes
     """
     bins = bins or range(0, 110, 10)
     if type(success_rates) in [ndarray, list]:
@@ -89,7 +87,7 @@ def plot_task_success_frequencies(
 
 
 def plot_task_completion_rates(completion_rates, bins: Union[list, range] = None,
-                               ax: Axes = None):
+                               ax: Axes = None) -> Axes:
 
     """
     Plot rate of task completion for a given task.
@@ -98,7 +96,6 @@ def plot_task_completion_rates(completion_rates, bins: Union[list, range] = None
     :type completion_rates: Union[List[float], Dict[str, List[float]]]
     :param bins: Bins for the histogram calculation.
     :param ax: Optional matplotlib axes.
-    :rtype: Axes
     """
     ax = ax or new_axes()
     bins = bins or range(0, 110, 10)
@@ -128,13 +125,12 @@ def plot_task_completion_rates(completion_rates, bins: Union[list, range] = None
 
 def plot_task_success_level(task_results: dict,
                             bar_order: Iterable[str] = None,  colors: Iterable[str] = None,
-                            ax: Axes = None):
+                            ax: Axes = None) -> Axes:
     """
     Plot a stacked bar chart of levels of success over different tasks.
 
     :param task_results: Dictionary {task name => {LoS => num participants})
     :param ax: Optional matplotlib axes.
-    :rtype: Axes
     """
     df = DataFrame.from_dict(task_results, orient='index')
     df_percent = df.apply(lambda x: 100 * x / x.sum(), axis=1)
