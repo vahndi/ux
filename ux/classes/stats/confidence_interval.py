@@ -1,3 +1,6 @@
+from ux.custom_types.builtin_types import FloatPair
+
+
 class ConfidenceInterval(object):
     """
     Represents a confidence interval.
@@ -20,11 +23,11 @@ class ConfidenceInterval(object):
         return 100 * (1 - self.significance)
 
     @property
-    def width(self):
+    def width(self) -> float:
 
         return self.upper - self.lower
 
     @property
-    def range(self):
+    def range(self) -> FloatPair:
 
         return self.lower, self.upper

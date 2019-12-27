@@ -18,25 +18,20 @@ class ISequences(object):
         """
         raise NotImplementedError
 
-    def filter(self, condition):
-        """
-        :rtype: ISequences
-        """
+    def filter(self, condition) -> 'ISequences':
+
         raise NotImplementedError
 
-    def chain_filter(self, filters):
+    def chain_filter(self, filters) -> 'ISequencesGroupBy':
         """
         Return a new SequencesGroupBy keyed by the dict key with values matching each filter, applied in series.
 
         :param filters: Dictionary of filters to apply. Use OrderedDict for Python < 3.7 to preserve key order.
-        :rtype: ISequencesGroupBy
         """
         raise NotImplementedError
 
-    def group_filter(self, filters, group_name: str = 'filter'):
-        """
-        :rtype: ISequencesGroupBy
-        """
+    def group_filter(self, filters, group_name: str = 'filter') -> 'ISequencesGroupBy':
+
         raise NotImplementedError
 
     def count(self, condition=None) -> int:
@@ -51,34 +46,25 @@ class ISequences(object):
         """
         raise NotImplementedError
 
-    def copy(self):
-        """
-        :rtype: ISequences
-        """
+    def copy(self) -> 'ISequences':
+
         raise NotImplementedError
 
-    def intersection(self, other):
-        """
-        :rtype: ISequences
-        """
+    def intersection(self, other) -> 'ISequences':
+
         raise NotImplementedError
 
     @staticmethod
-    def intersect_all(sequences):
-        """
-        :type sequences: List[ISequences]
-        :rtype: ISequences
-        """
+    def intersect_all(sequences: List['ISequences']) -> 'ISequences':
+
         raise NotImplementedError
 
     def back_click_rates(self) -> Dict[IActionTemplate, float]:
 
         raise NotImplementedError
 
-    def group_by(self, by):
-        """
-        :rtype: ISequencesGroupBy
-        """
+    def group_by(self, by) -> 'ISequencesGroupBy':
+
         raise NotImplementedError
 
     @property
@@ -144,21 +130,19 @@ class ISequences(object):
 
         raise NotImplementedError
 
-    def sort(self, by: str, ascending: bool = True):
-        """
-        :rtype: ISequences
-        """
-        raise NotImplementedError
-
-    def __getitem__(self, item):
+    def sort(self, by: str, ascending: bool = True) -> 'ISequences':
 
         raise NotImplementedError
 
-    def __len__(self):
+    def __getitem__(self, value):
 
         raise NotImplementedError
 
-    def __contains__(self, item: IActionSequence):
+    def __len__(self) -> int:
+
+        raise NotImplementedError
+
+    def __contains__(self, item: IActionSequence) -> bool:
 
         raise NotImplementedError
 
@@ -166,14 +150,10 @@ class ISequences(object):
 
         raise NotImplementedError
 
-    def __add__(self, other):
-        """
-        :rtype: ISequences
-        """
+    def __add__(self, other: 'ISequences') -> 'ISequences':
+
         raise NotImplementedError
 
-    def __sub__(self, other):
-        """
-        :rtype: ISequences
-        """
+    def __sub__(self, other: 'ISequences') -> 'ISequences':
+
         raise NotImplementedError

@@ -21,7 +21,7 @@ class SuccessRate(object):
         self.confidence_interval: ConfidenceInterval = confidence_interval
         self.name: str = name or ''
 
-    def __str__(self):
+    def __str__(self) -> str:
 
         return 'Mean: {:.2f}, CI: {:.2f}'.format(
             self.mean, self.confidence_interval.width

@@ -3,7 +3,7 @@ from datetime import timedelta, datetime
 from itertools import chain, product
 from pandas import notnull
 from types import FunctionType
-from typing import Dict, Iterator, List, Union
+from typing import Dict, Iterator, List, Union, Optional, overload
 
 from ux.classes.sequences.sequences_group_by import SequencesGroupBy
 from ux.classes.wrappers.map_result import MapResult
@@ -164,7 +164,7 @@ class Sequences(ISequences):
 
         :param mapper: The method or methods to apply to each ActionSequence
         """
-        def map_items(item_mapper: Union[str, FunctionType]):
+        def map_items(item_mapper: Union[str, FunctionType]) -> list:
             if isinstance(item_mapper, str):
                 # properties and methods
                 if hasattr(IActionSequence, item_mapper):
@@ -200,13 +200,13 @@ class Sequences(ISequences):
 
         return MapResult(results)
 
-    def count(self, condition: SequenceFilter = None) -> int:
+    def count(self, condition: Optional[SequenceFilter] = None) -> int:
         """
         Return the number of ActionSequences in the collection.
         """
         if condition is None:
             return len(self)
-        return self.filter(condition).count()
+        return len(self.filter(condition))
 
     def counter(self, get_value: SequenceCounter) -> Counter:
         """
@@ -430,9 +430,17 @@ class Sequences(ISequences):
             reverse=not ascending
         ))
 
-    def __getitem__(self, item) -> IActionSequence:
+    @overload
+    def __getitem__(self, value: int) -> IActionSequence:
+        pass
 
-        return self._sequences[item]
+    @overload
+    def __getitem__(self, value: slice) -> List[IActionSequence]:
+        pass
+
+    def __getitem__(self, value):
+
+        return self._sequences[value]
 
     def __repr__(self) -> str:
 

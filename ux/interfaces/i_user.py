@@ -18,8 +18,8 @@ class IUser(object):
 
         raise NotImplementedError
 
-    def add_action_id(self, action_id):
+    def add_action_id(self, action_id) -> None:
         raise NotImplementedError
 
-    def add_session_id(self, session_id):
+    def add_session_id(self, session_id) -> None:
         raise NotImplementedError

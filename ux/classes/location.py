@@ -20,17 +20,17 @@ class Location(ILocation):
         """
         return self._location_id
 
-    def __repr__(self):
+    def __repr__(self) -> str:
 
         return 'Location({})'.format(self._location_id)
 
-    def __gt__(self, other):
+    def __gt__(self, other) -> bool:
         """
         :type other: Location
         """
         return self._location_id > other._location_id
 
-    def __lt__(self, other):
+    def __lt__(self, other) -> bool:
         """
         :type other: Location
         """

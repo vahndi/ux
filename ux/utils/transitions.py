@@ -55,7 +55,7 @@ def create_transition_table(transitions: dict, get_name=None, exclude=None) -> D
     :param exclude: Optional list of names to exclude from the table.
     :type exclude: Union[str, List[str]]
     """
-    def get_source_id(action: IUserAction):
+    def get_source_id(action: IUserAction) -> str:
         return action.source_id
 
     if get_name is None:

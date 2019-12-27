@@ -16,7 +16,7 @@ def new_axes(width: int = 16, height: int = 9) -> Axes:
     return ax
 
 
-def set_axis_tick_label_rotation(ax: Axis, rotation: int):
+def set_axis_tick_label_rotation(ax: Axis, rotation: int) -> None:
     """
     Set the rotation of axis tick labels.
 
@@ -87,7 +87,7 @@ def get_color(color: Union[None, str, FunctionType], state: ILocation, default: 
         raise TypeError
 
 
-def transform_axis_tick_labels(ax: Axis, transformation: FunctionType):
+def transform_axis_tick_labels(ax: Axis, transformation: FunctionType) -> None:
     """
     Transforms the labels of each label along the axis by a transformation function.
 

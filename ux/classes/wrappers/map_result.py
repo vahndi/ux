@@ -1,9 +1,9 @@
 from collections import OrderedDict
 from pandas import DataFrame, Series, MultiIndex, Index, concat
-from typing import List, Union, Iterable
+from typing import List, Union, Iterable, ItemsView, KeysView, ValuesView, overload, Iterator
 
 
-def _str_or_non_iterable(val):
+def _str_or_non_iterable(val) -> bool:
 
     return not isinstance(val, Iterable) or isinstance(val, str)
 
@@ -106,15 +106,15 @@ class MapResult(object):
 
         return list(self.to_frame().to_records())
 
-    def items(self):
+    def items(self) -> ItemsView:
 
         return self._data.items()
 
-    def keys(self):
+    def keys(self) -> KeysView:
 
         return self._data.keys()
 
-    def values(self):
+    def values(self) -> ValuesView:
 
         return self._data.values()
 
@@ -122,31 +122,27 @@ class MapResult(object):
 
         return self._data[item]
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[dict]:
 
         return self._data.__iter__()
 
-    def __repr__(self):
+    def __repr__(self) -> str:
 
         return 'MapResult({})'.format(self._data.__repr__())
 
-    def __eq__(self, other):
-        """
-        :type other: MapResult
-        """
+    def __eq__(self, other: 'MapResult') -> bool:
+
         return (
             self.key_names == other.key_names and
             self.value_names == other.value_names and
             self._data == other._data
         )
 
-    def __add__(self, other):
+    def __add__(self, other: 'MapResult') -> 'MapResult':
         """
         Add the values of this MapResult to the values of the other by key.
 
         If key does not exist in one of the MapResults, uses the value from the one where it does.
-
-        :type other: MapResult
         """
         if self.key_names != other.key_names:
             raise KeyError('Key names must be identical')
@@ -165,14 +161,12 @@ class MapResult(object):
             data=new_data, key_names=self.key_names, value_names=self.value_names
         )
 
-    def __sub__(self, other):
+    def __sub__(self, other: 'MapResult') -> 'MapResult':
         """
         Subtract the values of the other MapResult from the values of this one by key.
 
         If key does not exist in this MapResult tries to negate the value of the other.
         If key does not exist in the other MapResult uses the value of this one.
-
-        :type other: MapResult
         """
         if self.key_names != other.key_names:
             raise KeyError('Key names must be identical')
@@ -191,13 +185,11 @@ class MapResult(object):
             data=new_data, key_names=self.key_names, value_names=self.value_names
         )
 
-    def __mul__(self, other):
+    def __mul__(self, other: 'MapResult') -> 'MapResult':
         """
         Multiply the values of this MapResult to the values of the other by key.
 
         If key does not exist in one of the MapResults, omits the key from the new result.
-
-        :type other: MapResult
         """
         if self.key_names != other.key_names:
             raise KeyError('Key names must be identical')
@@ -214,13 +206,11 @@ class MapResult(object):
             data=new_data, key_names=self.key_names, value_names=self.value_names
         )
 
-    def __truediv__(self, other):
+    def __truediv__(self, other: 'MapResult') -> 'MapResult':
         """
         Divide the values of this MapResult to the values of the other by key.
 
         If key does not exist in one of the MapResults, omits the key from the new result.
-
-        :type other: MapResult
         """
         if self.key_names != other.key_names:
             raise KeyError('Key names must be identical')

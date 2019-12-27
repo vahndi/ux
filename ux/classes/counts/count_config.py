@@ -34,7 +34,7 @@ class CountConfig(object):
         self.action_condition: Optional[ActionFilter] = action_condition
         self.action_split_by: Optional[Callable[[IUserAction], Dict[str, int]]] = action_split_by
 
-    def __repr__(self):
+    def __repr__(self) -> str:
 
         args = ['name', 'sequence_condition', 'sequence_split_by', 'action_condition', 'action_split_by']
         return 'CountConfig({})'.format(', '.join(['{}={}'.format(arg, getattr(self, arg)) for arg in args]))

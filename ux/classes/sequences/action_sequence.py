@@ -190,7 +190,7 @@ class ActionSequence(IActionSequence):
 
         :param mapper: The method or methods to apply to each UserAction
         """
-        def map_items(item_mapper):
+        def map_items(item_mapper) -> list:
             if isinstance(item_mapper, str):
                 # properties and methods
                 if hasattr(IUserAction, item_mapper):
@@ -451,9 +451,9 @@ class ActionSequence(IActionSequence):
         return self._user_actions.__iter__()
 
 
-def _create_action_template_condition(value: Union[IActionTemplate, FunctionType]) -> FunctionType:
+def _create_action_template_condition(value: Union[IActionTemplate, FunctionType]) -> Callable[[IActionTemplate], bool]:
 
-    def action_template_condition(template: IActionTemplate):
+    def action_template_condition(template: IActionTemplate) -> bool:
         if template == value:
             return True
         else:

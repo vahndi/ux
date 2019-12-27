@@ -101,7 +101,7 @@ def plot_task_completion_rates(completion_rates, bins: Union[list, range] = None
     bins = bins or range(0, 110, 10)
     hist_index = get_hist_index(bins)
 
-    def get_hist_series(rates: list):
+    def get_hist_series(rates: list) -> Series:
         rates = Series(rates)
         rates *= 100
         hist = Series(histogram(rates, bins=bins)[0])

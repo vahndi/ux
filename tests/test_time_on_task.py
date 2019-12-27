@@ -11,7 +11,7 @@ from ux.classes.actions.user_action import UserAction
 
 class TestTimeOnTask(TestCase):
 
-    def setUp(self):
+    def setUp(self) -> None:
 
         self.test_task: Task = Task(
             name='TestTask',

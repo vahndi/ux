@@ -11,7 +11,7 @@ from ux.classes.actions.user_action import UserAction
 
 class TestTaskSuccess(TestCase):
 
-    def setUp(self):
+    def setUp(self) -> None:
 
         self.test_task: Task = Task(
             name='OrderedTask',

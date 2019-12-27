@@ -1,5 +1,5 @@
 from collections import Counter
-from typing import Dict, List
+from typing import Dict, List, Union
 
 from ux.classes.counts.count_config import CountConfig
 from ux.classes.counts.temporal_count import TemporalCount
@@ -36,7 +36,9 @@ def count_actions_where(sequences: ISequences,
         return dict(counts)
 
 
-def count_sequences_where(sequences: ISequences, condition: SequenceFilter, split_by: SequenceGrouper = None):
+def count_sequences_where(sequences: ISequences, 
+                          condition: SequenceFilter, 
+                          split_by: SequenceGrouper = None) -> Union[int, Dict[str, int]]:
     """
     Count the number of ActionSequences in the list where the given condition is True.
 

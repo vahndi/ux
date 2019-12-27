@@ -1,13 +1,16 @@
-from typing import KeysView, ValuesView, List
+from typing import KeysView, ValuesView, List, ItemsView, Dict
+
+from ux.classes.wrappers.map_result import MapResult
+from ux.custom_types.builtin_types import Number
 
 
 class ISequencesGroupBy(object):
 
-    def count(self):
+    def count(self) -> MapResult:
 
         raise NotImplementedError
 
-    def items(self):
+    def items(self) -> ItemsView:
 
         raise NotImplementedError
 
@@ -24,32 +27,30 @@ class ISequencesGroupBy(object):
 
         raise NotImplementedError
 
-    def map(self, mapper):
+    def map(self, mapper) -> MapResult:
 
         raise NotImplementedError
 
-    def agg(self, agg_funcs: dict):
+    def agg(self, agg_funcs) -> Dict[Dict[str, Number]]:
         """
         :param agg_funcs: dict mapping attributes to one or more aggregation functions e.g. duration -> np.median
         """
         raise NotImplementedError
 
-    def filter(self, condition):
+    def filter(self, condition) -> 'ISequencesGroupBy':
         """
         Return a new Sequences containing only the sequences matching the `condition` in each group.
 
         :param condition: lambda(sequence) that returns True to include a sequence.
-        :rtype: ISequencesGroupBy
         """
         raise NotImplementedError
 
-    def group_filter(self, filters, group_name=None):
+    def group_filter(self, filters, group_name=None) -> 'ISequencesGroupBy':
         """
         Return a new SequencesGroupBy keyed by the filter name with values matching each filter, applied in parallel.
 
         :param filters: Dictionary of filters to apply.
         :param group_name: Name to identify the filter group.
-        :rtype: ISequencesGroupBy
         """
         raise NotImplementedError
 

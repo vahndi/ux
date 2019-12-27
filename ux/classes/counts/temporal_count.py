@@ -1,7 +1,7 @@
 from datetime import timedelta
 from matplotlib.axes import Axes
 from pandas import concat, DataFrame, MultiIndex, Series, pivot_table
-from typing import List
+from typing import List, Callable, Union
 from numpy import nan
 from pandas.core.computation.ops import isnumeric
 from seaborn import heatmap
@@ -26,11 +26,9 @@ class TemporalCount(dict):
                 assert None not in v.keys(), 'Keys of a split count cannot be None'
 
     @staticmethod
-    def from_dict(dictionary: dict, name: str):
+    def from_dict(dictionary: dict, name: str) -> 'TemporalCount':
         """
         Create a new Temporal Count from an existing dict.
-
-        :rtype: TemporalCount
         """
         count = TemporalCount(name=name)
         for key, value in dictionary.items():
@@ -38,13 +36,11 @@ class TemporalCount(dict):
         return count
 
     @property
-    def name(self):
+    def name(self) -> str:
         return self._name
 
-    def rename(self, name: str):
-        """
-        :rtype: TemporalCount
-        """
+    def rename(self, name: str) -> 'TemporalCount':
+
         self._name = name
         return self
 
@@ -81,7 +77,7 @@ class TemporalCount(dict):
         else:
             return None
 
-    def freq_formatter(self):
+    def freq_formatter(self) -> Callable[[str], str]:
 
         freq_str = self.freq_str
         if freq_str == 'hourly':
@@ -131,7 +127,7 @@ class TemporalCount(dict):
         else:
             return self.to_series().to_frame().replace(nan, 0)
 
-    def to_pandas(self):
+    def to_pandas(self) -> Union[DataFrame, Series]:
         """
         Return the most natural representation of the count as a pandas object.
 
@@ -209,10 +205,8 @@ class TemporalCount(dict):
             ax.set(**axis_kws)
         return ax
 
-    def __truediv__(self, other):
-        """
-        :rtype: TemporalCount
-        """
+    def __truediv__(self, other: 'TemporalCount') -> 'TemporalCount':
+
         if isinstance(other, TemporalCount):
             if self.is_split and not other.is_split:
                 raise ValueError("Can't divide a split count by a non-split count.")
@@ -234,10 +228,8 @@ class TemporalCount(dict):
         else:
             raise TypeError('Can only divide a TemporalCount by another TemporalCount or a numeric value.')
 
-    def __rtruediv__(self, other):
-        """
-        :rtype: TemporalCount
-        """
+    def __rtruediv__(self, other: 'TemporalCount') -> 'TemporalCount':
+
         if isinstance(other, TemporalCount):
             if self.is_split and not other.is_split:
                 raise ValueError("Can't divide a non-split count by a split count.")
@@ -259,10 +251,8 @@ class TemporalCount(dict):
         else:
             raise TypeError('Can only divide another TemporalCount or a numeric value by a TemporalCount.')
 
-    def __mul__(self, other):
-        """
-        :rtype: TemporalCount
-        """
+    def __mul__(self, other: 'TemporalCount') -> 'TemporalCount':
+
         if isinstance(other, TemporalCount):
             if self.is_split and not other.is_split:
                 raise ValueError("Can't multiply a split count by a non-split count.")
@@ -284,10 +274,8 @@ class TemporalCount(dict):
         else:
             raise TypeError('Can only multiply a TemporalCount by another TemporalCount or a numeric value.')
 
-    def __rmul__(self, other):
-        """
-        :rtype: TemporalCount
-        """
+    def __rmul__(self, other: 'TemporalCount') -> 'TemporalCount':
+
         if isinstance(other, TemporalCount):
             if self.is_split and not other.is_split:
                 raise ValueError("Can't multiply a split count by a non-split count.")
@@ -309,10 +297,8 @@ class TemporalCount(dict):
         else:
             raise TypeError('Can only multiply a TemporalCount by another TemporalCount or a numeric value.')
 
-    def __add__(self, other):
-        """
-        :rtype: TemporalCount
-        """
+    def __add__(self, other: 'TemporalCount') -> 'TemporalCount':
+
         if isinstance(other, TemporalCount):
             if self.is_split and not other.is_split:
                 raise ValueError("Can't add a split count to a non-split count.")
@@ -334,10 +320,8 @@ class TemporalCount(dict):
         else:
             raise TypeError('Can only add a TemporalCount to another TemporalCount or a numeric value.')
 
-    def __radd__(self, other):
-        """
-        :rtype: TemporalCount
-        """
+    def __radd__(self, other: 'TemporalCount') -> 'TemporalCount':
+
         if isinstance(other, TemporalCount):
             if self.is_split and not other.is_split:
                 raise ValueError("Can't add a split count to a non-split count.")
@@ -359,10 +343,8 @@ class TemporalCount(dict):
         else:
             raise TypeError('Can only add another TemporalCount or a numeric value to a TemporalCount.')
 
-    def __sub__(self, other):
-        """
-        :rtype: TemporalCount
-        """
+    def __sub__(self, other: 'TemporalCount') -> 'TemporalCount':
+
         if isinstance(other, TemporalCount):
             if self.is_split and not other.is_split:
                 raise ValueError("Can't subtract a non-split count from a split count.")
@@ -386,10 +368,8 @@ class TemporalCount(dict):
                 'Can only subtract another TemporalCount or a numeric value from a TemporalCount.'
             )
 
-    def __rsub__(self, other):
-        """
-        :rtype: TemporalCount
-        """
+    def __rsub__(self, other: 'TemporalCount') -> 'TemporalCount':
+
         if isinstance(other, TemporalCount):
             if self.is_split and not other.is_split:
                 raise ValueError("Can't subtract a split count from a non-split count.")

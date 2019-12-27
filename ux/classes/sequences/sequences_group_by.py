@@ -1,8 +1,9 @@
 from collections import defaultdict, OrderedDict
 from types import FunctionType
-from typing import Dict, List, Union, ItemsView, KeysView, ValuesView, Iterator
+from typing import Dict, List, Union, ItemsView, KeysView, ValuesView, Iterator, Tuple
 
 from ux.classes.wrappers.map_result import MapResult
+from ux.custom_types.builtin_types import Number
 from ux.custom_types.sequence_types import SequenceFilter, SequencesGroupByKey, SequenceFilterSet, SequencesGrouper, \
     SequenceGrouper
 from ux.interfaces.sequences.i_sequences import ISequences
@@ -42,7 +43,7 @@ class SequencesGroupBy(ISequencesGroupBy):
 
         :param mapper: The method or methods to apply to each Sequences
         """
-        def map_items(item_mapper: Union[str, FunctionType]):
+        def map_items(item_mapper: Union[str, FunctionType]) -> list:
             if isinstance(item_mapper, str):
                 # properties and methods
                 if hasattr(ISequences, item_mapper):
@@ -59,7 +60,7 @@ class SequencesGroupBy(ISequencesGroupBy):
 
         group_names = list(self._data.keys())
 
-        def new_group(names, method):
+        def new_group(names, method) -> Tuple[str, ...]:
             if isinstance(names, str):
                 names = [names]
             return tuple(names + [get_method_name(method)])
@@ -89,19 +90,22 @@ class SequencesGroupBy(ISequencesGroupBy):
 
         return MapResult(results, key_names=self.names + ['map'])
 
-    def agg(self, agg_funcs: dict):
+    def agg(self, agg_funcs: Dict[str, Union[FunctionType, List[FunctionType]]]) -> Dict[Dict[str, Number]]:
         """
-        :param agg_funcs: dict mapping attributes to one or more aggregation functions e.g. duration -> np.median
+        :param agg_funcs: dict mapping attributes to one or more aggregation functions e.g. 'duration': np.median
+        :return: Dict[Dict['{{func_name}}({{attr_name}})', agg_result]
         """
         results = defaultdict(dict)
         # build list of agg_key, agg_func pairs
-        agg_pairs = []
+        agg_pairs: List[Tuple] = []
         for k, v in agg_funcs.items():
             if isinstance(v, FunctionType):
                 agg_pairs.append((k, v))
-            else:
+            elif isinstance(v, list):
                 for f in v:
                     agg_pairs.append((k, f))
+            else:
+                raise TypeError('agg_funcs values must be FunctionType or List[FunctionType]')
         for agg_key, agg_func in agg_pairs:
             agg_name = get_method_name(agg_func)
             for name, sequences in self.items():
@@ -194,11 +198,11 @@ class SequencesGroupBy(ISequencesGroupBy):
         return self._names
     
     @names.setter
-    def names(self, names: List[str]):
+    def names(self, names: List[str]) -> None:
 
         self._names = names
 
-    def __getitem__(self, item) -> ISequences:
+    def __getitem__(self, item: Union[str, Tuple[str, ...]]) -> ISequences:
 
         return self._data[item]
 

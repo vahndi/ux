@@ -38,7 +38,7 @@ class Task(ITask):
         """
         return self._action_templates
 
-    def add_action_template(self, action_template: IActionTemplate):
+    def add_action_template(self, action_template: IActionTemplate) -> None:
         """
         Add a new ActionTemplate to the end of the Task.
 

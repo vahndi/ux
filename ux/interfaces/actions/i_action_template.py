@@ -28,12 +28,11 @@ class IActionTemplate(object):
         """
         raise NotImplementedError
 
-    def reversed(self, action_type: str = None):
+    def reversed(self, action_type: str = None) -> 'IActionTemplate':
         """
         Return a reversed version of the template (switch the source and target).
 
         :param action_type: Optional action type. Leave as None to use the existing action type.
-        :rtype: IActionTemplate
         """
         raise NotImplementedError
 

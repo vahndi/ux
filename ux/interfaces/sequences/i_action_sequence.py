@@ -83,10 +83,8 @@ class IActionSequence(object):
 
         raise NotImplementedError
 
-    def filter(self, condition, copy_meta: bool = False):
-        """
-        :rtype: IActionSequence
-        """
+    def filter(self, condition, copy_meta: bool = False) -> 'IActionSequence':
+
         raise NotImplementedError
 
     def count(self, condition) -> int:

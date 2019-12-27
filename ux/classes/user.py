@@ -39,7 +39,7 @@ class User(IUser):
         """
         return self._session_ids
 
-    def add_action_id(self, action_id: str):
+    def add_action_id(self, action_id: str) -> None:
         """
         Add an Action id to the list of the User's Actions.
 
@@ -47,7 +47,7 @@ class User(IUser):
         """
         self._action_ids.append(action_id)
 
-    def add_session_id(self, session_id: str):
+    def add_session_id(self, session_id: str) -> None:
         """
         Add a Session id to the list of the User's Sessions.
 

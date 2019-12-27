@@ -88,6 +88,6 @@ class ActionTemplate(IActionTemplate):
             self._target_id if self._target_id else ''
         )
 
-    def __hash__(self):
+    def __hash__(self) -> int:
 
         return hash(tuple(sorted(self.to_dict().items())))

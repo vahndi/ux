@@ -78,7 +78,7 @@ class TestMapResult(TestCase):
         ]
 
     @staticmethod
-    def series_equivalent(data_1: Series, data_2: Series):
+    def series_equivalent(data_1: Series, data_2: Series) -> bool:
 
         return (
             data_1.index.tolist() == data_2.index.tolist() and
@@ -86,7 +86,7 @@ class TestMapResult(TestCase):
         )
 
     @staticmethod
-    def frames_equivalent(data_1: DataFrame, data_2: DataFrame):
+    def frames_equivalent(data_1: DataFrame, data_2: DataFrame) -> bool:
 
         return (
             sorted(data_1.columns) == sorted(data_2.columns) and
