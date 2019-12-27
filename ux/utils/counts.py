@@ -4,7 +4,8 @@ from typing import Dict, List
 from ux.classes.counts.count_config import CountConfig
 from ux.classes.counts.temporal_count import TemporalCount
 from ux.classes.sequences.sequences import Sequences
-from ux.custom_types import SequenceFilter, ActionFilter, SequenceGrouper, ActionCounter
+from ux.custom_types.action_types import ActionCounter, ActionFilter
+from ux.custom_types.sequence_types import SequenceFilter, SequenceGrouper
 from ux.interfaces.sequences.i_action_sequence import IActionSequence
 from ux.interfaces.sequences.i_sequences import ISequences
 

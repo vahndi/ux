@@ -1,6 +1,7 @@
 from typing import Callable, Dict
 
-from ux.custom_types import SequenceFilter, ActionFilter
+from ux.custom_types.action_types import ActionFilter
+from ux.custom_types.sequence_types import SequenceFilter
 from ux.interfaces.actions.i_user_action import IUserAction
 from ux.interfaces.sequences.i_action_sequence import IActionSequence
 

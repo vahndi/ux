@@ -3,7 +3,8 @@ from types import FunctionType
 from typing import Dict, List, Union, ItemsView, KeysView, ValuesView, Iterator
 
 from ux.classes.wrappers.map_result import MapResult
-from ux.custom_types import SequenceFilter, SequencesGroupByKey, SequenceFilterSet, SequencesGrouper, SequenceGrouper
+from ux.custom_types.sequence_types import SequenceFilter, SequencesGroupByKey, SequenceFilterSet, SequencesGrouper, \
+    SequenceGrouper
 from ux.interfaces.sequences.i_sequences import ISequences
 from ux.interfaces.sequences.i_sequences_group_by import ISequencesGroupBy
 from ux.utils.misc import get_method_name
