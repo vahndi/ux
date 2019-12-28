@@ -108,19 +108,22 @@ class SequencesGroupBy(ISequencesGroupBy):
                     agg_pairs.append((k, f))
             else:
                 raise TypeError('agg_funcs values must be FunctionType or List[FunctionType]')
-        for agg_key, agg_func in agg_pairs:
-            agg_name = get_method_name(agg_func)
+        agg_attr: str
+        for agg_attr, agg_func in agg_pairs:
+            agg_func_name = get_method_name(agg_func)
             for group_key, sequences in self.items():
                 if type(group_key) is str:
                     group_key = (group_key,)
-                if hasattr(ISequences, agg_key):
-                    if callable(getattr(ISequences, agg_key)):
-                        values = getattr(sequences, agg_key)()
+                if hasattr(ISequences, agg_attr):
+                    if callable(getattr(ISequences, agg_attr)):
+                        values = getattr(sequences, agg_attr)()
                     else:
-                        values = getattr(sequences, agg_key)
-                    new_keys = tuple(list(group_key) + [agg_key, agg_name])
+                        values = getattr(sequences, agg_attr)
+                    new_keys = tuple(list(group_key) + [agg_attr, agg_func_name])
                     results[new_keys] = agg_func(values)
-        return MapResult(data=results, key_names=self.names + ['attribute', 'agg_method'], value_names='agg_result')
+        return MapResult(data=results,
+                         key_names=self.names + ['attribute', 'agg_method'],
+                         value_names='agg_result')
 
     def filter(self, condition: SequenceFilter) -> ISequencesGroupBy:
         """
