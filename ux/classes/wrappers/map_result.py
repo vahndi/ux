@@ -1,6 +1,6 @@
 from collections import OrderedDict
 from pandas import DataFrame, Series, MultiIndex, Index, concat
-from typing import List, Union, Iterable, ItemsView, KeysView, ValuesView, overload, Iterator
+from typing import Iterable, Iterator, List, Union, ItemsView, KeysView, ValuesView
 
 
 def _str_or_non_iterable(val) -> bool:

@@ -121,7 +121,8 @@ class ISequences(object):
         Return the amount of time spent by the user at each location.
 
         :param sum_by_location: Whether to sum the durations of time spent at each location or keep as a list.
-        :param sum_by_sequence: Whether to sum the durations of time spent at each location in each sequence or keep as a list.
+        :param sum_by_sequence: Whether to sum the durations of time spent at each location in each sequence
+                                or keep as a list.
         """
         raise NotImplementedError
 

@@ -96,7 +96,7 @@ def transform_axis_tick_labels(ax: Axis, transformation: FunctionType) -> None:
     """
     ax.figure.canvas.draw()  # make sure the figure has been drawn so the labels are available to be got
     labels = ax.get_ticklabels()
-    for l in labels:
-        new_label = transformation(l.get_text())
-        l.set_text(new_label)
+    for label in labels:
+        new_label = transformation(label.get_text())
+        label.set_text(new_label)
     ax.set_ticklabels(labels)

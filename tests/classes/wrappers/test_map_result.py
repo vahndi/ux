@@ -105,12 +105,24 @@ class TestMapResult(TestCase):
 
     def test_to_frame(self):
 
-        self.assertTrue(self.frames_equivalent(self.s_single_single.reset_index(), self.mr_single_single.to_frame()))
-        self.assertTrue(self.frames_equivalent(self.s_single_fixed.reset_index(), self.mr_single_fixed.to_frame()))
-        self.assertTrue(self.frames_equivalent(self.s_single_variable.reset_index(), self.mr_single_variable.to_frame()))
-        self.assertTrue(self.frames_equivalent(self.s_tuple_single.reset_index(), self.mr_tuple_single.to_frame()))
-        self.assertTrue(self.frames_equivalent(self.s_tuple_fixed.reset_index(), self.mr_tuple_fixed.to_frame()))
-        self.assertTrue(self.frames_equivalent(self.s_tuple_variable.reset_index(), self.mr_tuple_variable.to_frame()))
+        self.assertTrue(
+            self.frames_equivalent(self.s_single_single.reset_index(), self.mr_single_single.to_frame())
+        )
+        self.assertTrue(
+            self.frames_equivalent(self.s_single_fixed.reset_index(), self.mr_single_fixed.to_frame())
+        )
+        self.assertTrue(
+            self.frames_equivalent(self.s_single_variable.reset_index(), self.mr_single_variable.to_frame())
+        )
+        self.assertTrue(
+            self.frames_equivalent(self.s_tuple_single.reset_index(), self.mr_tuple_single.to_frame())
+        )
+        self.assertTrue(
+            self.frames_equivalent(self.s_tuple_fixed.reset_index(), self.mr_tuple_fixed.to_frame())
+        )
+        self.assertTrue(
+            self.frames_equivalent(self.s_tuple_variable.reset_index(), self.mr_tuple_variable.to_frame())
+        )
 
     def test_to_frame_wide(self):
 

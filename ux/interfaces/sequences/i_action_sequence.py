@@ -151,7 +151,7 @@ class IActionSequence(object):
         """
         raise NotImplementedError
 
-    def __getitem__(self, item) -> IUserAction:
+    def __getitem__(self, value):
         raise NotImplementedError
 
     def __len__(self) -> int:

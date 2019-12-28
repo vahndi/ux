@@ -1,7 +1,7 @@
 from datetime import timedelta
 from matplotlib.axes import Axes
 from pandas import concat, DataFrame, MultiIndex, Series, pivot_table
-from typing import List, Callable, Union
+from typing import List, Callable, Union, Optional
 from numpy import nan
 from pandas.core.computation.ops import isnumeric
 from seaborn import heatmap
@@ -45,7 +45,7 @@ class TemporalCount(dict):
         return self
 
     @property
-    def is_split(self) -> bool:
+    def is_split(self) -> Optional[bool]:
 
         values = list(self.values())
         if not values:
@@ -60,7 +60,7 @@ class TemporalCount(dict):
         return date_times[1] - date_times[0]
 
     @property
-    def freq_str(self) -> str:
+    def freq_str(self) -> Optional[str]:
 
         td = self.frequency
         if td.seconds == 3600:
@@ -175,19 +175,21 @@ class TemporalCount(dict):
         else:
             data = self.to_series()
             data.plot.bar(ax=ax)
-        transform_axis_tick_labels(ax.xaxis, self.freq_formatter())
+        transform_axis_tick_labels(ax.xaxis, self.freq_formatter)
         ax.set_xlabel('Date Time')
         if axis_kws is not None:
             ax.set(**axis_kws)
         return ax
 
     @staticmethod
-    def plot_comparison(temporal_counts, stacked: bool = False,
+    def plot_comparison(temporal_counts: List['TemporalCount'],
+                        stacked: bool = False,
                         ax: Axes = None, axis_kws: dict = None) -> Axes:
         """
         Plot a comparison of several counts.
 
         :param temporal_counts: Counts to compare
+        :param stacked: Whether to stack the bars.
         :type temporal_counts: List[TemporalCount]
         :param ax: Optional matplotlib axes to plot on
         :param axis_kws: Optional dict of values to call ax.set() with
@@ -198,7 +200,7 @@ class TemporalCount(dict):
         ], axis=1)  # assumes all are not split
         ax = ax or new_axes()
         data.plot.bar(ax=ax, stacked=stacked)
-        transform_axis_tick_labels(ax.xaxis, temporal_counts[0].freq_formatter())
+        transform_axis_tick_labels(ax.xaxis, temporal_counts[0].freq_formatter)
         ax.set_xlabel('Date Time')
         ax.set_ylabel('Count')
         if axis_kws is not None:
@@ -216,14 +218,15 @@ class TemporalCount(dict):
             if not self.is_split:
                 div_data = (self.to_pandas() / other.to_pandas()).to_dict()
             else:
-                div_data = self.to_frame().droplevel(0, axis=1).div(other.to_frame().droplevel(0, axis=1), fill_value=0)
-                div_data = div_data.to_dict(orient='index')
+                div_data = self.to_frame().droplevel(0, axis=1).div(
+                    other.to_frame().droplevel(0, axis=1), fill_value=0
+                ).to_dict(orient='index')
             return TemporalCount.from_dict(div_data, name=new_name)
         elif isnumeric(type(other)):
             if self.is_split:
-                div_data = (self.to_frame().droplevel(0, axis=1) / other).to_dict(orient='index')
+                div_data: DataFrame = (self.to_frame().droplevel(0, axis=1) / other).to_dict(orient='index')
             else:
-                div_data = (self.to_series() / other).to_dict()
+                div_data: Series = (self.to_series() / other).to_dict()
             return TemporalCount.from_dict(div_data, name='{} / {}'.format(self.name, other))
         else:
             raise TypeError('Can only divide a TemporalCount by another TemporalCount or a numeric value.')

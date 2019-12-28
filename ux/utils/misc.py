@@ -1,4 +1,4 @@
-from re import compile, match
+from re import compile
 from types import FunctionType
 from typing import Union
 

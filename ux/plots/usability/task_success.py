@@ -2,7 +2,7 @@ from collections import OrderedDict
 from matplotlib.axes import Axes
 from numpy import array, ndarray, histogram
 from pandas import DataFrame, Series
-from typing import Union, Iterable
+from typing import Union, Iterable, Optional
 
 from ux.calcs.basic_calcs.task_success import binary_task_success_rate
 from ux.plots.helpers import new_axes, get_hist_index
@@ -122,14 +122,19 @@ def plot_task_completion_rates(completion_rates, bins: Union[list, range] = None
     ax.set_xlabel('Completion Rate')
     ax.set_ylabel('Frequency')
 
+    return ax
+
 
 def plot_task_success_level(task_results: dict,
-                            bar_order: Iterable[str] = None,  colors: Iterable[str] = None,
+                            bar_order: Optional[Iterable[str]] = None,
+                            colors: Optional[Iterable[str]] = None,
                             ax: Axes = None) -> Axes:
     """
     Plot a stacked bar chart of levels of success over different tasks.
 
     :param task_results: Dictionary {task name => {LoS => num participants})
+    :param bar_order: Order to plot the bars in.
+    :param colors: Colors for the bars.
     :param ax: Optional matplotlib axes.
     """
     df = DataFrame.from_dict(task_results, orient='index')

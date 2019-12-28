@@ -70,7 +70,7 @@ def split_sequences_by_hour(sequences: List[IActionSequence],
         date_sequences = [
             sequence for sequence in sequences
             if sequence[0].time_stamp.date() == current_date_time.date() and
-               sequence[0].time_stamp.hour == current_date_time.hour
+            sequence[0].time_stamp.hour == current_date_time.hour
         ]
         sequence_dict[current_date_time] = date_sequences
         current_date_time = current_date_time + timedelta(hours=1)

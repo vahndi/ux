@@ -104,6 +104,8 @@ def plot_markov_chain(transitions, get_location, get_name=None,
         center = get_location(state)
         ax.text(*center, s=get_name(state), **text_kws)
 
+    return ax
+
 
 def plot_sequence_diagram(sequence: IActionSequence, locations: List[str], max_grid_lines: int = 50) -> Axes:
 

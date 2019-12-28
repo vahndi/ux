@@ -1,7 +1,7 @@
 from collections import defaultdict, OrderedDict, Counter
 from datetime import datetime, timedelta
 from types import FunctionType
-from typing import List, Callable, Set, Union, Iterator, Dict, Optional
+from typing import List, Callable, Set, Union, Iterator, Dict, Optional, overload
 
 from pandas import notnull
 
@@ -188,7 +188,7 @@ class ActionSequence(IActionSequence):
         """
         return [action for action in self if action.template() == template]
 
-    def find_first(self, template: IActionTemplate) -> IUserAction:
+    def find_first(self, template: IActionTemplate) -> Optional[IUserAction]:
         """
         Return the first action matching the given action template. Returns None if the template is not matched.
         """
@@ -198,7 +198,7 @@ class ActionSequence(IActionSequence):
         else:
             return None
 
-    def find_last(self, template: IActionTemplate) -> IUserAction:
+    def find_last(self, template: IActionTemplate) -> Optional[IUserAction]:
         """
         Return the first action matching the given action template. Returns None if the template is not matched.
         """
@@ -320,7 +320,7 @@ class ActionSequence(IActionSequence):
             meta=self._meta if copy_meta else None
         ) for start, end in zip(seq_starts, seq_ends)]
 
-    def crop(self, start, end, how: str, copy_meta: bool = False) -> IActionSequence:
+    def crop(self, start, end, how: str, copy_meta: bool = False) -> Optional[IActionSequence]:
         """
         Crop the sequence to start and end ActionTemplates or conditions.
         Returns None if both conditions are not found in order.
@@ -447,9 +447,17 @@ class ActionSequence(IActionSequence):
                 )
         return dwell_times
 
-    def __getitem__(self, item) -> IUserAction:
+    @overload
+    def __getitem__(self, value: int) -> IUserAction:
+        pass
 
-        return self._user_actions[item]
+    @overload
+    def __getitem__(self, value: slice) -> List[IUserAction]:
+        pass
+
+    def __getitem__(self, value):
+
+        return self._user_actions[value]
 
     def __repr__(self) -> str:
 

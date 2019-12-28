@@ -1,9 +1,8 @@
-from collections import defaultdict, OrderedDict
+from collections import OrderedDict
 from types import FunctionType
 from typing import Dict, List, Union, ItemsView, KeysView, ValuesView, Iterator, Tuple
 
 from ux.classes.wrappers.map_result import MapResult
-from ux.custom_types.builtin_types import Number
 from ux.custom_types.sequence_types import SequenceFilter, SequencesGroupByKey, SequenceFilterSet, SequencesGrouper, \
     SequenceGrouper
 from ux.interfaces.sequences.i_sequences import ISequences
@@ -226,6 +225,6 @@ class SequencesGroupBy(ISequencesGroupBy):
 
         return item in self._data
 
-    def __iter__(self) -> Iterator[Dict[SequencesGroupByKey, ISequences]]:
+    def __iter__(self) -> Iterator[SequencesGroupByKey]:
 
         return self._data.__iter__()
