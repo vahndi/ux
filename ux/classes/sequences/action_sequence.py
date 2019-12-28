@@ -77,6 +77,22 @@ class ActionSequence(IActionSequence):
 
         return self[0].session_id
 
+    # region action property lists
+
+    @property
+    def source_ids(self) -> List[str]:
+        return [action.source_id for action in self]
+
+    @property
+    def target_ids(self) -> List[Optional[str]]:
+        return [action.target_id for action in self]
+
+    @property
+    def action_types(self) -> List[str]:
+        return [action.action_type for action in self]
+
+    # end region
+
     def action_templates(self) -> List[IActionTemplate]:
         """
         Return a list of ActionTemplates derived from each of the UserActions taken.
@@ -375,7 +391,7 @@ class ActionSequence(IActionSequence):
         """
         return location_id in self.location_ids()
 
-    def action_types(self) -> Set[str]:
+    def unique_action_types(self) -> Set[str]:
         """
         Return a set of the unique action types carried out in the sequence.
         """

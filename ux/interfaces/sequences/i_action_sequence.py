@@ -1,6 +1,6 @@
 from collections import Counter
 from datetime import timedelta, datetime
-from typing import List, Set, Iterator, Dict, Union
+from typing import List, Set, Iterator, Dict, Union, Optional
 
 from ux.classes.wrappers.map_result import MapResult
 from ux.interfaces.actions.i_action_template import IActionTemplate
@@ -12,45 +12,52 @@ class IActionSequence(object):
 
     @property
     def user_actions(self) -> List[IUserAction]:
-
         raise NotImplementedError
 
     @property
     def meta(self) -> dict:
-
         raise NotImplementedError
 
     @property
     def duration(self) -> timedelta:
-
         raise NotImplementedError
 
     @property
     def start(self) -> datetime:
-
         raise NotImplementedError
 
     @property
     def end(self) -> datetime:
-
         raise NotImplementedError
 
     @property
     def user_id(self) -> str:
-
         raise NotImplementedError
 
     @property
     def session_id(self) -> str:
-
         raise NotImplementedError
 
-    def action_templates(self) -> List[IActionTemplate]:
+    # region action property lists
 
+    @property
+    def source_ids(self) -> List[str]:
+        raise NotImplementedError
+
+    @property
+    def target_ids(self) -> List[Optional[str]]:
+        raise NotImplementedError
+
+    @property
+    def action_types(self) -> List[str]:
+        raise NotImplementedError
+
+    # end region
+
+    def action_templates(self) -> List[IActionTemplate]:
         raise NotImplementedError
 
     def action_template_set(self) -> Set[IActionTemplate]:
-
         raise NotImplementedError
 
     def action_template_counts(self) -> Dict[IActionTemplate, int]:
@@ -60,31 +67,24 @@ class IActionSequence(object):
         raise NotImplementedError
 
     def map(self, mapper) -> MapResult:
-
         raise NotImplementedError
 
     def unordered_completion_rate(self, task: ITask) -> float:
-
         raise NotImplementedError
 
     def ordered_completion_rate(self, task: ITask) -> float:
-
         raise NotImplementedError
 
     def intersects_task(self, task: ITask) -> bool:
-
         raise NotImplementedError
 
-    def action_types(self) -> Set[str]:
-
+    def unique_action_types(self) -> Set[str]:
         raise NotImplementedError
 
     def back_click_rates(self) -> Dict[IActionTemplate, float]:
-
         raise NotImplementedError
 
     def filter(self, condition, copy_meta: bool = False) -> 'IActionSequence':
-
         raise NotImplementedError
 
     def count(self, condition) -> int:
@@ -110,7 +110,6 @@ class IActionSequence(object):
         raise NotImplementedError
 
     def location_ids(self) -> Set[str]:
-
         raise NotImplementedError
 
     def contains_location_id(self, location_id: str) -> bool:
@@ -145,17 +144,13 @@ class IActionSequence(object):
         raise NotImplementedError
 
     def __getitem__(self, item) -> IUserAction:
-
         raise NotImplementedError
 
     def __len__(self) -> int:
-
         raise NotImplementedError
 
     def __contains__(self, item) -> bool:
-
         raise NotImplementedError
 
     def __iter__(self) -> Iterator[IUserAction]:
-
         raise NotImplementedError

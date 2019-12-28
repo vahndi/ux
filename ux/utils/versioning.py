@@ -43,6 +43,6 @@ def find_action_type_history(manager: IDatabaseManager,
         if (start and session_start < start) or (end and (session_start > end)):
             continue
         sequence: IActionSequence = manager.get_session_sequence(session_id=session.session_id)
-        for action_type in sequence.action_types():
+        for action_type in sequence.unique_action_types():
             history[action_type].append(session_start)
     return dict(history)
