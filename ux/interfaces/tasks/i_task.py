@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from ux.interfaces.actions.i_action_template import IActionTemplate
 
@@ -14,6 +14,26 @@ class ITask(object):
     def action_templates(self) -> List[IActionTemplate]:
 
         raise NotImplementedError
+
+    # region action template property lists
+
+    @property
+    def source_ids(self) -> List[str]:
+        raise NotImplementedError
+
+    @property
+    def target_ids(self) -> List[Optional[str]]:
+        raise NotImplementedError
+
+    @property
+    def action_types(self) -> List[str]:
+        raise NotImplementedError
+
+    @property
+    def weightings(self) -> List[float]:
+        raise NotImplementedError
+
+    # end region
 
     def unordered_completion_rate(self, action_sequence) -> float:
         """

@@ -1,4 +1,4 @@
-from typing import List, Callable, Iterator
+from typing import List, Callable, Iterator, Optional
 
 from ux.calcs.object_calcs.efficiency import lostness
 from ux.calcs.object_calcs.task_success import unordered_task_completion_rate, ordered_task_completion_rate, \
@@ -37,6 +37,26 @@ class Task(ITask):
         Return the list of ActionTemplates that compose the Task.
         """
         return self._action_templates
+
+    # region action template property lists
+
+    @property
+    def source_ids(self) -> List[str]:
+        return [template.source_id for template in self]
+
+    @property
+    def target_ids(self) -> List[Optional[str]]:
+        return [template.target_id for template in self]
+
+    @property
+    def action_types(self) -> List[str]:
+        return [template.action_type for template in self]
+
+    @property
+    def weightings(self) -> List[float]:
+        return [template.weighting for template in self]
+
+    # end region
 
     def add_action_template(self, action_template: IActionTemplate) -> None:
         """
