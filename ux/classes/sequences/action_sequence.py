@@ -91,6 +91,14 @@ class ActionSequence(IActionSequence):
     def action_types(self) -> List[str]:
         return [action.action_type for action in self]
 
+    @property
+    def time_stamps(self) -> List[datetime]:
+        return [action.time_stamp for action in self]
+
+    @property
+    def metas(self) -> List[dict]:
+        return [action.meta for action in self]
+
     # end region
 
     def action_templates(self) -> List[IActionTemplate]:

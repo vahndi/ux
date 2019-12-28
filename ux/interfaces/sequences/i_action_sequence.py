@@ -52,6 +52,14 @@ class IActionSequence(object):
     def action_types(self) -> List[str]:
         raise NotImplementedError
 
+    @property
+    def time_stamps(self) -> List[datetime]:
+        raise NotImplementedError
+
+    @property
+    def metas(self) -> List[dict]:
+        raise NotImplementedError
+
     # end region
 
     def action_templates(self) -> List[IActionTemplate]:
