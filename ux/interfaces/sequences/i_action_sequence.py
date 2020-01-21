@@ -5,7 +5,6 @@ from typing import List, Set, Iterator, Dict, Union, Optional
 from ux.classes.wrappers.map_result import MapResult
 from ux.interfaces.actions.i_action_template import IActionTemplate
 from ux.interfaces.actions.i_user_action import IUserAction
-from ux.interfaces.tasks.i_task import ITask
 
 
 class IActionSequence(object):
@@ -77,13 +76,13 @@ class IActionSequence(object):
     def map(self, mapper) -> MapResult:
         raise NotImplementedError
 
-    def unordered_completion_rate(self, task: ITask) -> float:
+    def unordered_completion_rate(self, task) -> float:
         raise NotImplementedError
 
-    def ordered_completion_rate(self, task: ITask) -> float:
+    def ordered_completion_rate(self, task) -> float:
         raise NotImplementedError
 
-    def intersects_task(self, task: ITask) -> bool:
+    def intersects_task(self, task) -> bool:
         raise NotImplementedError
 
     def unique_action_types(self) -> Set[str]:
