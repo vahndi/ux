@@ -1,11 +1,11 @@
 from datetime import timedelta
 
+from ux.classes.sequences.action_sequence import ActionSequence
+from ux.classes.tasks.task import Task
 from ux.custom_types.builtin_types import IntPair
-from ux.interfaces.sequences.i_action_sequence import IActionSequence
-from ux.interfaces.tasks.i_task import ITask
 
 
-def task_extents(action_sequence: IActionSequence, task: ITask) -> IntPair:
+def task_extents(action_sequence: ActionSequence, task: Task) -> IntPair:
     """
     Return the start and end index of the actions in the sequence that are part of the task.
 
@@ -21,7 +21,7 @@ def task_extents(action_sequence: IActionSequence, task: ITask) -> IntPair:
     return i_first, i_last
 
 
-def time_on_task(task: ITask, action_sequence: IActionSequence) -> timedelta:
+def time_on_task(task: Task, action_sequence: ActionSequence) -> timedelta:
     """
     Measure the time from the start of the first action in the task to the end of the last action.
 

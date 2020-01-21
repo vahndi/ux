@@ -1,15 +1,9 @@
-from typing import List, Callable, Iterator, Optional
+from typing import List, Iterator, Optional
 
-from ux.calcs.object_calcs.efficiency import lostness
-from ux.calcs.object_calcs.task_success import unordered_task_completion_rate, ordered_task_completion_rate, \
-    binary_task_success
-from ux.calcs.object_calcs.utils import sequence_intersects_task
 from ux.classes.actions.action_template import ActionTemplate
-from ux.interfaces.sequences.i_action_sequence import IActionSequence
-from ux.interfaces.tasks.i_task import ITask
 
 
-class Task(ITask):
+class Task(object):
     """
     Represents a Task corresponding to a sequence of desirable Actions.
     """
@@ -64,45 +58,6 @@ class Task(ITask):
         :param action_template: The ActionTemplate to add.
         """
         self._action_templates.append(action_template)
-
-    def unordered_completion_rate(self, action_sequence: IActionSequence) -> float:
-        """
-        Calculate the unordered completion rate of the Task from the Actions in the given ActionSequence.
-        """
-        return unordered_task_completion_rate(self, action_sequence)
-
-    def ordered_completion_rate(self, action_sequence: IActionSequence) -> float:
-        """
-        Calculate the ordered completion rate of the Task from the Actions in the given ActionSequence.
-        """
-        return ordered_task_completion_rate(self, action_sequence)
-
-    def intersects_sequence(self, action_sequence: IActionSequence) -> bool:
-        """
-        Return True if the given ActionSequence has any ActionTemplates that are equivalent to any Actions in the Task.
-        """
-        return sequence_intersects_task(action_sequence=action_sequence, task=self)
-
-    def binary_task_success(self, action_sequence: IActionSequence,
-                            success_func: Callable[[ITask, IActionSequence], bool]) -> bool:
-        """
-        Return True if success_func is met.
-
-        :param action_sequence: The ActionSequence to assess success of.
-        :param success_func: Callable to use to assess success.
-        """
-        return binary_task_success(
-            task=self, action_sequence=action_sequence,
-            success_func=success_func
-        )
-
-    def lostness(self, action_sequence: IActionSequence) -> float:
-        """
-        Return the lostness of the given ActionSequence with respect to this Task.
-
-        :param action_sequence: The ActionSequence to calculate lostness for.
-        """
-        return lostness(task=self, action_sequence=action_sequence)
 
     def __len__(self) -> int:
 

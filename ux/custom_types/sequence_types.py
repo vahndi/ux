@@ -1,14 +1,15 @@
 from typing import Callable, Union, List, Dict, Any, Tuple
 
-from ux.interfaces.sequences.i_action_sequence import IActionSequence
-from ux.interfaces.sequences.i_sequences import ISequences
-from ux.interfaces.tasks.i_task import ITask
+from ux.classes.sequences.action_sequence import ActionSequence
+from ux.classes.sequences.sequences import Sequences
+from ux.classes.tasks.task import Task
 
-SequenceCounter = Callable[[IActionSequence], Union[str, List[str]]]
-SequenceFilter = Callable[[IActionSequence], bool]
+
+SequenceCounter = Callable[[ActionSequence], Union[str, List[str]]]
+SequenceFilter = Callable[[ActionSequence], bool]
 SequenceFilterSet = Dict[str, SequenceFilter]
-SequenceGrouper = Callable[[IActionSequence], Any]
+SequenceGrouper = Callable[[ActionSequence], Any]
 SequencesGroupByKey = Union[str, Tuple[str, ...]]
-SequencesGrouper = Callable[[ISequences], Any]
+SequencesGrouper = Callable[[Sequences], Any]
 
-TaskPair = Tuple[ITask, ITask]
+TaskPair = Tuple[Task, Task]

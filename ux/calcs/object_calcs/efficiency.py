@@ -1,10 +1,10 @@
 from math import sqrt
 
-from ux.interfaces.sequences.i_action_sequence import IActionSequence
-from ux.interfaces.tasks.i_task import ITask
+from ux.classes.sequences.action_sequence import ActionSequence
+from ux.classes.tasks.task import Task
 
 
-def lostness(task: ITask, action_sequence: IActionSequence) -> float:
+def lostness(task: Task, action_sequence: ActionSequence) -> float:
     """
     Calculate the `lostness` metric for the given ActionSequence, using the Task as a reference.
 

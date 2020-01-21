@@ -5,17 +5,11 @@ from typing import List, Callable, Set, Union, Iterator, Dict, Optional, overloa
 
 from pandas import notnull
 
-from ux.calcs.object_calcs.efficiency import lostness
-from ux.calcs.object_calcs.task_success import unordered_task_completion_rate, ordered_task_completion_rate, \
-    binary_task_success
-from ux.calcs.object_calcs.utils import sequence_intersects_task
 from ux.classes.actions.action_template import ActionTemplate
 from ux.classes.actions.user_action import UserAction
 from ux.classes.wrappers.map_result import MapResult
 from ux.custom_types.action_types import ActionMapper, ActionFilter, ActionCounter
-from ux.interfaces.actions.i_user_action import UserAction
 from ux.interfaces.sequences.i_action_sequence import IActionSequence
-from ux.interfaces.tasks.i_task import ITask
 from ux.utils.misc import get_method_name
 
 
@@ -247,35 +241,6 @@ class ActionSequence(IActionSequence):
 
         return MapResult(results)
 
-    def intersects_task(self, task: ITask) -> bool:
-        """
-        Return True if the given Task has ActionTemplates that are equivalent to any Actions in the Sequence.
-
-        :param task: Task to cross-reference Action Templates against.
-        """
-        return sequence_intersects_task(action_sequence=self, task=task)
-
-    def binary_task_success(self, task: ITask,
-                            success_func: Callable[[ITask, IActionSequence], bool]) -> bool:
-        """
-        Return True if success_func is met.
-
-        :param task: The Task to assess success against.
-        :param success_func: Callable to use to assess success.
-        """
-        return binary_task_success(
-            task=task, action_sequence=self,
-            success_func=success_func
-        )
-
-    def lostness(self, task: ITask) -> float:
-        """
-        Return the lostness with respect to the given Task.
-
-        :param task: The Task to calculate lostness against.
-        """
-        return lostness(task=task, action_sequence=self)
-
     def split(self, split, how: str = 'at', copy_meta: bool = False) -> List[IActionSequence]:
         """
         Split into a list of new ActionSequences after each `UserAction` where `condition` is met.
@@ -364,22 +329,6 @@ class ActionSequence(IActionSequence):
                 user_actions=self.user_actions[a_start: a_end + 1],
                 meta=self._meta if copy_meta else None
             )
-
-    def unordered_completion_rate(self, task: ITask) -> float:
-        """
-        Calculate the unordered completion rate of the given Task from the Actions in the Sequence.
-
-        :param task: The Task to cross-reference UserActions against.
-        """
-        return unordered_task_completion_rate(task, self)
-
-    def ordered_completion_rate(self, task: ITask) -> float:
-        """
-        Calculate the ordered completion rate of the given Task from the Actions in the Sequence.
-
-        :param task: The Task to cross-reference UserActions against.
-        """
-        return ordered_task_completion_rate(task, self)
 
     def location_ids(self) -> Set[str]:
         """

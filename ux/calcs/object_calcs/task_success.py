@@ -1,10 +1,10 @@
 from typing import Callable
 
-from ux.interfaces.sequences.i_action_sequence import IActionSequence
-from ux.interfaces.tasks.i_task import ITask
+from ux.classes.sequences.action_sequence import ActionSequence
+from ux.classes.tasks.task import Task
 
 
-def unordered_task_completion_rate(task: ITask, action_sequence: IActionSequence) -> float:
+def unordered_task_completion_rate(task: Task, action_sequence: ActionSequence) -> float:
     """
     Calculate the Task completion from a Sequence of User Actions.
     Does not require the Actions to be completed in order.
@@ -27,7 +27,7 @@ def unordered_task_completion_rate(task: ITask, action_sequence: IActionSequence
     return overlap_weight / task_weight
 
 
-def ordered_task_completion_rate(task: ITask, action_sequence: IActionSequence) -> float:
+def ordered_task_completion_rate(task: Task, action_sequence: ActionSequence) -> float:
     """
     Calculate the Task completion from a sequence of User Actions.
     Requires that the Actions are completed in the order specified in the Task.
@@ -58,8 +58,8 @@ def ordered_task_completion_rate(task: ITask, action_sequence: IActionSequence) 
     return sequence_weight / task_weight
 
 
-def binary_task_success(task: ITask, action_sequence: IActionSequence,
-                        success_func: Callable[[ITask, IActionSequence], bool]) -> bool:
+def binary_task_success(task: Task, action_sequence: ActionSequence,
+                        success_func: Callable[[Task, ActionSequence], bool]) -> bool:
     """
     Calculate the binary task success for each sequence.
 

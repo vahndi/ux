@@ -1,13 +1,13 @@
 from collections import defaultdict
 from typing import List, Dict
 
+from ux.classes.sequences.action_sequence import ActionSequence
+from ux.classes.tasks.task import Task
 from ux.custom_types.action_types import ActionTemplatePair
 from ux.custom_types.sequence_types import TaskPair
-from ux.interfaces.sequences.i_action_sequence import IActionSequence
-from ux.interfaces.tasks.i_task import ITask
 
 
-def transition_counts(task: ITask, action_sequences: List[IActionSequence]) -> Dict[ActionTemplatePair, int]:
+def transition_counts(task: Task, action_sequences: List[ActionSequence]) -> Dict[ActionTemplatePair, int]:
     """
     Count the transitions between actions.
 
@@ -29,7 +29,7 @@ def transition_counts(task: ITask, action_sequences: List[IActionSequence]) -> D
     return transitions
 
 
-def transition_probabilities(task: ITask, action_sequences: List[IActionSequence]) -> Dict[TaskPair, float]:
+def transition_probabilities(task: Task, action_sequences: List[ActionSequence]) -> Dict[TaskPair, float]:
     """
     Calculate the conditional probability of a first-order Markov Chain between actions.
 

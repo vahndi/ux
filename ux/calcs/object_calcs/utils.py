@@ -1,8 +1,8 @@
-from ux.interfaces.sequences.i_action_sequence import IActionSequence
-from ux.interfaces.tasks.i_task import ITask
+from ux.classes.sequences.action_sequence import ActionSequence
+from ux.classes.tasks.task import Task
 
 
-def sequence_intersects_task(action_sequence: IActionSequence, task: ITask) -> bool:
+def sequence_intersects_task(action_sequence: ActionSequence, task: Task) -> bool:
     """
     Determine if the actions in the sequence intersect with those in the task.
     """
