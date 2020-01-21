@@ -1,9 +1,8 @@
 from datetime import datetime
 from typing import Optional
 
-from ux.interfaces.actions.i_user_action import IUserAction
-from ux.interfaces.actions.i_action_template import IActionTemplate
 from ux.classes.actions.action_template import ActionTemplate
+from ux.interfaces.actions.i_user_action import IUserAction
 
 
 class UserAction(IUserAction):
@@ -33,7 +32,7 @@ class UserAction(IUserAction):
         self._user_id: str = user_id
         self._session_id: str = session_id
         self._meta: dict = meta
-        self._action_template: Optional[IActionTemplate] = None
+        self._action_template: Optional[ActionTemplate] = None
 
     @property
     def action_type(self) -> str:
@@ -91,7 +90,7 @@ class UserAction(IUserAction):
         """
         return self._meta
 
-    def template(self) -> IActionTemplate:
+    def template(self) -> ActionTemplate:
         """
         Return an ActionTemplate that corresponds to the Action.
         """

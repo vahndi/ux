@@ -9,9 +9,9 @@ from ux.calcs.object_calcs.efficiency import lostness
 from ux.calcs.object_calcs.task_success import unordered_task_completion_rate, ordered_task_completion_rate, \
     binary_task_success
 from ux.calcs.object_calcs.utils import sequence_intersects_task
+from ux.classes.actions.action_template import ActionTemplate
 from ux.classes.wrappers.map_result import MapResult
 from ux.custom_types.action_types import ActionMapper, ActionFilter, ActionCounter
-from ux.interfaces.actions.i_action_template import IActionTemplate
 from ux.interfaces.actions.i_user_action import IUserAction
 from ux.interfaces.sequences.i_action_sequence import IActionSequence
 from ux.interfaces.tasks.i_task import ITask
@@ -31,7 +31,7 @@ class ActionSequence(IActionSequence):
         """
         self._user_actions: List[IUserAction] = user_actions or []
         self._meta: Optional[dict] = meta
-        self._action_templates: Optional[List[IActionTemplate]] = None
+        self._action_templates: Optional[List[ActionTemplate]] = None
         self._location_ids: Optional[List[str]] = None
 
     @property
@@ -101,7 +101,7 @@ class ActionSequence(IActionSequence):
 
     # end region
 
-    def action_templates(self) -> List[IActionTemplate]:
+    def action_templates(self) -> List[ActionTemplate]:
         """
         Return a list of ActionTemplates derived from each of the UserActions taken.
         """
@@ -112,13 +112,13 @@ class ActionSequence(IActionSequence):
             ]
         return self._action_templates
 
-    def action_template_set(self) -> Set[IActionTemplate]:
+    def action_template_set(self) -> Set[ActionTemplate]:
         """
         Return a set of ActionTemplates representing the UserActions in the ActionSequence.
         """
         return set(self.action_templates())
 
-    def action_template_counts(self) -> Dict[IActionTemplate, int]:
+    def action_template_counts(self) -> Dict[ActionTemplate, int]:
         """
         Return a count of each ActionTemplate representing one or more UserActions in the ActionSequence.
         """
@@ -127,11 +127,11 @@ class ActionSequence(IActionSequence):
             counts[template] += 1
         return dict(counts)
 
-    def filter(self, condition: Union[ActionFilter, IActionTemplate], copy_meta: bool = False) -> IActionSequence:
+    def filter(self, condition: Union[ActionFilter, ActionTemplate], copy_meta: bool = False) -> IActionSequence:
 
         if condition in (None, True):
             return self
-        if isinstance(condition, IActionTemplate):
+        if isinstance(condition, ActionTemplate):
             actions = self.find_all(condition)
         elif isinstance(condition, FunctionType):
             actions = [a for a in self if condition(a)]
@@ -142,14 +142,14 @@ class ActionSequence(IActionSequence):
             meta=self.meta if copy_meta else {}
         )
 
-    def count(self, condition: Union[ActionFilter, IActionTemplate] = None) -> int:
+    def count(self, condition: Union[ActionFilter, ActionTemplate] = None) -> int:
         """
         Return a count of the UserActions where the given condition is True
         """
         if condition in (None, True):
             return len(self)
         action_count = 0
-        if isinstance(condition, IActionTemplate):
+        if isinstance(condition, ActionTemplate):
             return len(self.find_all(condition))
         elif isinstance(condition, FunctionType):
             for action in self._user_actions:
@@ -179,7 +179,7 @@ class ActionSequence(IActionSequence):
                 raise TypeError('get_value must return str or list of str')
         return counts
 
-    def find_all(self, template: IActionTemplate) -> List[IUserAction]:
+    def find_all(self, template: ActionTemplate) -> List[IUserAction]:
         """
         Return a list of all the actions matching the given action template.
         Returns an empty list if the template is not matched.
@@ -188,7 +188,7 @@ class ActionSequence(IActionSequence):
         """
         return [action for action in self if action.template() == template]
 
-    def find_first(self, template: IActionTemplate) -> Optional[IUserAction]:
+    def find_first(self, template: ActionTemplate) -> Optional[IUserAction]:
         """
         Return the first action matching the given action template. Returns None if the template is not matched.
         """
@@ -198,7 +198,7 @@ class ActionSequence(IActionSequence):
         else:
             return None
 
-    def find_last(self, template: IActionTemplate) -> Optional[IUserAction]:
+    def find_last(self, template: ActionTemplate) -> Optional[IUserAction]:
         """
         Return the first action matching the given action template. Returns None if the template is not matched.
         """
@@ -405,7 +405,7 @@ class ActionSequence(IActionSequence):
         """
         return set([action.action_type for action in self])
 
-    def back_click_rates(self) -> Dict[IActionTemplate, float]:
+    def back_click_rates(self) -> Dict[ActionTemplate, float]:
 
         rates = {}
         template_list = self.action_templates()
@@ -473,7 +473,7 @@ class ActionSequence(IActionSequence):
 
         if isinstance(item, IUserAction):
             return item in self._user_actions
-        elif isinstance(item, IActionTemplate):
+        elif isinstance(item, ActionTemplate):
             return item in self.action_templates()
         else:
             raise TypeError('item must be IUserAction or IActionTemplate')
@@ -483,15 +483,15 @@ class ActionSequence(IActionSequence):
         return self._user_actions.__iter__()
 
 
-def _create_action_template_condition(value: Union[IActionTemplate, FunctionType]) -> Callable[[IActionTemplate], bool]:
+def _create_action_template_condition(value: Union[ActionTemplate, FunctionType]) -> Callable[[ActionTemplate], bool]:
 
-    def action_template_condition(template: IActionTemplate) -> bool:
+    def action_template_condition(template: ActionTemplate) -> bool:
         if template == value:
             return True
         else:
             return False
 
-    if isinstance(value, IActionTemplate):
+    if isinstance(value, ActionTemplate):
         return action_template_condition
     elif isinstance(value, FunctionType):
         return value

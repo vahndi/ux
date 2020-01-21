@@ -14,7 +14,6 @@ setup(
         'numba',
         'numpy',
         'pandas',
-        'probability',
         'scipy',
         'seaborn',
         'statsmodels'

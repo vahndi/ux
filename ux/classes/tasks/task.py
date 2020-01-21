@@ -4,8 +4,8 @@ from ux.calcs.object_calcs.efficiency import lostness
 from ux.calcs.object_calcs.task_success import unordered_task_completion_rate, ordered_task_completion_rate, \
     binary_task_success
 from ux.calcs.object_calcs.utils import sequence_intersects_task
+from ux.classes.actions.action_template import ActionTemplate
 from ux.interfaces.sequences.i_action_sequence import IActionSequence
-from ux.interfaces.actions.i_action_template import IActionTemplate
 from ux.interfaces.tasks.i_task import ITask
 
 
@@ -13,7 +13,7 @@ class Task(ITask):
     """
     Represents a Task corresponding to a sequence of desirable Actions.
     """
-    def __init__(self, name: str, action_templates: List[IActionTemplate] = None):
+    def __init__(self, name: str, action_templates: List[ActionTemplate] = None):
         """
         Create a new Task.
 
@@ -21,7 +21,7 @@ class Task(ITask):
         :param action_templates: A list of ActionTemplates that compose the Task.
         """
         self._name: str = name
-        self._action_templates: List[IActionTemplate] = action_templates or []
+        self._action_templates: List[ActionTemplate] = action_templates or []
 
     @property
     def name(self) -> str:
@@ -31,7 +31,7 @@ class Task(ITask):
         return self._name
 
     @property
-    def action_templates(self) -> List[IActionTemplate]:
+    def action_templates(self) -> List[ActionTemplate]:
         """
         Return the list of ActionTemplates that compose the Task.
         """
@@ -57,7 +57,7 @@ class Task(ITask):
 
     # end region
 
-    def add_action_template(self, action_template: IActionTemplate) -> None:
+    def add_action_template(self, action_template: ActionTemplate) -> None:
         """
         Add a new ActionTemplate to the end of the Task.
 
@@ -114,17 +114,17 @@ class Task(ITask):
             self._name, len(self._action_templates)
         )
 
-    def __getitem__(self, item) -> IActionTemplate:
+    def __getitem__(self, item) -> ActionTemplate:
 
         return self._action_templates[item]
 
     def __contains__(self, item) -> bool:
 
-        if isinstance(item, IActionTemplate):
+        if isinstance(item, ActionTemplate):
             return item in self._action_templates
         else:
             raise TypeError('item must be IActionTemplate')
 
-    def __iter__(self) -> Iterator[IActionTemplate]:
+    def __iter__(self) -> Iterator[ActionTemplate]:
 
         return self._action_templates.__iter__()

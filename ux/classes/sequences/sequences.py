@@ -3,15 +3,16 @@ from datetime import timedelta, datetime
 from itertools import chain, product
 from pandas import notnull
 from types import FunctionType
-from typing import Dict, Iterator, List, Optional, overload, Union
 from typing import Counter as CounterType
+from typing import Dict, Iterator, List, Optional, overload, Union
 
+
+from ux.classes.actions.action_template import ActionTemplate
 from ux.classes.sequences.sequences_group_by import SequencesGroupBy
 from ux.classes.wrappers.map_result import MapResult
 from ux.custom_types.action_types import ActionTemplatePair
 from ux.custom_types.builtin_types import StrPair
 from ux.custom_types.sequence_types import SequenceCounter, SequenceFilter, SequenceFilterSet, SequenceGrouper
-from ux.interfaces.actions.i_action_template import IActionTemplate
 from ux.interfaces.sequences.i_action_sequence import IActionSequence
 from ux.interfaces.sequences.i_sequences import ISequences
 from ux.interfaces.sequences.i_sequences_group_by import ISequencesGroupBy
@@ -257,7 +258,7 @@ class Sequences(ISequences):
             intersect = intersect.intersection(s)
         return intersect
 
-    def back_click_rates(self) -> Dict[IActionTemplate, float]:
+    def back_click_rates(self) -> Dict[ActionTemplate, float]:
 
         rates = {}
         counts = self.action_template_counts()
@@ -301,7 +302,7 @@ class Sequences(ISequences):
 
     # end region
 
-    def action_template_counts(self) -> Dict[IActionTemplate, int]:
+    def action_template_counts(self) -> Dict[ActionTemplate, int]:
         """
         Return a total count of all the ActionTemplates in the ActionSequences in the collection.
         """
@@ -311,7 +312,7 @@ class Sequences(ISequences):
                 counts[template] += 1
         return dict(counts)
 
-    def action_template_sequence_counts(self) -> Dict[IActionTemplate, int]:
+    def action_template_sequence_counts(self) -> Dict[ActionTemplate, int]:
         """
         Return a total count of the number of ActionSequences containing each ActionTemplate in the collection.
         """

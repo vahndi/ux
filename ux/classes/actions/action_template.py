@@ -1,9 +1,7 @@
 from typing import Optional
 
-from ux.interfaces.actions.i_action_template import IActionTemplate
 
-
-class ActionTemplate(IActionTemplate):
+class ActionTemplate(object):
     """
     Represents a Template for a single Action that could be taken by a User.
     """
@@ -50,7 +48,7 @@ class ActionTemplate(IActionTemplate):
         """
         return self._weighting
 
-    def reversed(self, action_type: str = None) -> IActionTemplate:
+    def reversed(self, action_type: str = None) -> 'ActionTemplate':
         """
         Return a reversed version of the template (switch the source and target).
 
