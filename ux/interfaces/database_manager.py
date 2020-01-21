@@ -1,34 +1,34 @@
 from abc import ABC
 from typing import List
 
-from ux.classes.actions.user_action import UserAction
+from ux.classes.sequences.action_sequence import ActionSequence
 from ux.classes.location import Location
-from ux.interfaces.i_session import ISession
-from ux.interfaces.i_user import IUser
-from ux.interfaces.sequences.i_action_sequence import IActionSequence
+from ux.classes.session import Session
+from ux.classes.user import User
+from ux.classes.actions.user_action import UserAction
 
 
 class DatabaseManager(ABC):
     """
     An abstract base class that should be implemented for each new backend.
     """
-    def session(self, session_id: str) -> ISession:
+    def session(self, session_id: str) -> Session:
         """
         Return the Session with the given id.
         """
         raise NotImplementedError
 
-    def sessions(self) -> List[ISession]:
+    def sessions(self) -> List[Session]:
         """
         Return all the Sessions in the database.
         """
         raise NotImplementedError
 
-    def user(self, user_id: str) -> IUser:
+    def user(self, user_id: str) -> User:
 
         raise NotImplementedError
 
-    def users(self) -> List[IUser]:
+    def users(self) -> List[User]:
         """
         Return all the Users in the database.
         """
@@ -64,7 +64,7 @@ class DatabaseManager(ABC):
         """
         raise NotImplementedError
 
-    def get_session_sequence(self, session_id) -> IActionSequence:
+    def get_session_sequence(self, session_id) -> ActionSequence:
         """
         Return an ActionSequence constructed from all UserActions in the Session with the given id.
         """
