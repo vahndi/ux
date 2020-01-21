@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='ux',
-    version='0.1.13',
+    version='0.1.14',
     packages=find_packages(),
     url='https://github.com/vahndi/ux',
     license='MIT',
@@ -14,6 +14,7 @@ setup(
         'numba',
         'numpy',
         'pandas',
+        'probability',
         'scipy',
         'seaborn',
         'statsmodels'
