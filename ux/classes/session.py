@@ -1,9 +1,7 @@
 from datetime import datetime
 
-from ux.interfaces.i_session import ISession
 
-
-class Session(ISession):
+class Session(object):
     """
     Represents a single User Session.
     """
