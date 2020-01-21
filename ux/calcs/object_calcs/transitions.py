@@ -1,6 +1,7 @@
 from collections import defaultdict
 from typing import List, Dict
 
+from ux.calcs.object_calcs.utils import sequence_intersects_task
 from ux.sequences import ActionSequence
 from ux.tasks import Task
 from ux.custom_types.action_types import ActionTemplatePair
@@ -19,7 +20,7 @@ def transition_counts(task: Task, action_sequences: List[ActionSequence]) -> Dic
     task_action_set = set(task.action_templates)
     # count transitions
     for sequence in action_sequences:
-        if not task.intersects_sequence(sequence):
+        if not sequence_intersects_task(action_sequence=sequence, task=task):
             continue
         for a in range(len(sequence) - 1):
             from_action = sequence[a].template()
@@ -42,7 +43,7 @@ def transition_probabilities(task: Task, action_sequences: List[ActionSequence])
     task_action_set = set(task.action_templates)
     # count transitions and occurrences
     for sequence in action_sequences:
-        if not task.intersects_sequence(sequence):
+        if not sequence_intersects_task(action_sequence=sequence, task=task):
             continue
         for a in range(len(sequence) - 1):
             from_action = sequence[a].template()

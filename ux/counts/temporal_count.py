@@ -207,7 +207,7 @@ class TemporalCount(dict):
             ax.set(**axis_kws)
         return ax
 
-    def __truediv__(self, other: 'TemporalCount') -> 'TemporalCount':
+    def __truediv__(self, other: Union['TemporalCount', int, float]) -> 'TemporalCount':
 
         if isinstance(other, TemporalCount):
             if self.is_split and not other.is_split:
@@ -216,22 +216,22 @@ class TemporalCount(dict):
                 raise ValueError("Can't divide a non-split count by a split count.")
             new_name = '{} / {}'.format(self.name, other.name)
             if not self.is_split:
-                div_data = (self.to_pandas() / other.to_pandas()).to_dict()
+                div_data: dict = (self.to_pandas() / other.to_pandas()).to_dict()
             else:
-                div_data = self.to_frame().droplevel(0, axis=1).div(
+                div_data: dict = self.to_frame().droplevel(0, axis=1).div(
                     other.to_frame().droplevel(0, axis=1), fill_value=0
                 ).to_dict(orient='index')
             return TemporalCount.from_dict(div_data, name=new_name)
         elif isnumeric(type(other)):
             if self.is_split:
-                div_data: DataFrame = (self.to_frame().droplevel(0, axis=1) / other).to_dict(orient='index')
+                div_data: dict = (self.to_frame().droplevel(0, axis=1) / other).to_dict(orient='index')
             else:
-                div_data: Series = (self.to_series() / other).to_dict()
+                div_data: dict = (self.to_series() / other).to_dict()
             return TemporalCount.from_dict(div_data, name='{} / {}'.format(self.name, other))
         else:
             raise TypeError('Can only divide a TemporalCount by another TemporalCount or a numeric value.')
 
-    def __rtruediv__(self, other: 'TemporalCount') -> 'TemporalCount':
+    def __rtruediv__(self, other: Union['TemporalCount', int, float]) -> 'TemporalCount':
 
         if isinstance(other, TemporalCount):
             if self.is_split and not other.is_split:
@@ -247,14 +247,14 @@ class TemporalCount(dict):
             return TemporalCount.from_dict(div_data, name=new_name)
         elif isnumeric(type(other)):
             if self.is_split:
-                div_data = (other / self.to_frame().droplevel(0, axis=1)).to_dict(orient='index')
+                div_data: dict = (other / self.to_frame().droplevel(0, axis=1)).to_dict(orient='index')
             else:
-                div_data = (other / self.to_series()).to_dict()
+                div_data: dict = (other / self.to_series()).to_dict()
             return TemporalCount.from_dict(div_data, name='{} / {}'.format(other, self.name))
         else:
             raise TypeError('Can only divide another TemporalCount or a numeric value by a TemporalCount.')
 
-    def __mul__(self, other: 'TemporalCount') -> 'TemporalCount':
+    def __mul__(self, other: Union['TemporalCount', int, float]) -> 'TemporalCount':
 
         if isinstance(other, TemporalCount):
             if self.is_split and not other.is_split:
@@ -270,14 +270,14 @@ class TemporalCount(dict):
             return TemporalCount.from_dict(mul_data, name=new_name)
         elif isnumeric(type(other)):
             if self.is_split:
-                mul_data = (self.to_frame().droplevel(0, axis=1) * other).to_dict(orient='index')
+                mul_data: dict = (self.to_frame().droplevel(0, axis=1) * other).to_dict(orient='index')
             else:
-                mul_data = (self.to_series() * other).to_dict()
+                mul_data: dict = (self.to_series() * other).to_dict()
             return TemporalCount.from_dict(mul_data, name='{} * {}'.format(self.name, other))
         else:
             raise TypeError('Can only multiply a TemporalCount by another TemporalCount or a numeric value.')
 
-    def __rmul__(self, other: 'TemporalCount') -> 'TemporalCount':
+    def __rmul__(self, other: Union['TemporalCount', int, float]) -> 'TemporalCount':
 
         if isinstance(other, TemporalCount):
             if self.is_split and not other.is_split:
@@ -286,21 +286,22 @@ class TemporalCount(dict):
                 raise ValueError("Can't multiply a non-split count by a split count.")
             new_name = '{} * {}'.format(other.name, self.name)
             if not self.is_split:
-                mul_data = (other.to_pandas() * self.to_pandas()).to_dict()
+                mul_data: dict = (other.to_pandas() * self.to_pandas()).to_dict()
             else:
-                mul_data = other.to_frame().droplevel(0, axis=1).mul(self.to_frame().droplevel(0, axis=1), fill_value=0)
-                mul_data = mul_data.to_dict(orient='index')
+                mul_data: dict = other.to_frame().droplevel(0, axis=1).mul(
+                    self.to_frame().droplevel(0, axis=1), fill_value=0
+                ).to_dict(orient='index')
             return TemporalCount.from_dict(mul_data, name=new_name)
         elif isnumeric(type(other)):
             if self.is_split:
-                mul_data = (other * self.to_frame().droplevel(0, axis=1)).to_dict(orient='index')
+                mul_data: dict = (other * self.to_frame().droplevel(0, axis=1)).to_dict(orient='index')
             else:
-                mul_data = (other * self.to_series()).to_dict()
+                mul_data: dict = (other * self.to_series()).to_dict()
             return TemporalCount.from_dict(mul_data, name='{} * {}'.format(other, self.name))
         else:
             raise TypeError('Can only multiply a TemporalCount by another TemporalCount or a numeric value.')
 
-    def __add__(self, other: 'TemporalCount') -> 'TemporalCount':
+    def __add__(self, other: Union['TemporalCount', int, float]) -> 'TemporalCount':
 
         if isinstance(other, TemporalCount):
             if self.is_split and not other.is_split:
@@ -323,7 +324,7 @@ class TemporalCount(dict):
         else:
             raise TypeError('Can only add a TemporalCount to another TemporalCount or a numeric value.')
 
-    def __radd__(self, other: 'TemporalCount') -> 'TemporalCount':
+    def __radd__(self, other: Union['TemporalCount', int, float]) -> 'TemporalCount':
 
         if isinstance(other, TemporalCount):
             if self.is_split and not other.is_split:
@@ -346,7 +347,7 @@ class TemporalCount(dict):
         else:
             raise TypeError('Can only add another TemporalCount or a numeric value to a TemporalCount.')
 
-    def __sub__(self, other: 'TemporalCount') -> 'TemporalCount':
+    def __sub__(self, other: Union['TemporalCount', int, float]) -> 'TemporalCount':
 
         if isinstance(other, TemporalCount):
             if self.is_split and not other.is_split:
@@ -371,7 +372,7 @@ class TemporalCount(dict):
                 'Can only subtract another TemporalCount or a numeric value from a TemporalCount.'
             )
 
-    def __rsub__(self, other: 'TemporalCount') -> 'TemporalCount':
+    def __rsub__(self, other: Union['TemporalCount', int, float]) -> 'TemporalCount':
 
         if isinstance(other, TemporalCount):
             if self.is_split and not other.is_split:

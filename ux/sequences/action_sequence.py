@@ -442,7 +442,7 @@ def _create_action_template_condition(value: Union[ActionTemplate, FunctionType]
 
     if isinstance(value, ActionTemplate):
         return action_template_condition
-    elif isinstance(value, FunctionType):
+    elif callable(value):
         return value
     else:
         raise TypeError('expected IActionTemplate or FunctionType')

@@ -19,7 +19,7 @@ def calculate_kpis_by_config(sequences: Sequences, kpi_configs: List[KPIConfig],
     :param kpi_configs: List of KPI Configurations to calculate KPIs with.
     :param filter_sets: Dictionary mapping names of filter-sets to dictionaries of filter names to filter functions.
     """
-    # create sub-sequences from kpi config split definitions for product of split-definition values.
+    # create sub-sequences from kpi config split-definitions for product of split-definition values.
     sub_sequences = {}
     filter_set_names: List[str] = sorted(filter_sets.keys())
     for filter_names in list(
