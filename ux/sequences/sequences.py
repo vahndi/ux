@@ -3,17 +3,16 @@ from datetime import timedelta, datetime
 from itertools import chain, product
 from pandas import notnull
 from types import FunctionType
-from typing import Counter as CounterType
+from typing import Counter as CounterType, Union, Tuple, Callable, Any
 from typing import Dict, Iterator, List, Optional, overload, Union
 
-from ux.actions.action_template import ActionTemplate
-from ux.sequences import ActionSequence
-from ux.sequences import SequencesGroupBy
-from ux.wrappers.map_result import MapResult
-from ux.custom_types.action_types import ActionTemplatePair
-from ux.custom_types.builtin_types import StrPair
-from ux.custom_types.sequence_types import SequenceCounter, SequenceFilter, SequenceFilterSet, SequenceGrouper
+from ux.actions.action_template import ActionTemplate, ActionTemplatePair
+from ux.compound_types import StrPair
+from ux.sequences.action_sequence import ActionSequence, SequenceCounter, SequenceFilter, SequenceFilterSet, \
+    SequenceGrouper
+from ux.sequences.sequences_group_by import SequencesGroupBy
 from ux.utils.misc import get_method_name
+from ux.wrappers.map_result import MapResult
 
 
 class Sequences(object):
@@ -119,8 +118,8 @@ class Sequences(object):
             }
 
         # build groupers dict mapping name to grouping function
-        groupers = OrderedDict()
-        if isinstance(by, FunctionType):
+        groupers: Dict[str, SequenceGrouper] = OrderedDict()
+        if callable(by):
             groupers[by.__name__] = by
         elif isinstance(by, str):
             if by not in self._sequence_lookups.keys():
@@ -136,7 +135,7 @@ class Sequences(object):
                         raise ValueError('Cannot group by "{}"'.format(element))
                     else:
                         groupers[element] = self._sequence_lookups[element]
-                elif isinstance(element, FunctionType):
+                elif callable(element):
                     method_name = get_method_name(element)
                     groupers[method_name] = element
                 else:
@@ -471,3 +470,7 @@ class Sequences(object):
         return Sequences(list(
             set(self._sequences) - set(self._sequences).intersection(other)
         )).sort('date_time')
+
+
+SequencesGroupByKey = Union[str, Tuple[str, ...]]
+SequencesGrouper = Callable[[Sequences], Any]

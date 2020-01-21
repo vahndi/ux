@@ -3,7 +3,7 @@ from typing import Iterable, Tuple
 from pandas import Series
 from statsmodels.stats.proportion import proportion_confint
 
-from ux.custom_types.builtin_types import FloatPair
+from ux.compound_types import FloatPair
 
 
 def binary_task_success_rate(results: Iterable[int],

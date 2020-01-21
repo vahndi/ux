@@ -1,6 +1,6 @@
 from typing import List, Iterator
 
-from ux.custom_types.builtin_types import StrPair
+from ux.compound_types import StrPair
 
 
 class SourceTargetFactory(object):

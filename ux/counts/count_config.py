@@ -1,9 +1,7 @@
 from typing import Callable, Dict, Optional
 
-from ux.actions.user_action import UserAction
-from ux.sequences import ActionSequence
-from ux.custom_types.action_types import ActionFilter
-from ux.custom_types.sequence_types import SequenceFilter
+from ux.actions.user_action import UserAction, ActionFilter
+from ux.sequences.action_sequence import ActionSequence, SequenceFilter
 
 
 class CountConfig(object):

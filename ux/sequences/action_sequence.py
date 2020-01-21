@@ -2,13 +2,11 @@ from collections import defaultdict, OrderedDict, Counter
 from datetime import datetime, timedelta
 from pandas import notnull
 from types import FunctionType
-from typing import List, Callable, Set, Union, Iterator, Dict, Optional, overload
-
+from typing import List, Callable, Set, Union, Iterator, Dict, Optional, overload, Any
 
 from ux.actions.action_template import ActionTemplate
-from ux.actions.user_action import UserAction
+from ux.actions.user_action import UserAction, ActionCounter, ActionFilter, ActionMapper
 from ux.wrappers.map_result import MapResult
-from ux.custom_types.action_types import ActionMapper, ActionFilter, ActionCounter
 from ux.utils.misc import get_method_name
 
 
@@ -446,3 +444,9 @@ def _create_action_template_condition(value: Union[ActionTemplate, FunctionType]
         return value
     else:
         raise TypeError('expected IActionTemplate or FunctionType')
+
+
+SequenceCounter = Callable[[ActionSequence], Union[str, List[str]]]
+SequenceFilter = Callable[[ActionSequence], bool]
+SequenceFilterSet = Dict[str, SequenceFilter]
+SequenceGrouper = Callable[[ActionSequence], Any]

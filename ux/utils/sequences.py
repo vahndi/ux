@@ -2,8 +2,8 @@ from collections import OrderedDict
 from datetime import date, timedelta, datetime
 from typing import List
 
-from ux.sequences import ActionSequence
-from ux.custom_types.builtin_types import DatePair, DateTimePair
+from ux.sequences.action_sequence import ActionSequence
+from ux.compound_types import DatePair, DateTimePair
 from ux.utils.dates import monday_on_or_before, date_to_datetime
 
 

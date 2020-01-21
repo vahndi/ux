@@ -2,10 +2,9 @@ from collections import defaultdict
 from typing import List, Dict
 
 from ux.calcs.object_calcs.utils import sequence_intersects_task
-from ux.sequences import ActionSequence
-from ux.tasks import Task
-from ux.custom_types.action_types import ActionTemplatePair
-from ux.custom_types.sequence_types import TaskPair
+from ux.sequences.action_sequence import ActionSequence
+from ux.tasks.task import Task, TaskPair
+from ux.actions.action_template import ActionTemplatePair
 
 
 def transition_counts(task: Task, action_sequences: List[ActionSequence]) -> Dict[ActionTemplatePair, int]:

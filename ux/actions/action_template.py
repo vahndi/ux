@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Tuple
 
 
 class ActionTemplate(object):
@@ -89,3 +89,6 @@ class ActionTemplate(object):
     def __hash__(self) -> int:
 
         return hash(tuple(sorted(self.to_dict().items())))
+
+
+ActionTemplatePair = Tuple[ActionTemplate, ActionTemplate]

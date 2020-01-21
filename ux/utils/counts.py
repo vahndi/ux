@@ -2,11 +2,10 @@ from collections import Counter
 from typing import Dict, List, Union
 
 from ux.counts.count_config import CountConfig
-from ux.counts import TemporalCount
-from ux.sequences import ActionSequence
+from ux.counts.temporal_count import TemporalCount
+from ux.sequences.action_sequence import ActionSequence, SequenceFilter, SequenceGrouper
 from ux.sequences.sequences import Sequences
-from ux.custom_types.action_types import ActionCounter, ActionFilter
-from ux.custom_types.sequence_types import SequenceFilter, SequenceGrouper
+from ux.actions.user_action import ActionCounter, ActionFilter
 
 
 def count_actions_where(sequences: Sequences,

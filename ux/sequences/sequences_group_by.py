@@ -1,25 +1,23 @@
 from collections import OrderedDict
 from types import FunctionType
-from typing import Dict, List, Union, ItemsView, KeysView, ValuesView, Iterator, Tuple, TYPE_CHECKING
+from typing import Dict, List, Union, ItemsView, KeysView, ValuesView, Iterator, Tuple, TYPE_CHECKING, Optional
 
-from ux.wrappers.map_result import MapResult
-from ux.custom_types.sequence_types import (
-    SequenceFilter, SequenceFilterSet, SequenceGrouper, SequencesGrouper, SequencesGroupByKey
-)
+from ux.sequences.action_sequence import SequenceFilter, SequenceFilterSet, SequenceGrouper
 from ux.utils.misc import get_method_name
+from ux.wrappers.map_result import MapResult
 
 if TYPE_CHECKING:
-    from ux.sequences.sequences import Sequences
+    from ux.sequences.sequences import Sequences, SequencesGroupByKey, SequencesGrouper
 
 
 class SequencesGroupBy(object):
 
-    def __init__(self, data: Dict[SequencesGroupByKey, 'Sequences'], names: Union[str, List[str]]):
+    def __init__(self, data: Dict['SequencesGroupByKey', 'Sequences'], names: Union[str, List[str]]):
         """
         :param data: Dictionary mapping keys to Sequences collections
         :param names: Names for the key groups
         """
-        self._data: Dict[SequencesGroupByKey, 'Sequences'] = OrderedDict(data)
+        self._data: Dict['SequencesGroupByKey', 'Sequences'] = OrderedDict(data)
         if type(names) is str:
             names = [names]
         self._names: List[str] = names
@@ -38,7 +36,7 @@ class SequencesGroupBy(object):
         ])
         return MapResult(out_dict, key_names=self.names, value_names='count')
 
-    def map(self, mapper: Union[str, dict, list, SequencesGrouper]) -> MapResult:
+    def map(self, mapper: Union[str, dict, list, 'SequencesGrouper']) -> MapResult:
         """
         Apply a map function to every Sequences in the GroupBy and return the results.
 
@@ -176,20 +174,23 @@ class SequencesGroupBy(object):
         :param by: lambda(Sequence) or dict[group_name, lambda(Sequence)] or list[str or lambda(Sequence)].
         """
         new_results = OrderedDict()
+        group_sub_results: Optional[SequencesGroupBy] = None
         for group_key, group_sequences in self.items():
             if isinstance(group_key, tuple):
                 group_key = list(group_key)
             else:
                 group_key = [group_key]
-            group_sub_results: SequencesGroupBy = group_sequences.group_by(by)
+            group_sub_results = group_sequences.group_by(by)
             for group_sub_key, group_sub_values in group_sub_results.items():
                 if isinstance(group_sub_key, tuple):
                     group_sub_key = list(group_sub_key)
                 else:
                     group_sub_key = [group_sub_key]
                 new_results[tuple(group_key + group_sub_key)] = group_sub_values
-
-        return SequencesGroupBy(data=new_results, names=self.names + group_sub_results.names)
+        if group_sub_results is None:
+            raise ValueError('Could not get names for new SequencesGroupBy')
+        else:
+            return SequencesGroupBy(data=new_results, names=self.names + group_sub_results.names)
 
     def items(self) -> ItemsView:
 
@@ -229,6 +230,6 @@ class SequencesGroupBy(object):
 
         return item in self._data
 
-    def __iter__(self) -> Iterator[SequencesGroupByKey]:
+    def __iter__(self) -> Iterator['SequencesGroupByKey']:
 
         return self._data.__iter__()

@@ -16,6 +16,6 @@ setup(
         'pandas',
         'scipy',
         'seaborn',
-        'statsmodels'
+        'statsmodels', 'sqlalchemy', 'pytz', 'jinja2', 'probability', 'pylab'
     ]
 )

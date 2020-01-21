@@ -1,4 +1,4 @@
-from typing import List, Iterator, Optional
+from typing import List, Iterator, Optional, Tuple
 
 from ux.actions.action_template import ActionTemplate
 
@@ -83,3 +83,6 @@ class Task(object):
     def __iter__(self) -> Iterator[ActionTemplate]:
 
         return self._action_templates.__iter__()
+
+
+TaskPair = Tuple[Task, Task]

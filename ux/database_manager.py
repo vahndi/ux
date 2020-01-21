@@ -1,7 +1,7 @@
 from abc import ABC
 from typing import List
 
-from ux.sequences import ActionSequence
+from ux.sequences.action_sequence import ActionSequence
 from ux.location import Location
 from ux.session import Session
 from ux.user import User

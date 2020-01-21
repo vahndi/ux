@@ -1,6 +1,6 @@
 from typing import Dict, List, Optional
 
-from ux.custom_types.sequence_types import SequenceFilter, SequenceFilterSet
+from ux.sequences.action_sequence import SequenceFilter, SequenceFilterSet
 
 
 class KPIConfig(object):

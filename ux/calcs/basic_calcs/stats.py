@@ -3,7 +3,7 @@ from typing import Iterable
 from numpy import mean, std
 from scipy.stats import norm, expon
 
-from ux.custom_types.builtin_types import FloatPair
+from ux.compound_types import FloatPair
 
 
 def normal_confidence_interval(data: Iterable, confidence: float = 0.95) -> FloatPair:

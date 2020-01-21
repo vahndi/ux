@@ -3,9 +3,9 @@ from pandas import Series, pivot_table, DataFrame, notnull
 from typing import List, Dict
 
 from ux.actions.user_action import UserAction
-from ux.sequences import ActionSequence
-from ux.custom_types.action_types import ActionTemplatePair
-from ux.custom_types.builtin_types import StrPair
+from ux.sequences.action_sequence import ActionSequence
+from ux.actions.action_template import ActionTemplatePair
+from ux.compound_types import StrPair
 
 
 def count_action_transitions(action_sequences: List[ActionSequence]) -> Dict[ActionTemplatePair, int]:

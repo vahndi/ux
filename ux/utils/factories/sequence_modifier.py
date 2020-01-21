@@ -1,7 +1,7 @@
 from random import randint, random
 
 from ux.actions.user_action import UserAction
-from ux.sequences import ActionSequence
+from ux.sequences.action_sequence import ActionSequence
 
 
 class SequenceModifier(object):

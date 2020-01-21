@@ -4,7 +4,7 @@ from typing import Dict, List
 from ux.kpis.kpi import KPI
 from ux.kpis.kpi_config import KPIConfig
 from ux.sequences.sequences import Sequences
-from ux.custom_types.sequence_types import SequenceFilterSet
+from ux.sequences.action_sequence import SequenceFilterSet
 
 
 def calculate_kpis_by_config(sequences: Sequences, kpi_configs: List[KPIConfig],

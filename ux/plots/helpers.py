@@ -7,7 +7,7 @@ from matplotlib.axes import Axes
 from typing import List, Union
 
 from ux.location import Location
-from ux.custom_types.builtin_types import FloatPair
+from ux.compound_types import FloatPair
 
 
 def new_axes(width: int = 16, height: int = 9) -> Axes:

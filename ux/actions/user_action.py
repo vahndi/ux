@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Callable, Union, List, Any
 
 from ux.actions.action_template import ActionTemplate
 
@@ -108,3 +108,9 @@ class UserAction(object):
             ' -> ' if self._target_id else '',
             self._target_id if self._target_id else ''
         )
+
+
+ActionCounter = Callable[[UserAction], Union[str, List[str]]]
+ActionFilter = Callable[[UserAction], bool]
+ActionMapper = Callable[[UserAction], Any]
+ActionGrouper = Callable[[UserAction], Any]

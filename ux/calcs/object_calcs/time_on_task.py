@@ -1,8 +1,8 @@
 from datetime import timedelta
 
-from ux.sequences import ActionSequence
-from ux.tasks import Task
-from ux.custom_types.builtin_types import IntPair
+from ux.sequences.action_sequence import ActionSequence
+from ux.tasks.task import Task
+from ux.compound_types import IntPair
 
 
 def task_extents(action_sequence: ActionSequence, task: Task) -> IntPair:

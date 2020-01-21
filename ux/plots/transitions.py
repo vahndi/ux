@@ -8,7 +8,7 @@ from pandas import notnull
 from seaborn import heatmap
 from typing import Dict, List
 
-from ux.sequences import ActionSequence
+from ux.sequences.action_sequence import ActionSequence
 from ux.plots.helpers import new_axes, point_distance, circle_edge, get_color
 from ux.utils.transitions import create_transition_matrix
 

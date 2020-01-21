@@ -1,7 +1,7 @@
 from typing import List, Tuple, Optional
 
 from ux.calcs.basic_calcs.task_success import binary_task_success_rate
-from ux.custom_types.builtin_types import FloatPair, Number
+from ux.compound_types import FloatPair, Number
 
 
 class TaskResult(object):
