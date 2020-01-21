@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Dict, List
 
 from ux.classes.sequences.action_sequence import ActionSequence
-from ux.interfaces.database_manager import DatabaseManager
+from ux.database_manager import DatabaseManager
 
 
 def find_location_history(manager: DatabaseManager,

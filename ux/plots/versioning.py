@@ -1,7 +1,7 @@
 from datetime import datetime
 from matplotlib.axes import Axes
 
-from ux.interfaces.database_manager import DatabaseManager
+from ux.database_manager import DatabaseManager
 from ux.plots.helpers import new_axes
 from ux.utils.versioning import find_location_history, find_action_type_history
 
