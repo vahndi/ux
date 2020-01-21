@@ -6,7 +6,7 @@ from matplotlib.axis import Axis
 from matplotlib.axes import Axes
 from typing import List, Union
 
-from ux.classes.location import Location
+from ux.location import Location
 from ux.custom_types.builtin_types import FloatPair
 
 

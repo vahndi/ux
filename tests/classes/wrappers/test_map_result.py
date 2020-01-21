@@ -4,7 +4,7 @@ from unittest import TestCase
 
 from pandas import Series, Index, DataFrame
 
-from ux.classes.wrappers.map_result import MapResult
+from ux.wrappers.map_result import MapResult
 
 
 class TestMapResult(TestCase):

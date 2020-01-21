@@ -2,9 +2,9 @@ from abc import ABC
 from typing import List
 
 from ux.sequences import ActionSequence
-from ux.classes.location import Location
-from ux.classes.session import Session
-from ux.classes.user import User
+from ux.location import Location
+from ux.session import Session
+from ux.user import User
 from ux.actions.user_action import UserAction
 
 

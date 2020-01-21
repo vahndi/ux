@@ -1,8 +1,8 @@
 from itertools import product
 from typing import Dict, List
 
-from ux.classes.kpis.kpi import KPI
-from ux.classes.kpis.kpi_config import KPIConfig
+from ux.kpis.kpi import KPI
+from ux.kpis.kpi_config import KPIConfig
 from ux.sequences.sequences import Sequences
 from ux.custom_types.sequence_types import SequenceFilterSet
 

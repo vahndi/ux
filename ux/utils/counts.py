@@ -1,8 +1,8 @@
 from collections import Counter
 from typing import Dict, List, Union
 
-from ux.classes.counts.count_config import CountConfig
-from ux.classes.counts.temporal_count import TemporalCount
+from ux.counts.count_config import CountConfig
+from ux.counts import TemporalCount
 from ux.sequences import ActionSequence
 from ux.sequences.sequences import Sequences
 from ux.custom_types.action_types import ActionCounter, ActionFilter

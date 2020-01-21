@@ -2,7 +2,7 @@ from collections import OrderedDict
 from types import FunctionType
 from typing import Dict, List, Union, ItemsView, KeysView, ValuesView, Iterator, Tuple, TYPE_CHECKING
 
-from ux.classes.wrappers.map_result import MapResult
+from ux.wrappers.map_result import MapResult
 from ux.custom_types.sequence_types import (
     SequenceFilter, SequenceFilterSet, SequenceGrouper, SequencesGrouper, SequencesGroupByKey
 )

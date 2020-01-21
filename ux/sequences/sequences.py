@@ -9,7 +9,7 @@ from typing import Dict, Iterator, List, Optional, overload, Union
 from ux.actions.action_template import ActionTemplate
 from ux.sequences import ActionSequence
 from ux.sequences import SequencesGroupBy
-from ux.classes.wrappers.map_result import MapResult
+from ux.wrappers.map_result import MapResult
 from ux.custom_types.action_types import ActionTemplatePair
 from ux.custom_types.builtin_types import StrPair
 from ux.custom_types.sequence_types import SequenceCounter, SequenceFilter, SequenceFilterSet, SequenceGrouper
