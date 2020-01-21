@@ -1,9 +1,7 @@
 from typing import List, Optional
 
-from ux.interfaces.i_user import IUser
 
-
-class User(IUser):
+class User(object):
     """
     Represents a User.
     """
