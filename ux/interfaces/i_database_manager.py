@@ -1,6 +1,6 @@
 from typing import List
 
-from ux.interfaces.actions.i_user_action import IUserAction
+from ux.classes.actions.user_action import UserAction
 from ux.interfaces.i_location import ILocation
 from ux.interfaces.i_session import ISession
 from ux.interfaces.i_user import IUser
@@ -33,13 +33,13 @@ class IDatabaseManager(object):
         """
         raise NotImplementedError
 
-    def user_action(self, action_id: str) -> IUserAction:
+    def user_action(self, action_id: str) -> UserAction:
         """
         Return the UserAction with the given id.
         """
         raise NotImplementedError
 
-    def user_actions(self, user_id: str) -> List[IUserAction]:
+    def user_actions(self, user_id: str) -> List[UserAction]:
         """
         Return all the Actions taken by the User with the given id in the database.
         """

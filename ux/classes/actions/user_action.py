@@ -2,10 +2,9 @@ from datetime import datetime
 from typing import Optional
 
 from ux.classes.actions.action_template import ActionTemplate
-from ux.interfaces.actions.i_user_action import IUserAction
 
 
-class UserAction(IUserAction):
+class UserAction(object):
     """
     Represents an Action taken by a User.
     """

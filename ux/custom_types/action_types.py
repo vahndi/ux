@@ -1,10 +1,11 @@
 from typing import Callable, Union, List, Any, Tuple
 
-from ux.interfaces.actions.i_action_template import IActionTemplate
-from ux.interfaces.actions.i_user_action import IUserAction
+from ux.classes.actions.action_template import ActionTemplate
+from ux.classes.actions.user_action import UserAction
 
-ActionCounter = Callable[[IUserAction], Union[str, List[str]]]
-ActionFilter = Callable[[IUserAction], bool]
-ActionMapper = Callable[[IUserAction], Any]
-ActionGrouper = Callable[[IUserAction], Any]
-ActionTemplatePair = Tuple[IActionTemplate, IActionTemplate]
+
+ActionCounter = Callable[[UserAction], Union[str, List[str]]]
+ActionFilter = Callable[[UserAction], bool]
+ActionMapper = Callable[[UserAction], Any]
+ActionGrouper = Callable[[UserAction], Any]
+ActionTemplatePair = Tuple[ActionTemplate, ActionTemplate]

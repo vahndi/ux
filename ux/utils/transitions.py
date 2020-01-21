@@ -2,9 +2,9 @@ from collections import defaultdict
 from pandas import Series, pivot_table, DataFrame, notnull
 from typing import List, Dict
 
+from ux.classes.actions.user_action import UserAction
 from ux.custom_types.action_types import ActionTemplatePair
 from ux.custom_types.builtin_types import StrPair
-from ux.interfaces.actions.i_user_action import IUserAction
 from ux.interfaces.sequences.i_action_sequence import IActionSequence
 
 
@@ -55,12 +55,12 @@ def create_transition_table(transitions: dict, get_name=None, exclude=None) -> D
     :param exclude: Optional list of names to exclude from the table.
     :type exclude: Union[str, List[str]]
     """
-    def get_source_id(action: IUserAction) -> str:
+    def get_source_id(action: UserAction) -> str:
         return action.source_id
 
     if get_name is None:
         first_from = list(transitions.items())[0][0]
-        if isinstance(first_from, IUserAction):
+        if isinstance(first_from, UserAction):
             get_name = get_source_id
 
     transitions = Series(transitions).reset_index()

@@ -10,9 +10,10 @@ from ux.calcs.object_calcs.task_success import unordered_task_completion_rate, o
     binary_task_success
 from ux.calcs.object_calcs.utils import sequence_intersects_task
 from ux.classes.actions.action_template import ActionTemplate
+from ux.classes.actions.user_action import UserAction
 from ux.classes.wrappers.map_result import MapResult
 from ux.custom_types.action_types import ActionMapper, ActionFilter, ActionCounter
-from ux.interfaces.actions.i_user_action import IUserAction
+from ux.interfaces.actions.i_user_action import UserAction
 from ux.interfaces.sequences.i_action_sequence import IActionSequence
 from ux.interfaces.tasks.i_task import ITask
 from ux.utils.misc import get_method_name
@@ -22,20 +23,20 @@ class ActionSequence(IActionSequence):
     """
     Represents a sequence of UserActions taken by a User.
     """
-    def __init__(self, user_actions: Optional[List[IUserAction]] = None, meta: Optional[dict] = None):
+    def __init__(self, user_actions: Optional[List[UserAction]] = None, meta: Optional[dict] = None):
         """
         Create a new ActionSequence.
 
         :param user_actions: List of Actions to use to construct the ActionSequence.
         :param meta: Optional additional data to store with the ActionSequence.
         """
-        self._user_actions: List[IUserAction] = user_actions or []
+        self._user_actions: List[UserAction] = user_actions or []
         self._meta: Optional[dict] = meta
         self._action_templates: Optional[List[ActionTemplate]] = None
         self._location_ids: Optional[List[str]] = None
 
     @property
-    def user_actions(self) -> List[IUserAction]:
+    def user_actions(self) -> List[UserAction]:
         """
         Return the list of UserActions in the ActionSequence.
         """
@@ -179,7 +180,7 @@ class ActionSequence(IActionSequence):
                 raise TypeError('get_value must return str or list of str')
         return counts
 
-    def find_all(self, template: ActionTemplate) -> List[IUserAction]:
+    def find_all(self, template: ActionTemplate) -> List[UserAction]:
         """
         Return a list of all the actions matching the given action template.
         Returns an empty list if the template is not matched.
@@ -188,7 +189,7 @@ class ActionSequence(IActionSequence):
         """
         return [action for action in self if action.template() == template]
 
-    def find_first(self, template: ActionTemplate) -> Optional[IUserAction]:
+    def find_first(self, template: ActionTemplate) -> Optional[UserAction]:
         """
         Return the first action matching the given action template. Returns None if the template is not matched.
         """
@@ -198,7 +199,7 @@ class ActionSequence(IActionSequence):
         else:
             return None
 
-    def find_last(self, template: ActionTemplate) -> Optional[IUserAction]:
+    def find_last(self, template: ActionTemplate) -> Optional[UserAction]:
         """
         Return the first action matching the given action template. Returns None if the template is not matched.
         """
@@ -217,8 +218,8 @@ class ActionSequence(IActionSequence):
         def map_items(item_mapper) -> list:
             if isinstance(item_mapper, str):
                 # properties and methods
-                if hasattr(IUserAction, item_mapper):
-                    if callable(getattr(IUserAction, item_mapper)):
+                if hasattr(UserAction, item_mapper):
+                    if callable(getattr(UserAction, item_mapper)):
                         # methods
                         return [getattr(action, item_mapper)() for action in self]
                     else:
@@ -448,11 +449,11 @@ class ActionSequence(IActionSequence):
         return dwell_times
 
     @overload
-    def __getitem__(self, value: int) -> IUserAction:
+    def __getitem__(self, value: int) -> UserAction:
         pass
 
     @overload
-    def __getitem__(self, value: slice) -> List[IUserAction]:
+    def __getitem__(self, value: slice) -> List[UserAction]:
         pass
 
     def __getitem__(self, value):
@@ -471,14 +472,14 @@ class ActionSequence(IActionSequence):
 
     def __contains__(self, item) -> bool:
 
-        if isinstance(item, IUserAction):
+        if isinstance(item, UserAction):
             return item in self._user_actions
         elif isinstance(item, ActionTemplate):
             return item in self.action_templates()
         else:
-            raise TypeError('item must be IUserAction or IActionTemplate')
+            raise TypeError('item must be UserAction or IActionTemplate')
 
-    def __iter__(self) -> Iterator[IUserAction]:
+    def __iter__(self) -> Iterator[UserAction]:
 
         return self._user_actions.__iter__()
 
