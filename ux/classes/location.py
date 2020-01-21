@@ -1,7 +1,4 @@
-from ux.interfaces.i_location import ILocation
-
-
-class Location(ILocation):
+class Location(object):
     """
     Represents a Location where an Action could be taken.
     """

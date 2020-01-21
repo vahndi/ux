@@ -1,7 +1,7 @@
 from typing import List
 
 from ux.classes.actions.user_action import UserAction
-from ux.interfaces.i_location import ILocation
+from ux.classes.location import Location
 from ux.interfaces.i_session import ISession
 from ux.interfaces.i_user import IUser
 from ux.interfaces.sequences.i_action_sequence import IActionSequence
@@ -45,13 +45,13 @@ class IDatabaseManager(object):
         """
         raise NotImplementedError
 
-    def location(self, location_id: str) -> ILocation:
+    def location(self, location_id: str) -> Location:
         """
         Return the Location with the given id.
         """
         raise NotImplementedError
 
-    def locations(self) -> List[ILocation]:
+    def locations(self) -> List[Location]:
         """
         Return all the Locations in the database.
         """

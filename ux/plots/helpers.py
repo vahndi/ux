@@ -6,8 +6,8 @@ from matplotlib.axis import Axis
 from matplotlib.axes import Axes
 from typing import List, Union
 
+from ux.classes.location import Location
 from ux.custom_types.builtin_types import FloatPair
-from ux.interfaces.i_location import ILocation
 
 
 def new_axes(width: int = 16, height: int = 9) -> Axes:
@@ -69,7 +69,7 @@ def circle_edge(point_1: tuple, point_2: tuple, radius: float, rotation_angle: f
     return edge_point
 
 
-def get_color(color: Union[None, str, FunctionType], state: ILocation, default: str) -> str:
+def get_color(color: Union[None, str, FunctionType], state: Location, default: str) -> str:
     """
     Return a matplotlib color string depending on the type of `color`
 
