@@ -3,16 +3,16 @@ from types import FunctionType
 from typing import Dict, List, Union, ItemsView, KeysView, ValuesView, Iterator, Tuple, TYPE_CHECKING
 
 from ux.classes.wrappers.map_result import MapResult
-from ux.custom_types.sequence_types import SequenceFilter, SequencesGroupByKey, SequenceFilterSet, SequencesGrouper, \
-    SequenceGrouper
-from ux.interfaces.sequences.i_sequences_group_by import ISequencesGroupBy
+from ux.custom_types.sequence_types import (
+    SequenceFilter, SequenceFilterSet, SequenceGrouper, SequencesGrouper, SequencesGroupByKey
+)
 from ux.utils.misc import get_method_name
 
 if TYPE_CHECKING:
     from ux.classes.sequences.sequences import Sequences
 
 
-class SequencesGroupBy(ISequencesGroupBy):
+class SequencesGroupBy(object):
 
     def __init__(self, data: Dict[SequencesGroupByKey, 'Sequences'], names: Union[str, List[str]]):
         """
@@ -45,7 +45,7 @@ class SequencesGroupBy(ISequencesGroupBy):
         :param mapper: The method or methods to apply to each Sequences
         """
         def map_items(item_mapper: Union[str, FunctionType]) -> list:
-            first_sequences = list(self._data.values())[0]
+            first_sequences: 'Sequences' = list(self._data.values())[0]
             if isinstance(item_mapper, str):
                 # properties and methods
                 if hasattr(first_sequences, item_mapper):
@@ -116,7 +116,7 @@ class SequencesGroupBy(ISequencesGroupBy):
             for group_key, sequences in self.items():
                 if type(group_key) is str:
                     group_key = (group_key,)
-                first_sequences = list(self._data.values())[0]
+                first_sequences: 'Sequences' = list(self._data.values())[0]
                 if hasattr(first_sequences, agg_attr):
                     if callable(getattr(first_sequences, agg_attr)):
                         values = getattr(sequences, agg_attr)()
@@ -128,7 +128,7 @@ class SequencesGroupBy(ISequencesGroupBy):
                          key_names=self.names + ['attribute', 'agg_method'],
                          value_names='agg_result')
 
-    def filter(self, condition: SequenceFilter) -> ISequencesGroupBy:
+    def filter(self, condition: SequenceFilter) -> 'SequencesGroupBy':
         """
         Return a new Sequences containing only the sequences matching the `condition` in each group.
 
@@ -140,7 +140,7 @@ class SequencesGroupBy(ISequencesGroupBy):
         }
         return SequencesGroupBy(data=data, names=self.names)
 
-    def group_filter(self, filters: SequenceFilterSet, group_name: str = None) -> ISequencesGroupBy:
+    def group_filter(self, filters: SequenceFilterSet, group_name: str = None) -> 'SequencesGroupBy':
         """
         Return a new SequencesGroupBy keyed by the filter name with values matching each filter, applied in parallel.
 
@@ -167,7 +167,7 @@ class SequencesGroupBy(ISequencesGroupBy):
                 data[new_filter_names] = data_sequences.filter(filter_condition)
         return SequencesGroupBy(data=data, names=names)
 
-    def group_by(self, by: Union[SequenceGrouper, Dict[str, SequenceGrouper], str, list]) -> ISequencesGroupBy:
+    def group_by(self, by: Union[SequenceGrouper, Dict[str, SequenceGrouper], str, list]) -> 'SequencesGroupBy':
         """
         Return a new SequencesGroupBy keyed by each value returned by a single grouper,
         or each combination of groupers for a list of groupers.
@@ -181,7 +181,7 @@ class SequencesGroupBy(ISequencesGroupBy):
                 group_key = list(group_key)
             else:
                 group_key = [group_key]
-            group_sub_results: ISequencesGroupBy = group_sequences.group_by(by)
+            group_sub_results: SequencesGroupBy = group_sequences.group_by(by)
             for group_sub_key, group_sub_values in group_sub_results.items():
                 if isinstance(group_sub_key, tuple):
                     group_sub_key = list(group_sub_key)

@@ -13,7 +13,6 @@ from ux.classes.wrappers.map_result import MapResult
 from ux.custom_types.action_types import ActionTemplatePair
 from ux.custom_types.builtin_types import StrPair
 from ux.custom_types.sequence_types import SequenceCounter, SequenceFilter, SequenceFilterSet, SequenceGrouper
-from ux.interfaces.sequences.i_sequences_group_by import ISequencesGroupBy
 from ux.utils.misc import get_method_name
 
 
@@ -72,7 +71,7 @@ class Sequences(object):
                 filtered.append(sequence)
         return Sequences(filtered)
 
-    def group_filter(self, filters: SequenceFilterSet, group_name: str = 'filter') -> ISequencesGroupBy:
+    def group_filter(self, filters: SequenceFilterSet, group_name: str = 'filter') -> SequencesGroupBy:
         """
         Return a new SequencesGroupBy keyed by the filter name with values matching each filter, applied in parallel.
 
@@ -85,7 +84,7 @@ class Sequences(object):
         }
         return SequencesGroupBy(data=filtered, names=[group_name])
 
-    def chain_filter(self, filters: SequenceFilterSet) -> ISequencesGroupBy:
+    def chain_filter(self, filters: SequenceFilterSet) -> SequencesGroupBy:
         """
         Return a new SequencesGroupBy keyed by the dict key with values matching each filter, applied in series.
 
@@ -102,7 +101,7 @@ class Sequences(object):
             sequences = filtered_sequences
         return SequencesGroupBy(data=filtered, names=['filter'])
 
-    def group_by(self, by: Union[SequenceGrouper, Dict[str, SequenceGrouper], str, list]) -> ISequencesGroupBy:
+    def group_by(self, by: Union[SequenceGrouper, Dict[str, SequenceGrouper], str, list]) -> SequencesGroupBy:
         """
         Return a SequencesGroupBy keyed by each value returned by a single grouper,
         or each combination of groupers for a list of groupers.
