@@ -6,9 +6,9 @@ from types import FunctionType
 from typing import Counter as CounterType
 from typing import Dict, Iterator, List, Optional, overload, Union
 
-from ux.classes.actions.action_template import ActionTemplate
-from ux.classes.sequences.action_sequence import ActionSequence
-from ux.classes.sequences.sequences_group_by import SequencesGroupBy
+from ux.actions.action_template import ActionTemplate
+from ux.sequences import ActionSequence
+from ux.sequences import SequencesGroupBy
 from ux.classes.wrappers.map_result import MapResult
 from ux.custom_types.action_types import ActionTemplatePair
 from ux.custom_types.builtin_types import StrPair

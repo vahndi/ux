@@ -2,7 +2,7 @@ from collections import defaultdict
 from datetime import datetime
 from typing import Dict, List
 
-from ux.classes.sequences.action_sequence import ActionSequence
+from ux.sequences import ActionSequence
 from ux.database_manager import DatabaseManager
 
 

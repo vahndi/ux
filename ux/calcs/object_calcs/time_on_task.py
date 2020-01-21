@@ -1,7 +1,7 @@
 from datetime import timedelta
 
-from ux.classes.sequences.action_sequence import ActionSequence
-from ux.classes.tasks.task import Task
+from ux.sequences import ActionSequence
+from ux.tasks import Task
 from ux.custom_types.builtin_types import IntPair
 
 

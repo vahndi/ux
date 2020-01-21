@@ -1,11 +1,11 @@
 from abc import ABC
 from typing import List
 
-from ux.classes.sequences.action_sequence import ActionSequence
+from ux.sequences import ActionSequence
 from ux.classes.location import Location
 from ux.classes.session import Session
 from ux.classes.user import User
-from ux.classes.actions.user_action import UserAction
+from ux.actions.user_action import UserAction
 
 
 class DatabaseManager(ABC):

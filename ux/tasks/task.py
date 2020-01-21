@@ -1,6 +1,6 @@
 from typing import List, Iterator, Optional
 
-from ux.classes.actions.action_template import ActionTemplate
+from ux.actions.action_template import ActionTemplate
 
 
 class Task(object):

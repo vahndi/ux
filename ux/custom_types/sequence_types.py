@@ -1,8 +1,8 @@
 from typing import Callable, Union, List, Dict, Any, Tuple
 
-from ux.classes.sequences.action_sequence import ActionSequence
-from ux.classes.sequences.sequences import Sequences
-from ux.classes.tasks.task import Task
+from ux.sequences import ActionSequence
+from ux.sequences.sequences import Sequences
+from ux.tasks import Task
 
 
 SequenceCounter = Callable[[ActionSequence], Union[str, List[str]]]

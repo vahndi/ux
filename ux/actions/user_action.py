@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from ux.classes.actions.action_template import ActionTemplate
+from ux.actions.action_template import ActionTemplate
 
 
 class UserAction(object):

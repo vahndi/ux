@@ -1,7 +1,7 @@
 from typing import Callable, Union, List, Any, Tuple
 
-from ux.classes.actions.action_template import ActionTemplate
-from ux.classes.actions.user_action import UserAction
+from ux.actions.action_template import ActionTemplate
+from ux.actions.user_action import UserAction
 
 
 ActionCounter = Callable[[UserAction], Union[str, List[str]]]

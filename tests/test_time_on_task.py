@@ -3,10 +3,10 @@ from datetime import datetime, timedelta
 from unittest import TestCase
 
 from ux.calcs.object_calcs.time_on_task import task_extents
-from ux.classes.sequences.action_sequence import ActionSequence
-from ux.classes.actions.action_template import ActionTemplate
-from ux.classes.tasks.task import Task
-from ux.classes.actions.user_action import UserAction
+from ux.sequences import ActionSequence
+from ux.actions.action_template import ActionTemplate
+from ux.tasks import Task
+from ux.actions.user_action import UserAction
 
 
 class TestTimeOnTask(TestCase):

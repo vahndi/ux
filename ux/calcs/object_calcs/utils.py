@@ -1,5 +1,5 @@
-from ux.classes.sequences.action_sequence import ActionSequence
-from ux.classes.tasks.task import Task
+from ux.sequences import ActionSequence
+from ux.tasks import Task
 
 
 def sequence_intersects_task(action_sequence: ActionSequence, task: Task) -> bool:

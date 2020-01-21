@@ -1,8 +1,8 @@
 from collections import defaultdict
 from typing import List, Dict
 
-from ux.classes.sequences.action_sequence import ActionSequence
-from ux.classes.tasks.task import Task
+from ux.sequences import ActionSequence
+from ux.tasks import Task
 from ux.custom_types.action_types import ActionTemplatePair
 from ux.custom_types.sequence_types import TaskPair
 

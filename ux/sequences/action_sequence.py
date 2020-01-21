@@ -5,8 +5,8 @@ from types import FunctionType
 from typing import List, Callable, Set, Union, Iterator, Dict, Optional, overload
 
 
-from ux.classes.actions.action_template import ActionTemplate
-from ux.classes.actions.user_action import UserAction
+from ux.actions.action_template import ActionTemplate
+from ux.actions.user_action import UserAction
 from ux.classes.wrappers.map_result import MapResult
 from ux.custom_types.action_types import ActionMapper, ActionFilter, ActionCounter
 from ux.utils.misc import get_method_name

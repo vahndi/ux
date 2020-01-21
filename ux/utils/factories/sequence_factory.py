@@ -3,11 +3,11 @@ import matplotlib.pyplot as plt
 from types import FunctionType
 from typing import Callable, List
 
-from ux.classes.actions.user_action import UserAction
-from ux.classes.sequences.action_sequence import ActionSequence
+from ux.actions.user_action import UserAction
+from ux.sequences import ActionSequence
 from ux.plots.transitions import plot_sequence_diagram
 from ux.utils.factories.action_type_factory import ActionTypeFactory
-from ux.utils.factories.constants import LOCS__A_TO_Z, LOCS__ABCDE
+from ux.utils.factories.constants import LOCS__ABCDE
 from ux.utils.factories.sequence_modifier import SequenceModifier
 from ux.utils.factories.source_target_factory import SourceTargetFactory
 from ux.utils.factories.timing_factory import TimingFactory

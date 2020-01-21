@@ -1,7 +1,7 @@
 from math import sqrt
 
-from ux.classes.sequences.action_sequence import ActionSequence
-from ux.classes.tasks.task import Task
+from ux.sequences import ActionSequence
+from ux.tasks import Task
 
 
 def lostness(task: Task, action_sequence: ActionSequence) -> float:

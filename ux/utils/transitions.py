@@ -2,8 +2,8 @@ from collections import defaultdict
 from pandas import Series, pivot_table, DataFrame, notnull
 from typing import List, Dict
 
-from ux.classes.actions.user_action import UserAction
-from ux.classes.sequences.action_sequence import ActionSequence
+from ux.actions.user_action import UserAction
+from ux.sequences import ActionSequence
 from ux.custom_types.action_types import ActionTemplatePair
 from ux.custom_types.builtin_types import StrPair
 

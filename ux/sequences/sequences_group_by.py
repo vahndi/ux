@@ -9,7 +9,7 @@ from ux.custom_types.sequence_types import (
 from ux.utils.misc import get_method_name
 
 if TYPE_CHECKING:
-    from ux.classes.sequences.sequences import Sequences
+    from ux.sequences.sequences import Sequences
 
 
 class SequencesGroupBy(object):

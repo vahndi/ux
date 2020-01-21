@@ -3,8 +3,8 @@ from typing import Dict, List, Union
 
 from ux.classes.counts.count_config import CountConfig
 from ux.classes.counts.temporal_count import TemporalCount
-from ux.classes.sequences.action_sequence import ActionSequence
-from ux.classes.sequences.sequences import Sequences
+from ux.sequences import ActionSequence
+from ux.sequences.sequences import Sequences
 from ux.custom_types.action_types import ActionCounter, ActionFilter
 from ux.custom_types.sequence_types import SequenceFilter, SequenceGrouper
 

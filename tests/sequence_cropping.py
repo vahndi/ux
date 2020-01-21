@@ -1,7 +1,7 @@
 from datetime import datetime
 
-from ux.classes.actions.user_action import UserAction
-from ux.classes.sequences.action_sequence import ActionSequence
+from ux.actions.user_action import UserAction
+from ux.sequences import ActionSequence
 
 a = UserAction(
     action_id='1',
