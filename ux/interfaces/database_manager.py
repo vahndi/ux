@@ -1,3 +1,4 @@
+from abc import ABC
 from typing import List
 
 from ux.classes.actions.user_action import UserAction
@@ -7,9 +8,9 @@ from ux.interfaces.i_user import IUser
 from ux.interfaces.sequences.i_action_sequence import IActionSequence
 
 
-class IDatabaseManager(object):
+class DatabaseManager(ABC):
     """
-    An interface or abstract base class that should be implemented for each new backend.
+    An abstract base class that should be implemented for each new backend.
     """
     def session(self, session_id: str) -> ISession:
         """

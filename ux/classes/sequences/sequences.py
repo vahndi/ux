@@ -6,14 +6,13 @@ from types import FunctionType
 from typing import Counter as CounterType
 from typing import Dict, Iterator, List, Optional, overload, Union
 
-
 from ux.classes.actions.action_template import ActionTemplate
+from ux.classes.sequences.action_sequence import ActionSequence
 from ux.classes.sequences.sequences_group_by import SequencesGroupBy
 from ux.classes.wrappers.map_result import MapResult
 from ux.custom_types.action_types import ActionTemplatePair
 from ux.custom_types.builtin_types import StrPair
 from ux.custom_types.sequence_types import SequenceCounter, SequenceFilter, SequenceFilterSet, SequenceGrouper
-from ux.interfaces.sequences.i_action_sequence import IActionSequence
 from ux.interfaces.sequences.i_sequences import ISequences
 from ux.interfaces.sequences.i_sequences_group_by import ISequencesGroupBy
 from ux.utils.misc import get_method_name
@@ -45,16 +44,16 @@ class Sequences(ISequences):
         'end_month': lambda seq: seq.end.month
     }
 
-    def __init__(self, sequences: List[IActionSequence]):
+    def __init__(self, sequences: List[ActionSequence]):
         """
         Create a new Sequences collection.
 
         :param sequences: List of ActionSequences to use to create the object.
         """
-        self._sequences: List[IActionSequence] = sequences
+        self._sequences: List[ActionSequence] = sequences
 
     @property
-    def sequences(self) -> List[IActionSequence]:
+    def sequences(self) -> List[ActionSequence]:
         """
         Return a list of the individual Sequences in the collection.
         """
@@ -169,7 +168,7 @@ class Sequences(ISequences):
         def map_items(item_mapper: Union[str, FunctionType]) -> list:
             if isinstance(item_mapper, str):
                 # properties and methods
-                if hasattr(IActionSequence, item_mapper):
+                if hasattr(ActionSequence, item_mapper):
                     if callable(getattr(self[0], item_mapper)):
                         # methods
                         return [getattr(sequence, item_mapper)() for sequence in self]
@@ -179,7 +178,7 @@ class Sequences(ISequences):
                 elif item_mapper in self._sequence_lookups:
                     return [self._sequence_lookups[item_mapper](sequence) for sequence in self]
                 else:
-                    raise ValueError(f'IActionSequence has no property or attribute named {item_mapper}')
+                    raise ValueError(f'ActionSequence has no property or attribute named {item_mapper}')
             elif isinstance(item_mapper, FunctionType):
                 return [item_mapper(sequence) for sequence in self]
             else:
@@ -234,11 +233,9 @@ class Sequences(ISequences):
         """
         return Sequences(self._sequences)
 
-    def intersection(self, other) -> ISequences:
+    def intersection(self, other: Union['Sequences', List[ActionSequence]]) -> ISequences:
         """
         Return a new collection representing the ActionSequences in both collections.
-
-        :type other: Union[Sequences, List[IActionSequence]]
         """
         if type(other) is Sequences:
             other = other.sequences
@@ -433,11 +430,11 @@ class Sequences(ISequences):
         ))
 
     @overload
-    def __getitem__(self, value: int) -> IActionSequence:
+    def __getitem__(self, value: int) -> ActionSequence:
         pass
 
     @overload
-    def __getitem__(self, value: slice) -> List[IActionSequence]:
+    def __getitem__(self, value: slice) -> List[ActionSequence]:
         pass
 
     def __getitem__(self, value):
@@ -452,14 +449,14 @@ class Sequences(ISequences):
 
         return len(self._sequences)
 
-    def __contains__(self, item: IActionSequence) -> bool:
+    def __contains__(self, item: ActionSequence) -> bool:
 
-        if isinstance(item, IActionSequence):
+        if isinstance(item, ActionSequence):
             return item in self
         else:
-            raise TypeError('item must be IActionSequence')
+            raise TypeError('item must be ActionSequence')
 
-    def __iter__(self) -> Iterator[IActionSequence]:
+    def __iter__(self) -> Iterator[ActionSequence]:
 
         return self._sequences.__iter__()
 

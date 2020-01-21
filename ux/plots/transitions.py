@@ -8,7 +8,7 @@ from pandas import notnull
 from seaborn import heatmap
 from typing import Dict, List
 
-from ux.interfaces.sequences.i_action_sequence import IActionSequence
+from ux.classes.sequences.action_sequence import ActionSequence
 from ux.plots.helpers import new_axes, point_distance, circle_edge, get_color
 from ux.utils.transitions import create_transition_matrix
 
@@ -107,7 +107,7 @@ def plot_markov_chain(transitions, get_location, get_name=None,
     return ax
 
 
-def plot_sequence_diagram(sequence: IActionSequence, locations: List[str], max_grid_lines: int = 50) -> Axes:
+def plot_sequence_diagram(sequence: ActionSequence, locations: List[str], max_grid_lines: int = 50) -> Axes:
 
     # calculate plot coordinates and labels
     data = sequence.map({

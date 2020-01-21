@@ -2,11 +2,11 @@ from collections import defaultdict
 from datetime import datetime
 from typing import Dict, List
 
-from ux.interfaces.sequences.i_action_sequence import IActionSequence
-from ux.interfaces.i_database_manager import IDatabaseManager
+from ux.classes.sequences.action_sequence import ActionSequence
+from ux.interfaces.database_manager import DatabaseManager
 
 
-def find_location_history(manager: IDatabaseManager,
+def find_location_history(manager: DatabaseManager,
                           start: datetime = None, end: datetime = None) -> Dict[str, List[datetime]]:
     """
     Find the history of each Location's appearance in the Database.
@@ -21,13 +21,13 @@ def find_location_history(manager: IDatabaseManager,
         session_start = session.start_time
         if (start and session_start < start) or (end and (session_start > end)):
             continue
-        sequence: IActionSequence = manager.get_session_sequence(session_id=session.session_id)
+        sequence: ActionSequence = manager.get_session_sequence(session_id=session.session_id)
         for location_id in sequence.location_ids():
             history[location_id].append(session_start)
     return dict(history)
 
 
-def find_action_type_history(manager: IDatabaseManager,
+def find_action_type_history(manager: DatabaseManager,
                              start: datetime = None, end: datetime = None) -> Dict[str, List[datetime]]:
     """
     Find the history of each Action Type's appearance in the Database.
@@ -42,7 +42,7 @@ def find_action_type_history(manager: IDatabaseManager,
         session_start = session.start_time
         if (start and session_start < start) or (end and (session_start > end)):
             continue
-        sequence: IActionSequence = manager.get_session_sequence(session_id=session.session_id)
+        sequence: ActionSequence = manager.get_session_sequence(session_id=session.session_id)
         for action_type in sequence.unique_action_types():
             history[action_type].append(session_start)
     return dict(history)

@@ -3,10 +3,10 @@ from typing import Dict, List, Union
 
 from ux.classes.counts.count_config import CountConfig
 from ux.classes.counts.temporal_count import TemporalCount
+from ux.classes.sequences.action_sequence import ActionSequence
 from ux.classes.sequences.sequences import Sequences
 from ux.custom_types.action_types import ActionCounter, ActionFilter
 from ux.custom_types.sequence_types import SequenceFilter, SequenceGrouper
-from ux.interfaces.sequences.i_action_sequence import IActionSequence
 from ux.interfaces.sequences.i_sequences import ISequences
 
 
@@ -55,7 +55,7 @@ def count_sequences_where(sequences: ISequences,
         return dict(counts)
 
 
-def temporal_counts_by_config(sequences: List[IActionSequence], configs: List[CountConfig],
+def temporal_counts_by_config(sequences: List[ActionSequence], configs: List[CountConfig],
                               temporal_split) -> Dict[str, TemporalCount]:
     """
     Count metrics using the settings in a list of CountConfigs.

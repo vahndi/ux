@@ -1,19 +1,18 @@
 from collections import defaultdict, OrderedDict, Counter
 from datetime import datetime, timedelta
+from pandas import notnull
 from types import FunctionType
 from typing import List, Callable, Set, Union, Iterator, Dict, Optional, overload
 
-from pandas import notnull
 
 from ux.classes.actions.action_template import ActionTemplate
 from ux.classes.actions.user_action import UserAction
 from ux.classes.wrappers.map_result import MapResult
 from ux.custom_types.action_types import ActionMapper, ActionFilter, ActionCounter
-from ux.interfaces.sequences.i_action_sequence import IActionSequence
 from ux.utils.misc import get_method_name
 
 
-class ActionSequence(IActionSequence):
+class ActionSequence(object):
     """
     Represents a sequence of UserActions taken by a User.
     """
@@ -122,7 +121,7 @@ class ActionSequence(IActionSequence):
             counts[template] += 1
         return dict(counts)
 
-    def filter(self, condition: Union[ActionFilter, ActionTemplate], copy_meta: bool = False) -> IActionSequence:
+    def filter(self, condition: Union[ActionFilter, ActionTemplate], copy_meta: bool = False) -> 'ActionSequence':
 
         if condition in (None, True):
             return self
@@ -241,7 +240,7 @@ class ActionSequence(IActionSequence):
 
         return MapResult(results)
 
-    def split(self, split, how: str = 'at', copy_meta: bool = False) -> List[IActionSequence]:
+    def split(self, split, how: str = 'at', copy_meta: bool = False) -> List['ActionSequence']:
         """
         Split into a list of new ActionSequences after each `UserAction` where `condition` is met.
 
@@ -286,7 +285,7 @@ class ActionSequence(IActionSequence):
             meta=self._meta if copy_meta else None
         ) for start, end in zip(seq_starts, seq_ends)]
 
-    def crop(self, start, end, how: str, copy_meta: bool = False) -> Optional[IActionSequence]:
+    def crop(self, start, end, how: str, copy_meta: bool = False) -> Optional['ActionSequence']:
         """
         Crop the sequence to start and end ActionTemplates or conditions.
         Returns None if both conditions are not found in order.

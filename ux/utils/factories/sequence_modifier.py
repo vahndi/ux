@@ -2,13 +2,12 @@ from random import randint, random
 
 from ux.classes.actions.user_action import UserAction
 from ux.classes.sequences.action_sequence import ActionSequence
-from ux.interfaces.sequences.i_action_sequence import IActionSequence
 
 
 class SequenceModifier(object):
 
     @staticmethod
-    def insert_action_types_at_random(sequence: IActionSequence, num_insertions,
+    def insert_action_types_at_random(sequence: ActionSequence, num_insertions,
                                       action_type: str,
                                       min_gap_proportion: float = 0.25):
 

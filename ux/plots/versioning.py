@@ -1,12 +1,12 @@
 from datetime import datetime
 from matplotlib.axes import Axes
 
-from ux.interfaces.i_database_manager import IDatabaseManager
+from ux.interfaces.database_manager import DatabaseManager
 from ux.plots.helpers import new_axes
 from ux.utils.versioning import find_location_history, find_action_type_history
 
 
-def plot_history(manager: IDatabaseManager,
+def plot_history(manager: DatabaseManager,
                  start: datetime = None, end: datetime = None,
                  history_type: str = 'location', ax: Axes = None) -> Axes:
     """

@@ -3,17 +3,16 @@ from pandas import Series, pivot_table, DataFrame, notnull
 from typing import List, Dict
 
 from ux.classes.actions.user_action import UserAction
+from ux.classes.sequences.action_sequence import ActionSequence
 from ux.custom_types.action_types import ActionTemplatePair
 from ux.custom_types.builtin_types import StrPair
-from ux.interfaces.sequences.i_action_sequence import IActionSequence
 
 
-def count_action_transitions(action_sequences) -> Dict[ActionTemplatePair, int]:
+def count_action_transitions(action_sequences: List[ActionSequence]) -> Dict[ActionTemplatePair, int]:
     """
     Count the transitions from each action to each other action in the given sequences.
 
     :param action_sequences: List of IActionSequence to count transitions in.
-    :type action_sequences: List[IActionSequence]
     :return: Dictionary of {(from, to) => count}
     """
     transitions = defaultdict(int)
@@ -26,12 +25,11 @@ def count_action_transitions(action_sequences) -> Dict[ActionTemplatePair, int]:
     return transitions
 
 
-def count_location_transitions(action_sequences) -> Dict[StrPair, int]:
+def count_location_transitions(action_sequences: List[ActionSequence]) -> Dict[StrPair, int]:
     """
     Count the transitions from each location to each other location in actions in the given sequences.
 
     :param action_sequences: List of IActionSequence to count transitions in.
-    :type action_sequences: List[IActionSequence]
     """
     transitions = defaultdict(int)
     # count transitions
