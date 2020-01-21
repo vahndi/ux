@@ -3,11 +3,11 @@ from typing import Dict, List
 
 from ux.classes.kpis.kpi import KPI
 from ux.classes.kpis.kpi_config import KPIConfig
+from ux.classes.sequences.sequences import Sequences
 from ux.custom_types.sequence_types import SequenceFilterSet
-from ux.interfaces.sequences.i_sequences import ISequences
 
 
-def calculate_kpis_by_config(sequences: ISequences, kpi_configs: List[KPIConfig],
+def calculate_kpis_by_config(sequences: Sequences, kpi_configs: List[KPIConfig],
                              filter_sets: Dict[str, SequenceFilterSet]) -> List[KPI]:
     """
     Calculate KPIs for a Sequences instance using a list of KPIConfigs.

@@ -7,10 +7,9 @@ from ux.classes.sequences.action_sequence import ActionSequence
 from ux.classes.sequences.sequences import Sequences
 from ux.custom_types.action_types import ActionCounter, ActionFilter
 from ux.custom_types.sequence_types import SequenceFilter, SequenceGrouper
-from ux.interfaces.sequences.i_sequences import ISequences
 
 
-def count_actions_where(sequences: ISequences,
+def count_actions_where(sequences: Sequences,
                         action_condition: ActionFilter,
                         sequence_condition: SequenceFilter = None,
                         split_by: ActionCounter = None):
@@ -36,7 +35,7 @@ def count_actions_where(sequences: ISequences,
         return dict(counts)
 
 
-def count_sequences_where(sequences: ISequences, 
+def count_sequences_where(sequences: Sequences,
                           condition: SequenceFilter, 
                           split_by: SequenceGrouper = None) -> Union[int, Dict[str, int]]:
     """

@@ -1,23 +1,25 @@
 from collections import OrderedDict
 from types import FunctionType
-from typing import Dict, List, Union, ItemsView, KeysView, ValuesView, Iterator, Tuple
+from typing import Dict, List, Union, ItemsView, KeysView, ValuesView, Iterator, Tuple, TYPE_CHECKING
 
 from ux.classes.wrappers.map_result import MapResult
 from ux.custom_types.sequence_types import SequenceFilter, SequencesGroupByKey, SequenceFilterSet, SequencesGrouper, \
     SequenceGrouper
-from ux.interfaces.sequences.i_sequences import ISequences
 from ux.interfaces.sequences.i_sequences_group_by import ISequencesGroupBy
 from ux.utils.misc import get_method_name
+
+if TYPE_CHECKING:
+    from ux.classes.sequences.sequences import Sequences
 
 
 class SequencesGroupBy(ISequencesGroupBy):
 
-    def __init__(self, data: Dict[SequencesGroupByKey, ISequences], names: Union[str, List[str]]):
+    def __init__(self, data: Dict[SequencesGroupByKey, 'Sequences'], names: Union[str, List[str]]):
         """
         :param data: Dictionary mapping keys to Sequences collections
         :param names: Names for the key groups
         """
-        self._data: Dict[SequencesGroupByKey, ISequences] = OrderedDict(data)
+        self._data: Dict[SequencesGroupByKey, 'Sequences'] = OrderedDict(data)
         if type(names) is str:
             names = [names]
         self._names: List[str] = names
@@ -43,10 +45,11 @@ class SequencesGroupBy(ISequencesGroupBy):
         :param mapper: The method or methods to apply to each Sequences
         """
         def map_items(item_mapper: Union[str, FunctionType]) -> list:
+            first_sequences = list(self._data.values())[0]
             if isinstance(item_mapper, str):
                 # properties and methods
-                if hasattr(ISequences, item_mapper):
-                    if callable(getattr(ISequences, item_mapper)):
+                if hasattr(first_sequences, item_mapper):
+                    if callable(getattr(first_sequences, item_mapper)):
                         # methods
                         return [getattr(sequences, item_mapper)() for sequences in self._data.values()]
                     else:
@@ -113,8 +116,9 @@ class SequencesGroupBy(ISequencesGroupBy):
             for group_key, sequences in self.items():
                 if type(group_key) is str:
                     group_key = (group_key,)
-                if hasattr(ISequences, agg_attr):
-                    if callable(getattr(ISequences, agg_attr)):
+                first_sequences = list(self._data.values())[0]
+                if hasattr(first_sequences, agg_attr):
+                    if callable(getattr(first_sequences, agg_attr)):
                         values = getattr(sequences, agg_attr)()
                     else:
                         values = getattr(sequences, agg_attr)
@@ -209,7 +213,7 @@ class SequencesGroupBy(ISequencesGroupBy):
 
         self._names = names
 
-    def __getitem__(self, item: Union[str, Tuple[str, ...]]) -> ISequences:
+    def __getitem__(self, item: Union[str, Tuple[str, ...]]) -> 'Sequences':
 
         return self._data[item]
 

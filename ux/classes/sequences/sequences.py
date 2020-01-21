@@ -13,12 +13,11 @@ from ux.classes.wrappers.map_result import MapResult
 from ux.custom_types.action_types import ActionTemplatePair
 from ux.custom_types.builtin_types import StrPair
 from ux.custom_types.sequence_types import SequenceCounter, SequenceFilter, SequenceFilterSet, SequenceGrouper
-from ux.interfaces.sequences.i_sequences import ISequences
 from ux.interfaces.sequences.i_sequences_group_by import ISequencesGroupBy
 from ux.utils.misc import get_method_name
 
 
-class Sequences(ISequences):
+class Sequences(object):
 
     _sequence_lookups = {
         'date': lambda seq: seq.start.date(),
@@ -59,7 +58,7 @@ class Sequences(ISequences):
         """
         return self._sequences
 
-    def filter(self, condition: SequenceFilter) -> ISequences:
+    def filter(self, condition: SequenceFilter) -> 'Sequences':
         """
         Return a new Sequences containing only the sequences matching the `condition`.
 
@@ -111,7 +110,7 @@ class Sequences(ISequences):
 
         :param by: lambda(Sequence) or dict[group_name, lambda(Sequence)] or list[str or lambda(Sequence)].
         """
-        def apply_group_by(method: SequenceGrouper) -> Dict[str, ISequences]:
+        def apply_group_by(method: SequenceGrouper) -> Dict[str, 'Sequences']:
             splits = defaultdict(list)
             for sequence in self:
                 splits[method(sequence)].append(sequence)
@@ -227,13 +226,13 @@ class Sequences(ISequences):
                 counts[sequence_result] += 1
         return counts
 
-    def copy(self) -> ISequences:
+    def copy(self) -> 'Sequences':
         """
         Return a new collection referencing this collection's ActionSequences.
         """
         return Sequences(self._sequences)
 
-    def intersection(self, other: Union['Sequences', List[ActionSequence]]) -> ISequences:
+    def intersection(self, other: Union['Sequences', List[ActionSequence]]) -> 'Sequences':
         """
         Return a new collection representing the ActionSequences in both collections.
         """
@@ -244,11 +243,9 @@ class Sequences(ISequences):
         )
 
     @staticmethod
-    def intersect_all(sequences) -> ISequences:
+    def intersect_all(sequences: List['Sequences']) -> 'Sequences':
         """
         Return a new collection representing the ActionSequences in every collection.
-
-        :type sequences: List[ISequences]
         """
         intersect = sequences[0].copy()
         for s in sequences[1:]:
@@ -422,7 +419,7 @@ class Sequences(ISequences):
                 found = False
         return sequence
 
-    def sort(self, by: str, ascending: bool = True) -> ISequences:
+    def sort(self, by: str, ascending: bool = True) -> 'Sequences':
 
         return Sequences(sequences=sorted(
             self._sequences, key=self._sequence_lookups[by],
@@ -460,17 +457,17 @@ class Sequences(ISequences):
 
         return self._sequences.__iter__()
 
-    def __add__(self, other: ISequences) -> ISequences:
+    def __add__(self, other: 'Sequences') -> 'Sequences':
 
-        if isinstance(other, ISequences):
+        if isinstance(other, Sequences):
             other = other.sequences
         return Sequences(
             list(set(self._sequences).union(other))
         ).sort('date_time')
 
-    def __sub__(self, other: ISequences) -> ISequences:
+    def __sub__(self, other: 'Sequences') -> 'Sequences':
 
-        if isinstance(other, ISequences):
+        if isinstance(other, Sequences):
             other = other.sequences
         return Sequences(list(
             set(self._sequences) - set(self._sequences).intersection(other)
