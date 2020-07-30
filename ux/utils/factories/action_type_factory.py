@@ -13,9 +13,14 @@ class ActionTypeFactory(object):
         return ['page-view'] * len(sources)
 
     @staticmethod
-    def page_view__back_click(sources: List[str], targets: List[str], **kwargs) -> List[str]:
+    def page_view__back_click(
+            sources: List[str],
+            targets: List[str],
+            **kwargs
+    ) -> List[str]:
         """
-        Return forward actions as "page-view"s and backwards actions as "back-click" action type.
+        Return forward actions as "page-view"s and backwards actions as
+        "back-click" action type.
 
         :param sources: List of source locations.
         :param targets: List of target locations.

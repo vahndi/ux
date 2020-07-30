@@ -8,7 +8,8 @@ class SourceTargetFactory(object):
     @staticmethod
     def one_shot(locations: List[str]) -> List[StrPair]:
         """
-        Generate a sequence of sources and targets that visits each location in turn.
+        Generate a sequence of sources and targets that visits each location in
+        turn.
 
         :return: List[Tuple[source, target]]
         """
@@ -18,9 +19,14 @@ class SourceTargetFactory(object):
         ]
 
     @staticmethod
-    def forward_back(locations: List[str], forwards: int, backwards: int) -> Iterator[StrPair]:
+    def forward_back(
+            locations: List[str],
+            forwards: int,
+            backwards: int
+    ) -> Iterator[StrPair]:
         """
-        Generate a sequence of sources and targets that goes forwards and backwards through the locations.
+        Generate a sequence of sources and targets that goes forwards and
+        backwards through the locations.
 
         :return: Iterator[Tuple[source, target]]
         """

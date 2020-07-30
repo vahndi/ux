@@ -5,11 +5,17 @@ class User(object):
     """
     Represents a User.
     """
-    def __init__(self, user_id: str, session_ids: Optional[List[str]] = None, action_ids: Optional[List[str]] = None):
+    def __init__(
+            self,
+            user_id: str,
+            session_ids: Optional[List[str]] = None,
+            action_ids: Optional[List[str]] = None
+    ):
         """
         Create a new User.
         :param user_id: The User's id.
-        :param session_ids: A list of id's of Sessions that the User took Actions in.
+        :param session_ids: A list of id's of Sessions that the User took
+                            Actions in.
         :param action_ids: A list of the id's of Actions that the User took.
         """
         self._user_id: str = user_id

@@ -1,6 +1,6 @@
 from collections import defaultdict
 from pandas import Series, pivot_table, DataFrame, notnull
-from typing import List, Dict
+from typing import List, Dict, Tuple, Union, Callable, Optional
 
 from ux.actions.user_action import UserAction
 from ux.sequences.action_sequence import ActionSequence
@@ -8,9 +8,12 @@ from ux.actions.action_template import ActionTemplatePair
 from ux.compound_types import StrPair
 
 
-def count_action_transitions(action_sequences: List[ActionSequence]) -> Dict[ActionTemplatePair, int]:
+def count_action_transitions(
+        action_sequences: List[ActionSequence]
+) -> Dict[ActionTemplatePair, int]:
     """
-    Count the transitions from each action to each other action in the given sequences.
+    Count the transitions from each action to each other action in the given
+    sequences.
 
     :param action_sequences: List of IActionSequence to count transitions in.
     :return: Dictionary of {(from, to) => count}
@@ -25,9 +28,12 @@ def count_action_transitions(action_sequences: List[ActionSequence]) -> Dict[Act
     return transitions
 
 
-def count_location_transitions(action_sequences: List[ActionSequence]) -> Dict[StrPair, int]:
+def count_location_transitions(
+        action_sequences: List[ActionSequence]
+) -> Dict[StrPair, int]:
     """
-    Count the transitions from each location to each other location in actions in the given sequences.
+    Count the transitions from each location to each other location in actions
+    in the given sequences.
 
     :param action_sequences: List of IActionSequence to count transitions in.
     """
@@ -42,16 +48,19 @@ def count_location_transitions(action_sequences: List[ActionSequence]) -> Dict[S
     return transitions
 
 
-def create_transition_table(transitions: dict, get_name=None, exclude=None) -> DataFrame:
+def create_transition_table(
+        transitions: Dict[Tuple[object, object], Union[float, int]],
+        get_name: Optional[Callable[[UserAction], str]] = None,
+        exclude: Optional[Union[str, List[str]]] = None
+) -> DataFrame:
     """
     Create a DataFrame of transitions with columns ['from', 'to', 'count']
 
-    :param transitions: Dictionary of transitions and their counts or probabilities.
-    :type transitions: Dict[Tuple[object, object], Union[float, int]]
-    :param get_name: Optional lambda function to call to convert states to labels.
-    :type get_name: Callable[[IUserAction], str]
+    :param transitions: Dictionary of transitions and their counts or
+                        probabilities.
+    :param get_name: Optional lambda function to call to convert states to
+                     labels.
     :param exclude: Optional list of names to exclude from the table.
-    :type exclude: Union[str, List[str]]
     """
     def get_source_id(action: UserAction) -> str:
         return action.source_id
@@ -80,23 +89,30 @@ def create_transition_table(transitions: dict, get_name=None, exclude=None) -> D
     return transitions
 
 
-def create_transition_matrix(transitions: dict, get_name=None,
-                             order_by='from', exclude=None) -> DataFrame:
+def create_transition_matrix(
+        transitions: Dict[Tuple[object, object], Union[float, int]],
+        get_name: Optional[Callable[[UserAction], str]] = None,
+        order_by: Union[str, List[str]] = 'from',
+        exclude: Optional[Union[str, List[str]]] = None
+) -> DataFrame:
     """
     Create a transition matrix from a dictionary of transition counts.
 
-    :param transitions: Dictionary of transitions and their counts or probabilities.
-    :type transitions: Dict[Tuple[object, object], Union[float, int]]
-    :param get_name: Optional lambda function to call to convert states to labels.
-    :type get_name: Callable[[IUserAction], str]
-    :param order_by: Order labels by descending count of `from` or `to`, or pass a list to set order explicitly.
-    :type order_by: Union[str, List[str]]
+    :param transitions: Dictionary of transitions and their counts or
+                        probabilities.
+    :param get_name: Optional lambda function to call to convert states to
+                     labels.
+    :param order_by: Order labels by descending count of `from` or `to`,
+                     or pass a list to set order explicitly.
     :param exclude: Optional list of labels to exclude from the plots.
-    :type exclude: Union[str, List[str]]
     """
-    transitions = create_transition_table(transitions=transitions, get_name=get_name, exclude=exclude)
+    transitions = create_transition_table(
+        transitions=transitions, get_name=get_name, exclude=exclude
+    )
     if type(order_by) is str:
-        order_names = transitions.groupby(order_by).sum()['count'].sort_values(ascending=False).index.tolist()
+        order_names = transitions.groupby(order_by).sum()[
+            'count'
+        ].sort_values(ascending=False).index.tolist()
     else:
         order_names = order_by
     matrix = pivot_table(
@@ -108,24 +124,33 @@ def create_transition_matrix(transitions: dict, get_name=None,
     return matrix
 
 
-def find_most_probable_sequence(transitions, get_name=None, exclude=None, start_at: str = None) -> List[str]:
+def find_most_probable_sequence(
+        transitions: Dict[Tuple[object, object], Union[float, int]],
+        get_name: Optional[Callable[[UserAction], str]] = None,
+        exclude: Optional[Union[str, List[str]]] = None,
+        start_at: str = None
+) -> List[str]:
     """
     Find the most probable transition sequence.
 
-    :param transitions: Dictionary of transitions and their counts or probabilities.
-    :type transitions: Dict[Tuple[object, object], Union[float, int]]
-    :param get_name: Optional lambda function to call to convert states to labels.
-    :type get_name: Callable[[IUserAction], str]
+    :param transitions: Dictionary of transitions and their counts or
+                        probabilities.
+    :param get_name: Optional lambda function to call to convert states to
+                     labels.
     :param exclude: Optional list of names to exclude from the sequence.
-    :type exclude: Union[str, List[str]]
-    :param start_at: Optional name of start state. Leave as None to use most common state.
+    :param start_at: Optional name of start state. Leave as None to use most
+                     common state.
     """
-    transitions = create_transition_table(transitions=transitions, get_name=get_name, exclude=exclude)
+    transitions = create_transition_table(
+        transitions=transitions, get_name=get_name, exclude=exclude
+    )
     # find most frequent from point
     if start_at is not None:
         current_name = start_at
     else:
-        current_name = transitions.groupby('from').sum()['count'].sort_values(ascending=False).index[0]
+        current_name = transitions.groupby('from').sum()[
+            'count'
+        ].sort_values(ascending=False).index[0]
     sequence = [current_name]
     # iteratively find most frequent transition point from the current point
     found = True

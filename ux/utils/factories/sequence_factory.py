@@ -23,10 +23,14 @@ def generate_sequence(locations: List[str],
     Generate an ActionSequence based on user-supplied parameters.
 
     :param locations: list of locations in order that they would be visited
-    :param sources_targets: {function to generate a }list of tuples of (source, target) from the locations
-    :param action_types: {function to generate a }list of action types of from the sources and targets
-    :param time_stamps: {function to generate a }list of timestamps based on the sources, targets and action types
-    :param time_stamp_kwargs: additional keyword arguments to send to the time_stamps function
+    :param sources_targets: {function to generate a }list of tuples of
+                            (source, target) from the locations
+    :param action_types: {function to generate a }list of action types of from
+                         the sources and targets
+    :param time_stamps: {function to generate a }list of timestamps based on the
+                        sources, targets and action types
+    :param time_stamp_kwargs: additional keyword arguments to send to the
+                              time_stamps function
     :param user_id: the unique id of the user
     :param session_id: the unique id of the session
     """
@@ -62,7 +66,7 @@ if __name__ == '__main__':
 
     seq = generate_sequence(
         locations=LOCS__ABCDE,
-        sources_targets=lambda locs: SourceTargetFactory.forward_back(locs, 3, 2),
+        sources_targets=lambda l: SourceTargetFactory.forward_back(l, 3, 2),
         action_types=ActionTypeFactory.page_view__back_click,
         time_stamps=TimingFactory.constant_per_action_type,
         time_stamp_kwargs=dict(

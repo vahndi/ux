@@ -9,7 +9,8 @@ from ux.utils.dates import monday_on_or_before, date_to_datetime
 
 def _get_sequence_start_end_dates(sequences: List[ActionSequence]) -> DatePair:
     """
-    Find the start and end dates of the sequences using the first UserAction in each sequence.
+    Find the start and end dates of the sequences using the first UserAction in
+    each sequence.
 
     :param sequences: List of IActionSequences to find dates from.
     """
@@ -24,9 +25,12 @@ def _get_sequence_start_end_dates(sequences: List[ActionSequence]) -> DatePair:
     return start_date, end_date
 
 
-def _get_sequence_start_end_date_times(sequences: List[ActionSequence]) -> DateTimePair:
+def _get_sequence_start_end_date_times(
+        sequences: List[ActionSequence]
+) -> DateTimePair:
     """
-    Find the start and end date-times of the sequences using the first UserAction in each sequence.
+    Find the start and end date-times of the sequences using the first
+    UserAction in each sequence.
 
     :param sequences: List of IActionSequences to find dates from.
     """
@@ -41,16 +45,20 @@ def _get_sequence_start_end_date_times(sequences: List[ActionSequence]) -> DateT
     return start_date_time, end_date_time
 
 
-def split_sequences_by_hour(sequences: List[ActionSequence],
-                            start_date_time: datetime = None,
-                            end_date_time: datetime = None) -> OrderedDict[date, List[ActionSequence]]:
+def split_sequences_by_hour(
+        sequences: List[ActionSequence],
+        start_date_time: datetime = None,
+        end_date_time: datetime = None
+) -> OrderedDict[date, List[ActionSequence]]:
     """
-    Split a list of ActionSequences into an OrderedDict mapping each hour to a new list.
+    Split a list of ActionSequences into an OrderedDict mapping each hour to a
+    new list.
 
     Hours without any Sequences will contain an empty list.
 
     :param sequences: Original list of sequences to split by day.
-    :param start_date_time: Optional first date-time to use to split the sequences.
+    :param start_date_time: Optional first date-time to use to split the
+                            sequences.
     :param end_date_time: Optional last date-time to use.
     """
     if not sequences:
@@ -78,11 +86,14 @@ def split_sequences_by_hour(sequences: List[ActionSequence],
     return sequence_dict
 
 
-def split_sequences_by_day(sequences: List[ActionSequence],
-                           start_date: date = None,
-                           end_date: date = None) -> OrderedDict[date, List[ActionSequence]]:
+def split_sequences_by_day(
+        sequences: List[ActionSequence],
+        start_date: date = None,
+        end_date: date = None
+) -> OrderedDict[date, List[ActionSequence]]:
     """
-    Split a list of ActionSequences into an OrderedDict mapping each date to a new list.
+    Split a list of ActionSequences into an OrderedDict mapping each date to a
+    new list.
 
     Dates without any Sequences will contain an empty list.
 
@@ -112,11 +123,14 @@ def split_sequences_by_day(sequences: List[ActionSequence],
     return sequence_dict
 
 
-def split_sequences_by_week(sequences: List[ActionSequence],
-                            start_date: date = None,
-                            end_date: date = None) -> OrderedDict[date, List[ActionSequence]]:
+def split_sequences_by_week(
+        sequences: List[ActionSequence],
+        start_date: date = None,
+        end_date: date = None
+) -> OrderedDict[date, List[ActionSequence]]:
     """
-    Split a list of ActionSequences into an OrderedDict mapping each week's start date to a new list.
+    Split a list of ActionSequences into an OrderedDict mapping each week's
+    start date to a new list.
 
     Dates without any Sequences will contain an empty list.
 
@@ -154,11 +168,14 @@ def split_sequences_by_week(sequences: List[ActionSequence],
     return sequence_dict
 
 
-def split_sequences_by_month(sequences: List[ActionSequence],
-                             start_date: date = None,
-                             end_date: date = None) -> OrderedDict[date, List[ActionSequence]]:
+def split_sequences_by_month(
+        sequences: List[ActionSequence],
+        start_date: date = None,
+        end_date: date = None
+) -> OrderedDict[date, List[ActionSequence]]:
     """
-    Split a list of ActionSequences into an OrderedDict mapping each month's start date to a new list.
+    Split a list of ActionSequences into an OrderedDict mapping each month's
+    start date to a new list.
 
     Dates without any Sequences will contain an empty list.
 

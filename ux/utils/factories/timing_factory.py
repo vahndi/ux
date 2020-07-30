@@ -35,6 +35,8 @@ class TimingFactory(object):
         return date_times
 
     @staticmethod
-    def random_exponential(start: datetime, sources: List[str]) -> List[datetime]:
+    def random_exponential(
+            start: datetime, sources: List[str]
+    ) -> List[datetime]:
 
         pass

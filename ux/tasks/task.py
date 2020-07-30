@@ -7,7 +7,11 @@ class Task(object):
     """
     Represents a Task corresponding to a sequence of desirable Actions.
     """
-    def __init__(self, name: str, action_templates: List[ActionTemplate] = None):
+    def __init__(
+            self,
+            name: str,
+            action_templates: Optional[List[ActionTemplate]] = None
+    ):
         """
         Create a new Task.
 

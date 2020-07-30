@@ -19,7 +19,8 @@ class UserAction(object):
         :param source_id: The id of the location where the User took the Action.
         :param time_stamp: The date-time when the User took the Action.
         :param user_id: The id of the User who took the Action.
-        :param session_id: The id of the Session in which the User took the Action.
+        :param session_id: The id of the Session in which the User took the
+                           Action.
         :param target_id: Optional id of the location the Action navigated to.
         :param meta: Optional additional data to store with the UserAction.
         """

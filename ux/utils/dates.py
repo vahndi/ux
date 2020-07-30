@@ -16,7 +16,8 @@ def monday_on_or_after(the_date: date) -> date:
 
     :param the_date: The date to find the date of the Monday for.
     """
-    return the_date + timedelta(days=-the_date.weekday(), weeks=the_date.weekday() > 1)
+    return the_date + timedelta(days=-the_date.weekday(),
+                                weeks=the_date.weekday() > 1)
 
 
 def date_to_datetime(the_date: date) -> datetime:

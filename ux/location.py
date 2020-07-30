@@ -21,14 +21,8 @@ class Location(object):
 
         return 'Location({})'.format(self._location_id)
 
-    def __gt__(self, other) -> bool:
-        """
-        :type other: Location
-        """
+    def __gt__(self, other: 'Location') -> bool:
         return self._location_id > other._location_id
 
-    def __lt__(self, other) -> bool:
-        """
-        :type other: Location
-        """
+    def __lt__(self, other: 'Location') -> bool:
         return self._location_id < other._location_id

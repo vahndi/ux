@@ -2,7 +2,7 @@ from collections import OrderedDict
 from matplotlib.axes import Axes
 from numpy import array, ndarray, histogram
 from pandas import DataFrame, Series
-from typing import Union, Iterable, Optional
+from typing import Union, Iterable, Optional, List, Dict
 
 from ux.calcs.basic_calcs.task_success import binary_task_success_rate
 from ux.plots.helpers import new_axes, get_hist_index
@@ -44,14 +44,15 @@ def plot_task_success_rates(task_results: dict, ax: Axes = None) -> Axes:
 
 
 def plot_task_success_frequencies(
-        success_rates, bins: Union[list, range] = None,
-        ax: Axes = None
+        success_rates: Union[List[float], Dict[str, List[float]]],
+        bins: Optional[Union[list, range]] = None,
+        ax: Optional[Axes] = None
 ) -> Axes:
     """
     Plot frequencies of success rates for one or many scenarios.
 
-    :param success_rates: List of success rates for one scenario, or dict(name->success_rates) for many.
-    :type success_rates: Union[List[float], Dict[str, List[float]]]
+    :param success_rates: List of success rates for one scenario,
+                          or dict(name->success_rates) for many.
     :param bins: Bins for the histogram calculation.
     :param ax: Optional matplotlib axes.
     """
@@ -86,14 +87,16 @@ def plot_task_success_frequencies(
         raise TypeError
 
 
-def plot_task_completion_rates(completion_rates, bins: Union[list, range] = None,
-                               ax: Axes = None) -> Axes:
+def plot_task_completion_rates(
+        completion_rates: Union[List[float], Dict[str, List[float]]],
+        bins: Union[list, range] = None,
+        ax: Optional[Axes] = None
+) -> Axes:
 
     """
     Plot rate of task completion for a given task.
 
     :param completion_rates: Completion rates for each participant (0 - 1)
-    :type completion_rates: Union[List[float], Dict[str, List[float]]]
     :param bins: Bins for the histogram calculation.
     :param ax: Optional matplotlib axes.
     """

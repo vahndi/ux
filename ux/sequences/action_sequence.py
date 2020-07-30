@@ -1,24 +1,29 @@
 from collections import defaultdict, OrderedDict, Counter
 from datetime import datetime, timedelta
-from pandas import notnull
 from types import FunctionType
-from typing import List, Callable, Set, Union, Iterator, Dict, Optional, overload, Any
+from typing import List, Callable, Set, Union, Iterator, Dict, Optional, \
+    overload, Any
+
+from pandas import notnull
 
 from ux.actions.action_template import ActionTemplate
-from ux.actions.user_action import UserAction, ActionCounter, ActionFilter, ActionMapper
-from ux.wrappers.map_result import MapResult
+from ux.actions.user_action import UserAction, ActionCounter, ActionFilter, \
+    ActionMapper
 from ux.utils.misc import get_method_name
+from ux.wrappers.map_result import MapResult
 
 
 class ActionSequence(object):
     """
     Represents a sequence of UserActions taken by a User.
     """
-    def __init__(self, user_actions: Optional[List[UserAction]] = None, meta: Optional[dict] = None):
+    def __init__(self, user_actions: Optional[List[UserAction]] = None,
+                 meta: Optional[dict] = None):
         """
         Create a new ActionSequence.
 
-        :param user_actions: List of Actions to use to construct the ActionSequence.
+        :param user_actions: List of Actions to use to construct the
+                             ActionSequence.
         :param meta: Optional additional data to store with the ActionSequence.
         """
         self._user_actions: List[UserAction] = user_actions or []
@@ -53,7 +58,8 @@ class ActionSequence(object):
     @property
     def duration(self) -> timedelta:
         """
-        Return the total duration of the ActionSequence from the first Action to the last.
+        Return the total duration of the ActionSequence from the first Action to
+        the last.
         """
         start_time = self[0].time_stamp
         end_time = self[-1].time_stamp
@@ -95,7 +101,8 @@ class ActionSequence(object):
 
     def action_templates(self) -> List[ActionTemplate]:
         """
-        Return a list of ActionTemplates derived from each of the UserActions taken.
+        Return a list of ActionTemplates derived from each of the UserActions
+        taken.
         """
         if self._action_templates is None:
             self._action_templates = [
@@ -106,20 +113,23 @@ class ActionSequence(object):
 
     def action_template_set(self) -> Set[ActionTemplate]:
         """
-        Return a set of ActionTemplates representing the UserActions in the ActionSequence.
+        Return a set of ActionTemplates representing the UserActions in the
+        ActionSequence.
         """
         return set(self.action_templates())
 
     def action_template_counts(self) -> Dict[ActionTemplate, int]:
         """
-        Return a count of each ActionTemplate representing one or more UserActions in the ActionSequence.
+        Return a count of each ActionTemplate representing one or more
+        UserActions in the ActionSequence.
         """
         counts = defaultdict(int)
         for template in self.action_templates():
             counts[template] += 1
         return dict(counts)
 
-    def filter(self, condition: Union[ActionFilter, ActionTemplate], copy_meta: bool = False) -> 'ActionSequence':
+    def filter(self, condition: Union[ActionFilter, ActionTemplate],
+               copy_meta: bool = False) -> 'ActionSequence':
 
         if condition in (None, True):
             return self
@@ -128,13 +138,15 @@ class ActionSequence(object):
         elif isinstance(condition, FunctionType):
             actions = [a for a in self if condition(a)]
         else:
-            raise TypeError('filter condition must be ActionFilter or IActionTemplate')
+            raise TypeError(
+                'filter condition must be ActionFilter or IActionTemplate')
         return ActionSequence(
             user_actions=actions,
             meta=self.meta if copy_meta else {}
         )
 
-    def count(self, condition: Union[ActionFilter, ActionTemplate] = None) -> int:
+    def count(self,
+              condition: Union[ActionFilter, ActionTemplate] = None) -> int:
         """
         Return a count of the UserActions where the given condition is True
         """
@@ -149,16 +161,21 @@ class ActionSequence(object):
                     action_count += 1
             return action_count
         else:
-            raise TypeError('count condition must be ActionFilter or IActionTemplate')
+            raise TypeError(
+                'count condition must be ActionFilter or IActionTemplate')
 
     def counter(self, get_value: ActionCounter) -> Counter:
         """
-        Return a dict of counts of each value returned by get_value(action) for each action.
+        Return a dict of counts of each value returned by get_value(action) for
+        each action.
 
-        If get_value returns a list then 1 will be added to the counter value for each element key of the list.
-        If get_value returns a non-list then the returned item will be used as a key and it's value increased by 1.
+        If get_value returns a list then 1 will be added to the counter value
+        for each element key of the list.
+        If get_value returns a non-list then the returned item will be used as a
+        key and it's value increased by 1.
 
-        :param get_value: method that returns a str or list of strs when called on an action.
+        :param get_value: method that returns a str or list of strs when called
+        on an action.
         """
         counts = Counter()
         for action in self:
@@ -182,7 +199,8 @@ class ActionSequence(object):
 
     def find_first(self, template: ActionTemplate) -> Optional[UserAction]:
         """
-        Return the first action matching the given action template. Returns None if the template is not matched.
+        Return the first action matching the given action template. Returns None
+        if the template is not matched.
         """
         occurrences = self.find_all(template)
         if len(occurrences):
@@ -192,7 +210,8 @@ class ActionSequence(object):
 
     def find_last(self, template: ActionTemplate) -> Optional[UserAction]:
         """
-        Return the first action matching the given action template. Returns None if the template is not matched.
+        Return the first action matching the given action template. Returns None
+        if the template is not matched.
         """
         occurrences = self.find_all(template)
         if len(occurrences):
@@ -202,17 +221,20 @@ class ActionSequence(object):
 
     def map(self, mapper: Union[str, dict, list, ActionMapper]) -> MapResult:
         """
-        Apply a map function to every action in the Sequence and return the results.
+        Apply a map function to every action in the Sequence and return the
+        results.
 
         :param mapper: The method or methods to apply to each UserAction
         """
+
         def map_items(item_mapper) -> list:
             if isinstance(item_mapper, str):
                 # properties and methods
                 if hasattr(UserAction, item_mapper):
                     if callable(getattr(UserAction, item_mapper)):
                         # methods
-                        return [getattr(action, item_mapper)() for action in self]
+                        return [getattr(action, item_mapper)() for action in
+                                self]
                     else:
                         # properties
                         return [getattr(action, item_mapper) for action in self]
@@ -222,7 +244,8 @@ class ActionSequence(object):
                 raise TypeError('item mappers must be FunctionType or str')
 
         if isinstance(mapper, str) or isinstance(mapper, FunctionType):
-            results = OrderedDict([(get_method_name(mapper), map_items(mapper))])
+            results = OrderedDict(
+                [(get_method_name(mapper), map_items(mapper))])
         elif isinstance(mapper, dict):
             results = OrderedDict([
                 (get_method_name(key), map_items(value))
@@ -238,14 +261,22 @@ class ActionSequence(object):
 
         return MapResult(results)
 
-    def split(self, split, how: str = 'at', copy_meta: bool = False) -> List['ActionSequence']:
+    def split(
+            self,
+            split: Union[ActionFilter, ActionTemplate],
+            how: str = 'at',
+            copy_meta: bool = False
+    ) -> List['ActionSequence']:
         """
-        Split into a list of new ActionSequences after each `UserAction` where `condition` is met.
+        Split into a list of new ActionSequences after each `UserAction` where
+        `condition` is met.
 
-        :param split: Lambda function or Action Template to use to break the sequence.
-        :type split: Union[ActionFilter, IActionTemplate]
-        :param how: How to split the Sequence. One of `['before', 'after', 'at']`
-        :param copy_meta: Whether to copy the `meta` dict into the new Sequences.
+        :param split: Lambda function or Action Template to use to break the
+                      sequence.
+        :param how: How to split the Sequence.
+                    One of `['before', 'after', 'at']`
+        :param copy_meta: Whether to copy the `meta` dict into the new
+                          Sequences.
         """
         # find matching locations
         match_locs = []
@@ -276,14 +307,17 @@ class ActionSequence(object):
             if match_locs[-1] != len(self) - 1:
                 seq_ends.append(len(self))
         else:
-            raise ValueError("'how' must be set to one of ['before', 'after', 'at']")
+            raise ValueError(
+                "'how' must be set to one of ['before', 'after', 'at']")
 
         return [ActionSequence(
             user_actions=self[start: end],
             meta=self._meta if copy_meta else None
         ) for start, end in zip(seq_starts, seq_ends)]
 
-    def crop(self, start, end, how: str, copy_meta: bool = False) -> Optional['ActionSequence']:
+    def crop(
+            self, start, end, how: str, copy_meta: bool = False
+    ) -> Optional['ActionSequence']:
         """
         Crop the sequence to start and end ActionTemplates or conditions.
         Returns None if both conditions are not found in order.
@@ -364,28 +398,34 @@ class ActionSequence(object):
                 rates[template] = rate
         return rates
 
-    def dwell_times(self, sum_by_location: bool) -> Dict[str, Union[timedelta, List[timedelta]]]:
+    def dwell_times(
+            self, sum_by_location: bool
+    ) -> Dict[str, Union[timedelta, List[timedelta]]]:
         """
         Return the amount of time spent by the user at each location.
 
-        :param sum_by_location: Whether to sum the durations of time spent at each location or keep as a list.
+        :param sum_by_location: Whether to sum the durations of time spent at
+                                each location or keep as a list.
         """
         if sum_by_location:
             dwell_times = defaultdict(timedelta)
             for a in range(1, len(self)):
                 prev_action = self[a - 1]
                 next_action = self[a]
-                if notnull(prev_action.target_id) and prev_action.target_id != '':
+                if notnull(
+                        prev_action.target_id) and prev_action.target_id != '':
                     location = prev_action.target_id
                 else:
                     location = prev_action.source_id
-                dwell_times[location] += next_action.time_stamp - prev_action.time_stamp
+                dwell_times[
+                    location] += next_action.time_stamp - prev_action.time_stamp
         else:
             dwell_times = defaultdict(list)
             for a in range(1, len(self)):
                 prev_action = self[a - 1]
                 next_action = self[a]
-                if notnull(prev_action.target_id) and prev_action.target_id != '':
+                if notnull(
+                        prev_action.target_id) and prev_action.target_id != '':
                     location = prev_action.target_id
                 else:
                     location = prev_action.source_id
@@ -430,7 +470,9 @@ class ActionSequence(object):
         return self._user_actions.__iter__()
 
 
-def _create_action_template_condition(value: Union[ActionTemplate, FunctionType]) -> Callable[[ActionTemplate], bool]:
+def _create_action_template_condition(
+        value: Union[ActionTemplate, FunctionType]
+) -> Callable[[ActionTemplate], bool]:
 
     def action_template_condition(template: ActionTemplate) -> bool:
         if template == value:

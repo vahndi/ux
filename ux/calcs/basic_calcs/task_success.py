@@ -6,10 +6,14 @@ from statsmodels.stats.proportion import proportion_confint
 from ux.compound_types import FloatPair
 
 
-def binary_task_success_rate(results: Iterable[int],
-                             alpha: float = 0.05, method: str = 'normal') -> Tuple[float, FloatPair]:
+def binary_task_success_rate(
+        results: Iterable[int],
+        alpha: float = 0.05,
+        method: str = 'normal'
+) -> Tuple[float, FloatPair]:
     """
-    Calculate the binary task success rate from a list of pass or fail task results for a given user.
+    Calculate the binary task success rate from a list of pass or fail task
+    results for a given user.
 
     See http://www.statsmodels.org/devel/generated/statsmodels.stats.proportion.proportion_confint.html
 

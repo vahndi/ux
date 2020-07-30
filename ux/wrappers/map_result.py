@@ -21,12 +21,20 @@ class MapResult(object):
 
         # check key names
         if all(_str_or_non_iterable(k) for k in list(data.keys())):
-            assert len(key_names) == 1, 'Length of index names must be 1 when keys are not Iterables'
+            if not len(key_names) == 1:
+                raise ValueError(
+                    'Length of index names must be '
+                    '1 when keys are not Iterables'
+                )
         else:
-            assert len(key_names) == len(list(data.keys())[0]), 'Keys must have same length as key_names'
+            if not len(key_names) == len(list(data.keys())[0]):
+                raise KeyError(
+                    'Keys must have same length as key_names'
+                )
 
         # check value names
-        assert len(value_names) == 1, 'value_names must be length 1'
+        if not len(value_names) == 1:
+            raise ValueError('value_names must be length 1')
 
         self._data: dict = data
         self._key_names: List[str] = key_names
@@ -62,7 +70,8 @@ class MapResult(object):
                 # e.g. {'a': [1, 2], 'b': [3, 4, 5]}
                 series = concat([
                     Series(
-                        index=Index([key] * len(values), name=self.key_names[0]),
+                        index=Index([key] * len(values),
+                                    name=self.key_names[0]),
                         data=values, name=self.value_names[0]
                     )
                     for key, values in self._data.items()
@@ -76,7 +85,8 @@ class MapResult(object):
                 # e.g. {('a', 'b'): [1, 2], ('c', 'd'): [3, 4, 5]}
                 series = concat([
                     Series(
-                        index=MultiIndex.from_tuples([key] * len(values), names=self.key_names),
+                        index=MultiIndex.from_tuples(tuples=[key] * len(values),
+                                                     names=self.key_names),
                         data=values, name=self.value_names[0]
                     )
                     for key, values in self._data.items()
@@ -142,7 +152,8 @@ class MapResult(object):
         """
         Add the values of this MapResult to the values of the other by key.
 
-        If key does not exist in one of the MapResults, uses the value from the one where it does.
+        If key does not exist in one of the MapResults, uses the value from the
+        one where it does.
         """
         if self.key_names != other.key_names:
             raise KeyError('Key names must be identical')
@@ -158,14 +169,18 @@ class MapResult(object):
             if key not in self.keys():
                 new_data[key] = other[key]
         return MapResult(
-            data=new_data, key_names=self.key_names, value_names=self.value_names
+            data=new_data,
+            key_names=self.key_names,
+            value_names=self.value_names
         )
 
     def __sub__(self, other: 'MapResult') -> 'MapResult':
         """
-        Subtract the values of the other MapResult from the values of this one by key.
+        Subtract the values of the other MapResult from the values of this one
+        by key.
 
-        If key does not exist in this MapResult tries to negate the value of the other.
+        If key does not exist in this MapResult tries to negate the value of the
+        other.
         If key does not exist in the other MapResult uses the value of this one.
         """
         if self.key_names != other.key_names:
@@ -182,14 +197,17 @@ class MapResult(object):
             if key not in self.keys():
                 new_data[key] = -other[key]
         return MapResult(
-            data=new_data, key_names=self.key_names, value_names=self.value_names
+            data=new_data,
+            key_names=self.key_names,
+            value_names=self.value_names
         )
 
     def __mul__(self, other: 'MapResult') -> 'MapResult':
         """
         Multiply the values of this MapResult to the values of the other by key.
 
-        If key does not exist in one of the MapResults, omits the key from the new result.
+        If key does not exist in one of the MapResults, omits the key from the
+        new result.
         """
         if self.key_names != other.key_names:
             raise KeyError('Key names must be identical')
@@ -198,19 +216,27 @@ class MapResult(object):
         new_data = OrderedDict()
         for key in self.keys():
             if key in other.keys():
-                if not isinstance(self[key], Iterable) and not isinstance(other[key], Iterable):
+                if (
+                        not isinstance(self[key], Iterable) and
+                        not isinstance(other[key], Iterable)
+                ):
                     new_data[key] = self[key] * other[key]
                 else:
-                    raise TypeError('Cannot multiple iterable value by non-iterable value')
+                    raise TypeError(
+                        'Cannot multiple iterable value by non-iterable value'
+                    )
         return MapResult(
-            data=new_data, key_names=self.key_names, value_names=self.value_names
+            data=new_data,
+            key_names=self.key_names,
+            value_names=self.value_names
         )
 
     def __truediv__(self, other: 'MapResult') -> 'MapResult':
         """
         Divide the values of this MapResult to the values of the other by key.
 
-        If key does not exist in one of the MapResults, omits the key from the new result.
+        If key does not exist in one of the MapResults, omits the key from the
+        new result.
         """
         if self.key_names != other.key_names:
             raise KeyError('Key names must be identical')
@@ -221,5 +247,7 @@ class MapResult(object):
             if key in other.keys():
                 new_data[key] = self[key] / other[key]
         return MapResult(
-            data=new_data, key_names=self.key_names, value_names=self.value_names
+            data=new_data,
+            key_names=self.key_names,
+            value_names=self.value_names
         )

@@ -2,6 +2,7 @@ from typing import List, Tuple, Optional
 
 from ux.calcs.basic_calcs.task_success import binary_task_success_rate
 from ux.compound_types import FloatPair, Number
+from ux.tasks import TaskResult
 
 
 class TaskResult(object):
@@ -19,12 +20,14 @@ class TaskResult(object):
         self._meta: Optional[dict] = meta
 
     @staticmethod
-    def binary_task_success_rate(results,
-                                 alpha: float = 0.05, method: str = 'normal') -> Tuple[float, FloatPair]:
+    def binary_task_success_rate(
+            results: List[TaskResult],
+            alpha: float = 0.05,
+            method: str = 'normal'
+    ) -> Tuple[float, FloatPair]:
         """
         Return the binary success rate of a number of TaskResults.
 
-        :type results: List[TaskResult]
         :param results: list of pass (1/True) / fail (0/False) results
         :param alpha: significance level
         :param method: method to use for confidence interval

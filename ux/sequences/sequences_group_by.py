@@ -1,18 +1,25 @@
 from collections import OrderedDict
 from types import FunctionType
-from typing import Dict, List, Union, ItemsView, KeysView, ValuesView, Iterator, Tuple, TYPE_CHECKING, Optional
+from typing import Dict, List, Union, ItemsView, KeysView, ValuesView, \
+    Iterator, Tuple, TYPE_CHECKING, Optional
 
-from ux.sequences.action_sequence import SequenceFilter, SequenceFilterSet, SequenceGrouper
+from ux.sequences.action_sequence import SequenceFilter, SequenceFilterSet, \
+    SequenceGrouper
 from ux.utils.misc import get_method_name
 from ux.wrappers.map_result import MapResult
 
 if TYPE_CHECKING:
-    from ux.sequences.sequences import Sequences, SequencesGroupByKey, SequencesGrouper
+    from ux.sequences.sequences import Sequences, SequencesGroupByKey, \
+        SequencesGrouper
 
 
 class SequencesGroupBy(object):
 
-    def __init__(self, data: Dict['SequencesGroupByKey', 'Sequences'], names: Union[str, List[str]]):
+    def __init__(
+            self,
+            data: Dict['SequencesGroupByKey', 'Sequences'],
+            names: Union[str, List[str]]
+    ):
         """
         :param data: Dictionary mapping keys to Sequences collections
         :param names: Names for the key groups
@@ -36,12 +43,15 @@ class SequencesGroupBy(object):
         ])
         return MapResult(out_dict, key_names=self.names, value_names='count')
 
-    def map(self, mapper: Union[str, dict, list, 'SequencesGrouper']) -> MapResult:
+    def map(self,
+            mapper: Union[str, dict, list, 'SequencesGrouper']) -> MapResult:
         """
-        Apply a map function to every Sequences in the GroupBy and return the results.
+        Apply a map function to every Sequences in the GroupBy and return the
+        results.
 
         :param mapper: The method or methods to apply to each Sequences
         """
+
         def map_items(item_mapper: Union[str, FunctionType]) -> list:
             first_sequences: 'Sequences' = list(self._data.values())[0]
             if isinstance(item_mapper, str):
@@ -49,12 +59,15 @@ class SequencesGroupBy(object):
                 if hasattr(first_sequences, item_mapper):
                     if callable(getattr(first_sequences, item_mapper)):
                         # methods
-                        return [getattr(sequences, item_mapper)() for sequences in self._data.values()]
+                        return [getattr(sequences, item_mapper)() for sequences
+                                in self._data.values()]
                     else:
                         # properties
-                        return [getattr(sequences, item_mapper) for sequences in self._data.values()]
+                        return [getattr(sequences, item_mapper) for sequences in
+                                self._data.values()]
             elif isinstance(item_mapper, FunctionType):
-                return [item_mapper(sequences) for sequences in self._data.values()]
+                return [item_mapper(sequences) for sequences in
+                        self._data.values()]
             else:
                 raise TypeError('item mappers must be FunctionType or str')
 
@@ -70,7 +83,8 @@ class SequencesGroupBy(object):
         if isinstance(mapper, str) or isinstance(mapper, FunctionType):
             keys = [new_group(names, mapper) for names in group_names]
             values = map_items(mapper)
-            results = OrderedDict([(key, value) for key, value in zip(keys, values)])
+            results = OrderedDict(
+                [(key, value) for key, value in zip(keys, values)])
         elif isinstance(mapper, dict):
             results = OrderedDict()
             for map_key, map_func in mapper.items():
@@ -92,9 +106,12 @@ class SequencesGroupBy(object):
 
         return MapResult(results, key_names=self.names + ['map'])
 
-    def agg(self, agg_funcs: Dict[str, Union[FunctionType, List[FunctionType]]]) -> MapResult:
+    def agg(
+            self, agg_funcs: Dict[str, Union[FunctionType, List[FunctionType]]]
+    ) -> MapResult:
         """
-        :param agg_funcs: dict mapping attributes to one or more aggregation functions e.g. 'duration': np.median
+        :param agg_funcs: dict mapping attributes to one or more aggregation
+                          functions e.g. 'duration': np.median
         :return: Dict[Dict['{{func_name}}({{attr_name}})', agg_result]
         """
         results = OrderedDict()
@@ -107,7 +124,10 @@ class SequencesGroupBy(object):
                 for f in v:
                     agg_pairs.append((k, f))
             else:
-                raise TypeError('agg_funcs values must be FunctionType or List[FunctionType]')
+                raise TypeError(
+                    'agg_funcs values must be '
+                    'FunctionType or List[FunctionType]'
+                )
         agg_attr: str
         for agg_attr, agg_func in agg_pairs:
             agg_func_name = get_method_name(agg_func)
@@ -120,7 +140,8 @@ class SequencesGroupBy(object):
                         values = getattr(sequences, agg_attr)()
                     else:
                         values = getattr(sequences, agg_attr)
-                    new_keys = tuple(list(group_key) + [agg_attr, agg_func_name])
+                    new_keys = tuple(
+                        list(group_key) + [agg_attr, agg_func_name])
                     results[new_keys] = agg_func(values)
         return MapResult(data=results,
                          key_names=self.names + ['attribute', 'agg_method'],
@@ -128,9 +149,11 @@ class SequencesGroupBy(object):
 
     def filter(self, condition: SequenceFilter) -> 'SequencesGroupBy':
         """
-        Return a new Sequences containing only the sequences matching the `condition` in each group.
+        Return a new Sequences containing only the sequences matching the
+        `condition` in each group.
 
-        :param condition: lambda(sequence) that returns True to include a sequence.
+        :param condition: lambda(sequence) that returns True to include a
+                          sequence.
         """
         data = {
             key: value.filter(condition)
@@ -138,9 +161,11 @@ class SequencesGroupBy(object):
         }
         return SequencesGroupBy(data=data, names=self.names)
 
-    def group_filter(self, filters: SequenceFilterSet, group_name: str = None) -> 'SequencesGroupBy':
+    def group_filter(self, filters: SequenceFilterSet,
+                     group_name: str = None) -> 'SequencesGroupBy':
         """
-        Return a new SequencesGroupBy keyed by the filter name with values matching each filter, applied in parallel.
+        Return a new SequencesGroupBy keyed by the filter name with values
+        matching each filter, applied in parallel.
 
         :param filters: Dictionary of filters to apply.
         :param group_name: Name to identify the filter group.
@@ -152,7 +177,10 @@ class SequencesGroupBy(object):
                 i += 1
             group_name = 'filter_' + str(i)
         if group_name in names:
-            raise ValueError(f'Name "{group_name}" already exists in SequencesGroupBy instance.')
+            raise ValueError(
+                f'Name "{group_name}" already exists '
+                f'in SequencesGroupBy instance.'
+            )
         else:
             names.append(group_name)
         data = {}
@@ -161,17 +189,23 @@ class SequencesGroupBy(object):
                 if type(data_filter_names) is str:
                     new_filter_names = (data_filter_names, filter_name)
                 else:
-                    new_filter_names = tuple(list(data_filter_names) + [filter_name])
+                    new_filter_names = tuple(
+                        list(data_filter_names) + [filter_name])
                 data[new_filter_names] = data_sequences.filter(filter_condition)
         return SequencesGroupBy(data=data, names=names)
 
-    def group_by(self, by: Union[SequenceGrouper, Dict[str, SequenceGrouper], str, list]) -> 'SequencesGroupBy':
+    def group_by(
+            self,
+            by: Union[SequenceGrouper, Dict[str, SequenceGrouper], str, list]
+    ) -> 'SequencesGroupBy':
         """
-        Return a new SequencesGroupBy keyed by each value returned by a single grouper,
-        or each combination of groupers for a list of groupers.
-        Each grouper should be a lambda function that returns a picklable value e.g. str.
+        Return a new SequencesGroupBy keyed by each value returned by a single
+        grouper, or each combination of groupers for a list of groupers.
+        Each grouper should be a lambda function that returns a picklable
+        value e.g. str.
 
-        :param by: lambda(Sequence) or dict[group_name, lambda(Sequence)] or list[str or lambda(Sequence)].
+        :param by: lambda(Sequence) or dict[group_name, lambda(Sequence)] or
+                   list[str or lambda(Sequence)].
         """
         new_results = OrderedDict()
         group_sub_results: Optional[SequencesGroupBy] = None
@@ -190,7 +224,8 @@ class SequencesGroupBy(object):
         if group_sub_results is None:
             raise ValueError('Could not get names for new SequencesGroupBy')
         else:
-            return SequencesGroupBy(data=new_results, names=self.names + group_sub_results.names)
+            return SequencesGroupBy(data=new_results,
+                                    names=self.names + group_sub_results.names)
 
     def items(self) -> ItemsView:
 
@@ -208,7 +243,7 @@ class SequencesGroupBy(object):
     def names(self) -> List[str]:
 
         return self._names
-    
+
     @names.setter
     def names(self, names: List[str]) -> None:
 

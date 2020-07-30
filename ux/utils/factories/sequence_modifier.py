@@ -7,9 +7,11 @@ from ux.sequences.action_sequence import ActionSequence
 class SequenceModifier(object):
 
     @staticmethod
-    def insert_action_types_at_random(sequence: ActionSequence, num_insertions,
-                                      action_type: str,
-                                      min_gap_proportion: float = 0.25):
+    def insert_action_types_at_random(
+            sequence: ActionSequence, num_insertions,
+            action_type: str,
+            min_gap_proportion: float = 0.25
+    ):
 
         user = sequence[0].user_id
         session = sequence[0].session_id
@@ -18,9 +20,13 @@ class SequenceModifier(object):
         for _ in range(num_insertions):
             insert_after = randint(0, len(sequence) - 2)
             insert_afters.append(insert_after)
-            random_num = random() * (1 - 2 * min_gap_proportion) + min_gap_proportion
+            random_num = (
+                    random() * (1 - 2 * min_gap_proportion) +
+                    min_gap_proportion
+            )
             action_time = sequence[insert_after].time_stamp + random_num * (
-                sequence[insert_after + 1].time_stamp - sequence[insert_after].time_stamp
+                sequence[insert_after + 1].time_stamp -
+                sequence[insert_after].time_stamp
             )
             insert_times.append(action_time)
         new_actions = []

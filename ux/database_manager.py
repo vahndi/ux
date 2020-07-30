@@ -42,7 +42,8 @@ class DatabaseManager(ABC):
 
     def user_actions(self, user_id: str) -> List[UserAction]:
         """
-        Return all the Actions taken by the User with the given id in the database.
+        Return all the Actions taken by the User with the given id in the
+        database.
         """
         raise NotImplementedError
 
@@ -66,6 +67,7 @@ class DatabaseManager(ABC):
 
     def get_session_sequence(self, session_id) -> ActionSequence:
         """
-        Return an ActionSequence constructed from all UserActions in the Session with the given id.
+        Return an ActionSequence constructed from all UserActions in the Session
+        with the given id.
         """
         raise NotImplementedError

@@ -1,22 +1,22 @@
 from collections import defaultdict, OrderedDict, Counter
 from datetime import timedelta, datetime
 from itertools import chain, product
-from pandas import notnull
 from types import FunctionType
-from typing import Counter as CounterType, Union, Tuple, Callable, Any
+from typing import Counter as CounterType, Tuple, Callable, Any
 from typing import Dict, Iterator, List, Optional, overload, Union
+
+from pandas import notnull
 
 from ux.actions.action_template import ActionTemplate, ActionTemplatePair
 from ux.compound_types import StrPair
-from ux.sequences.action_sequence import ActionSequence, SequenceCounter, SequenceFilter, SequenceFilterSet, \
-    SequenceGrouper
+from ux.sequences.action_sequence import ActionSequence, SequenceCounter, \
+    SequenceFilter, SequenceFilterSet, SequenceGrouper
 from ux.sequences.sequences_group_by import SequencesGroupBy
 from ux.utils.misc import get_method_name
 from ux.wrappers.map_result import MapResult
 
 
 class Sequences(object):
-
     _sequence_lookups = {
         'date': lambda seq: seq.start.date(),
         'start_date': lambda seq: seq.start.date(),
@@ -58,9 +58,11 @@ class Sequences(object):
 
     def filter(self, condition: SequenceFilter) -> 'Sequences':
         """
-        Return a new Sequences containing only the sequences matching the `condition`.
+        Return a new Sequences containing only the sequences matching the
+        `condition`.
 
-        :param condition: lambda(sequence) that returns True to include a sequence.
+        :param condition: lambda(sequence) that returns True to include a
+        sequence.
         """
         if condition in (None, True):
             return self
@@ -70,9 +72,11 @@ class Sequences(object):
                 filtered.append(sequence)
         return Sequences(filtered)
 
-    def group_filter(self, filters: SequenceFilterSet, group_name: str = 'filter') -> SequencesGroupBy:
+    def group_filter(self, filters: SequenceFilterSet,
+                     group_name: str = 'filter') -> SequencesGroupBy:
         """
-        Return a new SequencesGroupBy keyed by the filter name with values matching each filter, applied in parallel.
+        Return a new SequencesGroupBy keyed by the filter name with values
+        matching each filter, applied in parallel.
 
         :param filters: Dictionary of filters to apply.
         :param group_name: Name to identify the filter group.
@@ -85,9 +89,11 @@ class Sequences(object):
 
     def chain_filter(self, filters: SequenceFilterSet) -> SequencesGroupBy:
         """
-        Return a new SequencesGroupBy keyed by the dict key with values matching each filter, applied in series.
+        Return a new SequencesGroupBy keyed by the dict key with values matching
+        each filter, applied in series.
 
-        :param filters: Dictionary of filters to apply. Use OrderedDict for Python < 3.7 to preserve key order.
+        :param filters: Dictionary of filters to apply. Use OrderedDict for
+        Python < 3.7 to preserve key order.
         """
         filtered = OrderedDict()
         sequences = self._sequences
@@ -100,14 +106,20 @@ class Sequences(object):
             sequences = filtered_sequences
         return SequencesGroupBy(data=filtered, names=['filter'])
 
-    def group_by(self, by: Union[SequenceGrouper, Dict[str, SequenceGrouper], str, list]) -> SequencesGroupBy:
+    def group_by(
+            self,
+            by: Union[SequenceGrouper, Dict[str, SequenceGrouper], str, list]
+    ) -> SequencesGroupBy:
         """
-        Return a SequencesGroupBy keyed by each value returned by a single grouper,
-        or each combination of groupers for a list of groupers.
-        Each grouper should be a lambda function that returns a picklable value e.g. str.
+        Return a SequencesGroupBy keyed by each value returned by a single
+        grouper, or each combination of groupers for a list of groupers.
+        Each grouper should be a lambda function that returns a picklable value
+        e.g. str.
 
-        :param by: lambda(Sequence) or dict[group_name, lambda(Sequence)] or list[str or lambda(Sequence)].
+        :param by: lambda(Sequence) or dict[group_name, lambda(Sequence)] or
+                   list[str or lambda(Sequence)].
         """
+
         def apply_group_by(method: SequenceGrouper) -> Dict[str, 'Sequences']:
             splits = defaultdict(list)
             for sequence in self:
@@ -139,7 +151,8 @@ class Sequences(object):
                     method_name = get_method_name(element)
                     groupers[method_name] = element
                 else:
-                    raise TypeError('List elements must be strings or functions.')
+                    raise TypeError(
+                        'List elements must be strings or functions.')
 
         # calculate dict mapping group-by split names to Sequences
         group_by_names = list(groupers.keys())
@@ -148,7 +161,8 @@ class Sequences(object):
             for by_name in group_by_names
         ])
         result = dict()
-        for subgroups_combo in product(*[group_bys[group].items() for group in group_bys.keys()]):
+        for subgroups_combo in product(
+                *[group_bys[group].items() for group in group_bys.keys()]):
             result_key = tuple([subgroup[0] for subgroup in subgroups_combo])
             if len(result_key) == 1:
                 result_key = result_key[0]
@@ -158,31 +172,40 @@ class Sequences(object):
 
     def map(self, mapper: Union[str, dict, list, SequenceGrouper]) -> MapResult:
         """
-        Apply a map function to every Sequence in the Sequences and return the results.
+        Apply a map function to every Sequence in the Sequences and return the
+        results.
 
         :param mapper: The method or methods to apply to each ActionSequence
         """
+
         def map_items(item_mapper: Union[str, FunctionType]) -> list:
             if isinstance(item_mapper, str):
                 # properties and methods
                 if hasattr(ActionSequence, item_mapper):
                     if callable(getattr(self[0], item_mapper)):
                         # methods
-                        return [getattr(sequence, item_mapper)() for sequence in self]
+                        return [getattr(sequence, item_mapper)() for sequence in
+                                self]
                     else:
                         # properties
-                        return [getattr(sequence, item_mapper) for sequence in self]
+                        return [getattr(sequence, item_mapper) for sequence in
+                                self]
                 elif item_mapper in self._sequence_lookups:
-                    return [self._sequence_lookups[item_mapper](sequence) for sequence in self]
+                    return [self._sequence_lookups[item_mapper](sequence) for
+                            sequence in self]
                 else:
-                    raise ValueError(f'ActionSequence has no property or attribute named {item_mapper}')
+                    raise ValueError(
+                        f'ActionSequence has no property'
+                        f' or attribute named {item_mapper}'
+                    )
             elif isinstance(item_mapper, FunctionType):
                 return [item_mapper(sequence) for sequence in self]
             else:
                 raise TypeError('item mappers must be FunctionType or str')
 
         if isinstance(mapper, str) or isinstance(mapper, FunctionType):
-            results = OrderedDict([(get_method_name(mapper), map_items(mapper))])
+            results = OrderedDict(
+                [(get_method_name(mapper), map_items(mapper))])
         elif isinstance(mapper, dict):
             results = OrderedDict([
                 (get_method_name(key), map_items(value))
@@ -208,12 +231,16 @@ class Sequences(object):
 
     def counter(self, get_value: SequenceCounter) -> CounterType[str]:
         """
-        Return a dict of counts of each value returned by get_value(action) for each action.
+        Return a dict of counts of each value returned by get_value(action) for
+        each action.
 
-        If get_value returns a list then 1 will be added to the counter value for each element key of the list.
-        If get_value returns a non-list then the returned item will be used as a key and it's value increased by 1.
+        If get_value returns a list then 1 will be added to the counter value
+        for each element key of the list.
+        If get_value returns a non-list then the returned item will be used as a
+        key and it's value increased by 1.
 
-        :param get_value: method that returns a str or list of strs when called on an action.
+        :param get_value: method that returns a str or list of strs when called
+        on an action.
         """
         counts = Counter()
         for sequence in self:
@@ -230,9 +257,12 @@ class Sequences(object):
         """
         return Sequences(self._sequences)
 
-    def intersection(self, other: Union['Sequences', List[ActionSequence]]) -> 'Sequences':
+    def intersection(
+            self, other: Union['Sequences', List[ActionSequence]]
+    ) -> 'Sequences':
         """
-        Return a new collection representing the ActionSequences in both collections.
+        Return a new collection representing the ActionSequences in both
+        collections.
         """
         if type(other) is Sequences:
             other = other.sequences
@@ -243,7 +273,8 @@ class Sequences(object):
     @staticmethod
     def intersect_all(sequences: List['Sequences']) -> 'Sequences':
         """
-        Return a new collection representing the ActionSequences in every collection.
+        Return a new collection representing the ActionSequences in every
+        collection.
         """
         intersect = sequences[0].copy()
         for s in sequences[1:]:
@@ -296,7 +327,8 @@ class Sequences(object):
 
     def action_template_counts(self) -> Dict[ActionTemplate, int]:
         """
-        Return a total count of all the ActionTemplates in the ActionSequences in the collection.
+        Return a total count of all the ActionTemplates in the ActionSequences
+        in the collection.
         """
         counts = defaultdict(int)
         for sequence in self:
@@ -306,16 +338,20 @@ class Sequences(object):
 
     def action_template_sequence_counts(self) -> Dict[ActionTemplate, int]:
         """
-        Return a total count of the number of ActionSequences containing each ActionTemplate in the collection.
+        Return a total count of the number of ActionSequences containing each
+        ActionTemplate in the collection.
         """
         counts = Counter(chain.from_iterable(
             list(sequence.action_template_set()) for sequence in self
         ))
         return dict(counts)
 
-    def action_template_transition_counts(self) -> Dict[ActionTemplatePair, int]:
+    def action_template_transition_counts(
+            self
+    ) -> Dict[ActionTemplatePair, int]:
         """
-        Return counts of transitions between pairs of Actions from each Sequence in the collection.
+        Return counts of transitions between pairs of Actions from each Sequence
+        in the collection.
 
         :return: Dictionary of {(from, to) => count}
         """
@@ -328,9 +364,12 @@ class Sequences(object):
                 transitions[(from_action, to_action)] += 1
         return dict(transitions)
 
-    def location_transition_counts(self, exclude: Union[str, List[str]] = None) -> CounterType[StrPair]:
+    def location_transition_counts(
+            self, exclude: Union[str, List[str]] = None
+    ) -> CounterType[StrPair]:
         """
-        Count the transitions from each location to each other location in actions in the given sequences.
+        Count the transitions from each location to each other location in
+        actions in the given sequences.
 
         :return: Counter[Tuple[from, to], count]
         """
@@ -345,47 +384,68 @@ class Sequences(object):
             for action in sequence:
                 source = action.source_id
                 target = action.target_id
-                if notnull(target) and source not in exclude and target not in exclude:
+                if (
+                        notnull(target) and
+                        source not in exclude and
+                        target not in exclude
+                ):
                     transitions[(source, target)] += 1
         return transitions
 
-    def dwell_times(self, sum_by_location: bool, sum_by_sequence: bool) -> Dict[str, Union[timedelta, List[timedelta]]]:
+    def dwell_times(
+            self, sum_by_location: bool, sum_by_sequence: bool
+    ) -> Dict[str, Union[timedelta, List[timedelta]]]:
         """
         Return the amount of time spent by the user at each location.
 
-        :param sum_by_location: Whether to sum the durations of time spent at each location or keep as a list.
-        :param sum_by_sequence: Whether to sum the durations of time spent at each location in each sequence
-                                or keep as a list.
+        :param sum_by_location: Whether to sum the durations of time spent at
+                                each location or keep as a list.
+        :param sum_by_sequence: Whether to sum the durations of time spent at
+                                each location in each sequence or keep as a
+                                list.
         """
         if sum_by_sequence:
             dwell_times = defaultdict(timedelta)
             for sequence in self:
-                for location, duration in sequence.dwell_times(sum_by_location=True).items():
+                for location, duration in sequence.dwell_times(
+                        sum_by_location=True).items():
                     dwell_times[location] += duration
         elif not sum_by_location and not sum_by_sequence:
             dwell_times = defaultdict(list)
             for sequence in self:
-                for location, durations in sequence.dwell_times(sum_by_location=False).items():
+                for location, durations in sequence.dwell_times(
+                        sum_by_location=False).items():
                     dwell_times[location].extend(durations)
         elif sum_by_location and not sum_by_sequence:
             dwell_times = defaultdict(list)
             for sequence in self:
-                for location, duration in sequence.dwell_times(sum_by_location=True).items():
+                for location, duration in sequence.dwell_times(
+                        sum_by_location=True).items():
                     dwell_times[location].append(duration)
         else:
-            raise ValueError('Invalid arguments for sum_per_location and / or sum_per_sequence')
+            raise ValueError(
+                'Invalid arguments for sum_per_location'
+                ' and / or sum_per_sequence'
+            )
 
         return dwell_times
 
-    def most_probable_location_sequence(self, exclude: Union[str, List[str]] = None, start_at: str = None,
-                                        allow_repeats: bool = True) -> List[str]:
+    def most_probable_location_sequence(
+            self,
+            exclude: Union[str, List[str]] = None,
+            start_at: str = None,
+            allow_repeats: bool = True
+    ) -> List[str]:
         """
         Find the most probable location sequence.
 
         :param exclude: Optional list of names to exclude from the sequence.
-        :param start_at: Optional name of start state. Leave as None to use most common state.
-        :param allow_repeats: Whether to stop building the sequence at the point where a previous item is found or to
-                              use a less likely item instead and carry on building the sequence.
+        :param start_at: Optional name of start state. Leave as None to use most
+                         common state.
+        :param allow_repeats: Whether to stop building the sequence at the point
+                              where a previous item is found or to use a less
+                              likely item instead and carry on building the
+                              sequence.
         """
         transitions = self.location_transition_counts(exclude=exclude)
         # find most frequent from point
@@ -399,7 +459,8 @@ class Sequences(object):
         while found:
             # remove last added location as a possible target
             if not allow_repeats:
-                transitions = {from_to: count for from_to, count in transitions.items()
+                transitions = {from_to: count for from_to, count in
+                               transitions.items()
                                if from_to[1] != current_name}
             # find next location
             froms = [from_to[0] for from_to in transitions.keys()]

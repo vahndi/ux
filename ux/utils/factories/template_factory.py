@@ -9,13 +9,18 @@ def add_meta(template: dict, key: str, value: str) -> dict:
     return template
 
 
-def generate_generic_template(specifics: dict, placeholders: dict, meta: dict = None) -> dict:
+def generate_generic_template(
+        specifics: dict,
+        placeholders: dict,
+        meta: dict = None
+) -> dict:
     """
     Generate an example template from a dictionary of keys and values.
 
     :param specifics: Keys and values specific to this template.
     :param placeholders: Keys and values for all templates.
-    :param meta: Additional values for meta, other than those already in `specifics`.
+    :param meta: Additional values for meta, other than those already in
+                 `specifics`.
     """
     template = placeholders.copy()
     for key, value in specifics.items():
